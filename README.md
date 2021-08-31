@@ -20,7 +20,7 @@ This project is primarily developed using Ubuntu 20.04 on WSL, and Visual Studio
 
 The LostTime Webapp is written in TypeScript and uses React.
 
-Quickstart: navigate to the `src/webapp` directory and run `npm start`
+Quickstart: navigate to the `src/webapp` directory and run `npm install` then `npm start`
 
 In order to create minified files ready for production, run `npm run build`, which creates files in a `build` folder. These files can be served by the api.
 
