@@ -10,6 +10,7 @@ import { PageTitle } from './components/PageTitle';
 import {Entry} from './components/Entry';
 import {EntryFile, entryFileMeta} from './components/EntryFile';
 import { RegistrationClassCount } from './components/RegistrationClassCount';
+import { buildCheckInPdf } from './orienteering/RegistrationCheckinPdf';
 
 type myformstate = {
   filesprocessed: entryFileMeta[],
@@ -30,6 +31,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
     this.updateEntries = this.updateEntries.bind(this);
     this.handleClearEntries = this.handleClearEntries.bind(this);
     this.nowtimestring = this.nowtimestring.bind(this);
+    this.downloadpdf = this.downloadpdf.bind(this);
   }
 
   handleClearEntries() {
@@ -93,8 +95,13 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
         filesprocessed: [...this.state.filesprocessed, newfile]
       });
   }
-
   });
+  }
+
+  downloadpdf() {
+    const checkInPdf = buildCheckInPdf(this.state.entries);
+    const fileName:string = 'Registrations-'.concat(this.nowtimestring(), '.pdf');
+    checkInPdf.download(fileName);
   }
 
   render() {
@@ -147,7 +154,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
           Save event registration information in .csv format. Upload multiple files to combine registration information from multiple sources. (Todo: click to expand for supported csv formats)
         </p>
         <p>
-          This tool creates outputs ready for import into SportSoftware (OE). (Future: and pdf files to use at check-in)
+          This tool creates outputs ready for import into SportSoftware (OE) and PDF files to print and use at check-in.
         </p>
         <h4>Files</h4>
         <p>
@@ -174,6 +181,14 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
                   disabled={this.state.entries.length > 0 ? false:true}
                 >
                   Download OE File
+                </Button>
+                &nbsp;
+                <Button 
+                  variant="primary" 
+                  onClick={this.downloadpdf}
+                  disabled={this.state.entries.length > 0 ? false:true}
+                >
+                  Download Check-In PDF
                 </Button>
                 &nbsp;
                 <Button 
