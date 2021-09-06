@@ -25,24 +25,30 @@ jobs:
           add: 'src/api/frontend'
           branch: nfs-build-auto
           default_author: github_actions
-          message: '[bot] build for nfs, without webapp src'
+          message: '[bot] build for api host without webapp src'
           pull_strategy: 'NO-PULL'
           remove: 'src/webapp/ -r'
 #       - name: Remove unwanted files
 #         run: rm -r src/webapp/
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v3.10.1
-        with:
-         commit-message: "[bot] create pull request"
-         branch: nfs-build-auto
-         base: nfs-live
-         title: Latest changes for nfs-live
-         body: |
-           Latest changes from main built for api host
+#       - name: Create Pull Request
+#         id: cpr
+#         uses: peter-evans/create-pull-request@v3.10.1
+#         with:
+#          commit-message: "[bot] create pull request"
+#          branch: nfs-build-auto
+#          base: nfs-live
+#          title: Latest changes for nfs-live
+#          body: |
+#            Latest changes from main built for api host
            
-           This should not be merged to `main`.
-           This PR was created by automation.
-         
-        
+#            This should not be merged to `main`.
+#            This PR was created by automation.
+      - name: GitHub Pull Request Action
+        uses: repo-sync/pull-request@v2.6
+        with:
+           source_branch: nfs-build-auto
+           destimation_branch: nfs-live
+           pr_title: "Latest changes built for nfs-live"
+           pr_body: "Latest changes from main built for api host. This is an automated PR."   
+
 
