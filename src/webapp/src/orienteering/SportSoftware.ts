@@ -34,7 +34,7 @@ export function fromLtEntries(entries: LtEntry[]): OeEntryCsv[] {
 
 function convertFromLtEntry(entry:LtEntry): OeEntryCsv {
   if (!entry.StartNo) {
-    throw 'Start number is required';
+    throw new Error('Start number is required');
   }
   return {
     Stno: entry.StartNo,
