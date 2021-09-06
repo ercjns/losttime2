@@ -49,6 +49,7 @@ jobs:
            source_branch: nfs-build-auto
            destination_branch: nfs-live
            pr_title: "Latest changes built for nfs-live"
-           pr_body: "Latest changes from main built for api host. This is an automated PR."   
+           pr_body: "Latest changes from main built for api host. This is an automated PR."
+           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
