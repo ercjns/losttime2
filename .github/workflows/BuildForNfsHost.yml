@@ -13,43 +13,30 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+      - name: Remove react app from API static folder
+        run: rm -r src/api/frontend/
       - name: npm install 
         working-directory: ./src/webapp
         run: npm ci
-      - name: npm build
+      - name: npm build (and copy to API static folder)
         working-directory: ./src/webapp
         run: npm run build
-      - name: Add & Commit
+      - name: Commit to nfs-build-auto
         uses: EndBug/add-and-commit@v7.3.0
         with:
           add: 'src/api/frontend'
           branch: nfs-build-auto
           default_author: github_actions
-          message: '[bot] build for api host without webapp src'
+          message: 'update react app in API static folder'
           pull_strategy: 'NO-PULL'
-          remove: 'src/webapp/ -r'
-#       - name: Remove unwanted files
-#         run: rm -r src/webapp/
-#       - name: Create Pull Request
-#         id: cpr
-#         uses: peter-evans/create-pull-request@v3.10.1
-#         with:
-#          commit-message: "[bot] create pull request"
-#          branch: nfs-build-auto
-#          base: nfs-live
-#          title: Latest changes for nfs-live
-#          body: |
-#            Latest changes from main built for api host
-           
-#            This should not be merged to `main`.
-#            This PR was created by automation.
-      - name: GitHub Pull Request Action
+          remove: "['src/webapp/ -r', '.github']"
+      - name: Open PR to nfs-live
         uses: repo-sync/pull-request@v2.6
         with:
            source_branch: nfs-build-auto
            destination_branch: nfs-live
-           pr_title: "Latest changes built for nfs-live"
-           pr_body: "Latest changes from main built for api host. This is an automated PR."
+           pr_title: "Latest changes from ${{ env.GITHUB_REF }} for nfs-live"
+           pr_body: "Latest changes from `${{ env.GITHUB_REF }}` built `nfs-live`.\nThis is an automated PR from ${{ env.GITHUB_WORKFLOW }} run ${{ env.GITHUB_RUN_NUMBER }}"
            github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
