@@ -69,7 +69,7 @@ export function buildCheckInPdf(entries:LtEntry[]): pdfMake.TCreatedPdf {
                 margin: [0,0,0,10] // bottom only
             },
             {
-                text: [{text: 'Registration Volunteers: ', italics: true, bold: true}, 'Check off each participant in the first column when they arrive. Please verify course assignment, epunch number, and contact information. Collect any money owed and cross out in the owed column when paid.'],
+                text: [{text: 'Registration Volunteers: ', italics: true, bold: true}, 'Check off each participant in the first column when they arrive. Please verify course assignment, epunch number, contact, and vehicle information. Collect any money owed and cross out in the owed column when paid.'],
                 margin: [0,0,0,10] // bottom only
             },
             {
@@ -114,7 +114,7 @@ export function buildCheckInPdf(entries:LtEntry[]): pdfMake.TCreatedPdf {
                 margin: [0,0,0,10] // bottom only
             },
             {
-                text: [{text: 'Registration Volunteers: ', italics: true, bold: true}, 'Check off each participant in the first column when they arrive. Write the rental epunch number in the large box. Please verify course assignment, and contact information. Collect any money owed and cross out in the owed column when paid.'],
+                text: [{text: 'Registration Volunteers: ', italics: true, bold: true}, 'Check off each participant in the first column when they arrive. Write the rental epunch number in the large box but do not check the shaded box. Please verify course assignment, contact, and vehicle information. Collect any money owed and cross out in the owed column when paid.'],
                 margin: [0,0,0,10] // bottom only
             },
             {
@@ -157,7 +157,7 @@ export function buildCheckInPdf(entries:LtEntry[]): pdfMake.TCreatedPdf {
                 margin: [0,0,0,10] // bottom only
             },
             {
-                text: [{text: 'Registration Volunteers: ', italics: true, bold: true}, 'Check off each participant in the first column when they arrive. Write the rental epunch number in the large box. Please verify course assignment, and contact information. Collect any money owed and cross out in the owed column when paid.'],
+                text: [{text: 'Registration Volunteers: ', italics: true, bold: true}, 'Check off each participant in the first column when they arrive. Write the rental epunch number in the large box but do not check the shaded box. Please verify course assignment, contact, and vehicle information. Collect any money owed and cross out in the owed column when paid.'],
                 margin: [0,0,0,10] // bottom only
             },
             {
