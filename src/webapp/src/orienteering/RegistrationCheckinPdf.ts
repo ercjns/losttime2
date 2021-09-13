@@ -2,7 +2,7 @@ import { LtEntry } from "../lt/Entry";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
 
-export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCreatedPdf {
+export function buildCheckInPdf(entries:LtEntry[], files:String[], headerText:string=''): pdfMake.TCreatedPdf {
     
     const fonts:TFontDictionary = {
         // download default Roboto font from cdnjs.com
@@ -73,7 +73,16 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCre
         },
         content: [
             {
-                text: 'Pre-Registration List: OWNED punches',
+                columns: [
+                    {
+                        width: '50%',
+                        text: 'Pre-Registration List: OWNED punches',
+                    },
+                    {
+                        width: '50%',
+                        text: headerText,
+                    }
+                ],
                 bold: true,
                 fontSize: 15,
                 margin: [0,0,0,10] // bottom only
@@ -118,7 +127,16 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCre
 
 
             {
-                text: 'Pre-Registration List: RENTAL punches (list A)',
+                columns: [
+                    {
+                        width: '50%',
+                        text: 'Pre-Registration List: RENTAL punches (list A)', 
+                    },
+                    {
+                        width: '50%',
+                        text: headerText,
+                    }
+                ],
                 bold: true,
                 fontSize: 15,
                 margin: [0,0,0,10] // bottom only
@@ -161,7 +179,16 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCre
             },
 
             {
-                text: 'Pre-Registration List: RENTAL punches (list B)',
+                columns: [
+                    {
+                        width: '50%',
+                        text: 'Pre-Registration List: RENTAL punches (list B)', 
+                    },
+                    {
+                        width: '50%',
+                        text: headerText,
+                    }
+                ],
                 bold: true,
                 fontSize: 15,
                 margin: [0,0,0,10] // bottom only
