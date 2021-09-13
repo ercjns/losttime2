@@ -14,9 +14,9 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCre
      },
     }
     
-    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', 'Emergency Ph.', 'Vehicle']]
-    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', 'Emergency Ph.', 'Vehicle']]
-    const tablebodyrented2: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', 'Emergency Ph.', 'Vehicle']]
+    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
+    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
+    const tablebodyrented2: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
     const ownedepunchentries = entries.filter(entry => entry.Epunch.length > 0).map(buildRegPdfRow);
     const rentalepunchentries = entries.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
     const rentalepunchentries2 = entries.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
@@ -232,8 +232,6 @@ function buildRegPdfRow(entry:LtEntry): any[]{
                     widths: [100],
                     heights: [25],
                     body: [[{
-                        border: [true, true, true, true],
-                        alignment: 'right',
                         columns: [
                             {
                                 width: '*',
@@ -241,17 +239,9 @@ function buildRegPdfRow(entry:LtEntry): any[]{
                             },
                             {
                                 width: 'auto',
-                                table: {
-                                    widths: [4],
-                                    heights: [4],
-                                    body: [[{
-                                        text: " ",
-                                        border: [false, false, false, false]
-                                    }]]
-                                },
-                                layout: {
-                                    fillColor: '#CCCCCC'
-                                }
+                                text: '     ',
+                                lineHeight: 1.45,
+                                background: '#CCCCCC'
                             }
                         ],
                     }]]
@@ -268,13 +258,22 @@ function buildRegPdfRow(entry:LtEntry): any[]{
                     },
                     vLineColor() {
                         return 'black';
+                    },
+                    paddingTop() {
+                        return 2;
+                    },
+                    paddingBottom() {
+                        return -2;
+                    },
+                    paddingRight() {
+                        return 2;
                     }
                 }
             }:
             {text: entry.Epunch, fontSize: 11, alignment:'right'},
         {text: entry.Club, fontSize: 11},
-        {text: formatPhoneNumber(entry.Phone), fontSize: 11},
-        {text: formatPhoneNumber(entry.EmergencyPhone), fontSize: 11},
+        {text: formatPhoneNumber(entry.Phone), fontSize: 11, noWrap:true},
+        {text: formatPhoneNumber(entry.EmergencyPhone), fontSize: 11, noWrap:true  },
         {text: entry.CarLicense, fontSize: 8}
     ]
     return(row);
