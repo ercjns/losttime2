@@ -3,7 +3,7 @@ import './App.css';
 import Papa from 'papaparse';
 import { BasicDz } from './components/dz';
 import * as SS from './orienteering/SportSoftware'
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Col, Container, Dropdown, DropdownButton, Row } from 'react-bootstrap';
 import { LtEntry, parseEnties } from './lt/Entry';
 import { Header } from './components/Header';
 import { PageTitle } from './components/PageTitle';
@@ -27,7 +27,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
       nextstartno: 1000
     }
 
-    this.handleUnparse = this.handleUnparse.bind(this);
+    this.downloadOeRegCsv = this.downloadOeRegCsv.bind(this);
     this.updateEntries = this.updateEntries.bind(this);
     this.handleClearEntries = this.handleClearEntries.bind(this);
     this.nowtimestring = this.nowtimestring.bind(this);
@@ -38,7 +38,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
     this.setState({entries: [], filesprocessed: []});
   }
 
-  handleUnparse() {
+  downloadOeRegCsv(isScoreO:boolean=false) {
     if (this.state.entries.length === 0) {
       console.log("No entries");
       return
@@ -54,7 +54,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
       delimiter: ";",
       header: true,
       skipEmptyLines: "greedy",
-      columns: SS.COLUMNS_STANDARD
+      columns: isScoreO ? SS.COLUMNS_SCOREO : SS.COLUMNS_STANDARD
     }
 
     const csvstring:string = Papa.unparse(forexport, unparseconfig);
@@ -174,30 +174,31 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
 
             </Row>
             <Row>
-              <p>
-                <Button 
-                  variant="primary" 
-                  onClick={this.handleUnparse} 
-                  disabled={this.state.entries.length > 0 ? false:true}
-                >
-                  Download OE File
-                </Button>
-                &nbsp;
+              <ButtonToolbar>
+                <ButtonGroup className="me-2">
+                  <DropdownButton title="Download OE File" 
+                    variant="primary"
+                    disabled={this.state.entries.length > 0 ? false:true}>
+                    <Dropdown.Item onClick={() => this.downloadOeRegCsv()}>Regular</Dropdown.Item>
+                    <Dropdown.Item onClick={() => this.downloadOeRegCsv(true)}>Score O</Dropdown.Item>
+                  </DropdownButton>
+                </ButtonGroup>
+                <ButtonGroup className="me-2">
                 <Button 
                   variant="primary" 
                   onClick={this.downloadpdf}
-                  disabled={this.state.entries.length > 0 ? false:true}
-                >
+                  disabled={this.state.entries.length > 0 ? false:true}>
                   Download Check-In PDF
                 </Button>
-                &nbsp;
-                <Button 
-                  variant="outline-secondary" 
-                  onClick={this.handleClearEntries}
-                >
-                  Clear Registrations
-                </Button>
-              </p>
+                </ButtonGroup>
+                <ButtonGroup>
+                  <Button 
+                    variant="outline-secondary" 
+                    onClick={this.handleClearEntries}>
+                    Clear Registrations
+                  </Button>
+                </ButtonGroup>
+              </ButtonToolbar>
             </Row>
           </Col>
           <Col xs={6} md={6}>
