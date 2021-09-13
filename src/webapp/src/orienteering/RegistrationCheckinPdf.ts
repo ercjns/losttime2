@@ -36,7 +36,7 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCre
 
     tablebodyowned.sort(lastNameSort);
     tablebodyrented.sort(lastNameSort);
-    tablebodyrented.sort(lastNameSort);
+    tablebodyrented2.sort(lastNameSort);
 
     function nowtimestring():string {
         const now:Date = new Date();
