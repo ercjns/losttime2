@@ -99,7 +99,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
   }
 
   downloadpdf() {
-    const checkInPdf = buildCheckInPdf(this.state.entries);
+    const checkInPdf = buildCheckInPdf(this.state.entries, this.state.filesprocessed.map((x) => x.name));
     const fileName:string = 'Registrations-'.concat(this.nowtimestring(), '.pdf');
     checkInPdf.download(fileName);
   }

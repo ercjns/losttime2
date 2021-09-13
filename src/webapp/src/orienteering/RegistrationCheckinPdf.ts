@@ -2,7 +2,7 @@ import { LtEntry } from "../lt/Entry";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
 
-export function buildCheckInPdf(entries:LtEntry[]): pdfMake.TCreatedPdf {
+export function buildCheckInPdf(entries:LtEntry[], files:String[]): pdfMake.TCreatedPdf {
     
     const fonts:TFontDictionary = {
         // download default Roboto font from cdnjs.com
@@ -56,9 +56,19 @@ export function buildCheckInPdf(entries:LtEntry[]): pdfMake.TCreatedPdf {
         pageSize: 'LETTER',
         pageOrientation: 'landscape',
         footer: function(currentPage, pageCount) { return({
-                text: 'Created: ' + nowtimestring(),
-                fontSize: 8,
-                margin: [50,0,0,0]
+                columns: [{
+                    text: 'Created: ' + nowtimestring(),
+                    fontSize: 8,
+                    margin: [50,0,0,0]
+                    },
+                    {
+                        text: 'Source File(s): ' + files,
+                        fontSize: 8,
+                        margin: [0,0,50,0],
+                        alignment: 'right'
+                    }
+                ]
+                
             })
         },
         content: [
