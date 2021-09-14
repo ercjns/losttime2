@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import Papa from 'papaparse';
 import { BasicDz } from './components/dz';
@@ -191,12 +191,6 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
                   </DropdownButton>
                 </ButtonGroup>
                 <ButtonGroup className="me-2">
-                {/* <Button 
-                  variant="primary" 
-                  onClick={this.downloadpdf}
-                  disabled={this.state.entries.length > 0 ? false:true}>
-                  Download Check-In PDF
-                </Button> */}
                 <Dropdown >
                   <Dropdown.Toggle>
                     Download Check-In PDF
@@ -204,7 +198,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
                   <Dropdown.Menu>
                   <Dropdown.ItemText>Header Text:</Dropdown.ItemText>
                   <Form onSubmit={(e) => {e.preventDefault(); this.downloadpdf(this.state.pdftextvalue)}}>
-                    <FormControl type='text' onChange={this.onpdftextchange} value={this.state.pdftextvalue} placeholder='2021 WL #3'></FormControl>
+                    <FormControl type='text' onChange={this.onpdftextchange} value={this.state.pdftextvalue} placeholder={this.state.filesprocessed[0]?.name || ''}></FormControl>
                     <Button type='submit' disabled={this.state.entries.length > 0 ? false:true}>Download PDF</Button>
                   </Form>
                   </Dropdown.Menu>
