@@ -114,7 +114,7 @@ export const COLUMNS_STANDARD = [
   ]
 
 export const COLUMNS_SCOREO = [
-  "OEScore0001",
+  "OESco0001",
   "Stno",
   "XStno",
   "Chipno",
