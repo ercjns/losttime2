@@ -10,7 +10,7 @@ export class CascadeRegistrationCsv {
     EmergencyPhone!: string;
     CarLicense!: string;
     Newcomer!: true | false;
-    Group!: number | null;
+    Group!: number | '*' | null;
     Paid!: true | false;
     Owed!: number | null
 }

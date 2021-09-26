@@ -27,6 +27,7 @@ export class LtEntry {
     CarLicense!: string;
     Newcomer!: true | false | "unknown";
     Group!: number;
+    GroupLeader!: boolean;
     Paid!: true | false | "unknown";
     Owed!: number;
 
@@ -48,6 +49,7 @@ export class LtEntry {
         this.CarLicense= '';
         this.Newcomer= "unknown";
         this.Group= 1;
+        this.GroupLeader= true;
         this.Paid= "unknown";
         this.Owed= 0;
 
@@ -58,7 +60,7 @@ export class LtEntry {
     ) {
         this.StartNo = null;
         this.Epunch = entry.EPunch
-        this.EpunchRented= (entry.EPunch === '') ? true:false;
+        this.EpunchRented= (entry.EPunch === '' && entry.Group !== '*') ? true:false;
         this.FirstName= entry.FirstName
         this.LastName= entry.LastName
         this.Club= entry.Club
@@ -70,7 +72,8 @@ export class LtEntry {
         this.EmergencyPhone= entry.EmergencyPhone;
         this.CarLicense= entry.CarLicense
         this.Newcomer= entry.Newcomer
-        this.Group= (entry.Group) ? entry.Group: 1; 
+        this.Group= (entry.Group) ? (entry.Group === '*' ? 0 : entry.Group): 1;
+        this.GroupLeader= (entry.Group === '*') ? false : true;
         this.Paid= entry.Paid
         this.Owed= (entry.Owed) ? entry.Owed: 0;
 
