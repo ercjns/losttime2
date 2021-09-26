@@ -3,7 +3,7 @@ import './App.css';
 import Papa from 'papaparse';
 import { BasicDz } from './components/dz';
 import * as SS from './orienteering/SportSoftware'
-import { Button, ButtonGroup, ButtonToolbar, Col, Container, Dropdown, DropdownButton, Row } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Col, Container, Dropdown, DropdownButton, Form, FormControl, Row } from 'react-bootstrap';
 import { LtEntry, parseEnties } from './lt/Entry';
 import { Header } from './components/Header';
 import { PageTitle } from './components/PageTitle';
@@ -15,7 +15,8 @@ import { buildCheckInPdf } from './orienteering/RegistrationCheckinPdf';
 type myformstate = {
   filesprocessed: entryFileMeta[],
   entries: LtEntry[],
-  nextstartno: number
+  nextstartno: number,
+  pdftextvalue: string
 }
 
 class EntryProcessor extends React.Component<{}, myformstate, {}> {
@@ -24,14 +25,16 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
     this.state = {
       filesprocessed: [],
       entries: [],
-      nextstartno: 1000
+      nextstartno: 1000,
+      pdftextvalue: ''
     }
-
+    
     this.downloadOeRegCsv = this.downloadOeRegCsv.bind(this);
     this.updateEntries = this.updateEntries.bind(this);
     this.handleClearEntries = this.handleClearEntries.bind(this);
     this.nowtimestring = this.nowtimestring.bind(this);
     this.downloadpdf = this.downloadpdf.bind(this);
+    this.onpdftextchange = this.onpdftextchange.bind(this);
   }
 
   handleClearEntries() {
@@ -98,10 +101,18 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
   });
   }
 
-  downloadpdf() {
-    const checkInPdf = buildCheckInPdf(this.state.entries);
-    const fileName:string = 'Registrations-'.concat(this.nowtimestring(), '.pdf');
-    checkInPdf.download(fileName);
+  downloadpdf(headerText:string='') {
+    const checkInPdfs = buildCheckInPdf(this.state.entries, this.state.filesprocessed.map((x) => x.name), headerText);
+    const fileTimeString = this.nowtimestring();
+    for (const pdf of checkInPdfs) {
+      const fileName:string = 'Registrations-'.concat(fileTimeString, '-', pdf.name, '.pdf');
+      pdf.doc.download(fileName); 
+    }
+  }
+
+  onpdftextchange(e:React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    this.setState({pdftextvalue:e.target.value});
   }
 
   render() {
@@ -137,13 +148,12 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
   
     const regmeta = Object.entries(regclasshist);
 
-
     const counts = regmeta.sort((a, b) => a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase())).map((regclass) => 
     <RegistrationClassCount
       classname={regclass[0]}
       regcount={regclass[1]}
     />
-  );
+    );
 
     return (
       <div>
@@ -184,12 +194,24 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
                   </DropdownButton>
                 </ButtonGroup>
                 <ButtonGroup className="me-2">
-                <Button 
-                  variant="primary" 
-                  onClick={this.downloadpdf}
-                  disabled={this.state.entries.length > 0 ? false:true}>
-                  Download Check-In PDF
-                </Button>
+                <Dropdown>
+                  <Dropdown.Toggle className={this.state.entries.length > 0 ? "":"disabled"}>
+                    Download Check-In PDFs
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu style={{ minWidth: '20rem' }}>
+                    <Dropdown.ItemText>Additional Custom Header Text:</Dropdown.ItemText>
+                    <Row className="justify-content-center">
+                      <Col xs={12}>
+                        <Form 
+                          style= {{marginRight: '16px', marginLeft: '16px'}}
+                          onSubmit={(e) => {e.preventDefault(); this.downloadpdf(this.state.pdftextvalue)}}>
+                          <FormControl type='text' onChange={this.onpdftextchange} value={this.state.pdftextvalue}></FormControl>
+                          <Button style= {{marginTop: '8px'}} type='submit' disabled={this.state.entries.length > 0 ? false:true}>Download PDFs</Button>
+                        </Form>
+                      </Col>
+                    </Row>
+                  </Dropdown.Menu>
+                </Dropdown>
                 </ButtonGroup>
                 <ButtonGroup>
                   <Button 
