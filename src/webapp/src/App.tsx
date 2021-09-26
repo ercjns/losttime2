@@ -102,9 +102,12 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
   }
 
   downloadpdf(headerText:string='') {
-    const checkInPdf = buildCheckInPdf(this.state.entries, this.state.filesprocessed.map((x) => x.name), headerText);
-    const fileName:string = 'Registrations-'.concat(this.nowtimestring(), '.pdf');
-    checkInPdf.download(fileName);
+    const checkInPdfs = buildCheckInPdf(this.state.entries, this.state.filesprocessed.map((x) => x.name), headerText);
+    const fileTimeString = this.nowtimestring();
+    for (const pdf of checkInPdfs) {
+      const fileName:string = 'Registrations-'.concat(fileTimeString, '-', pdf.name, '.pdf');
+      pdf.doc.download(fileName); 
+    }
   }
 
   onpdftextchange(e:React.ChangeEvent<HTMLInputElement>) {
@@ -191,16 +194,22 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
                   </DropdownButton>
                 </ButtonGroup>
                 <ButtonGroup className="me-2">
-                <Dropdown >
-                  <Dropdown.Toggle>
-                    Download Check-In PDF
+                <Dropdown>
+                  <Dropdown.Toggle className={this.state.entries.length > 0 ? "":"disabled"}>
+                    Download Check-In PDFs
                   </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                  <Dropdown.ItemText>Header Text:</Dropdown.ItemText>
-                  <Form onSubmit={(e) => {e.preventDefault(); this.downloadpdf(this.state.pdftextvalue)}}>
-                    <FormControl type='text' onChange={this.onpdftextchange} value={this.state.pdftextvalue} placeholder={this.state.filesprocessed[0]?.name || ''}></FormControl>
-                    <Button type='submit' disabled={this.state.entries.length > 0 ? false:true}>Download PDF</Button>
-                  </Form>
+                  <Dropdown.Menu style={{ minWidth: '20rem' }}>
+                    <Dropdown.ItemText>Additional Custom Header Text:</Dropdown.ItemText>
+                    <Row className="justify-content-center">
+                      <Col xs={12}>
+                        <Form 
+                          style= {{marginRight: '16px', marginLeft: '16px'}}
+                          onSubmit={(e) => {e.preventDefault(); this.downloadpdf(this.state.pdftextvalue)}}>
+                          <FormControl type='text' onChange={this.onpdftextchange} value={this.state.pdftextvalue}></FormControl>
+                          <Button style= {{marginTop: '8px'}} type='submit' disabled={this.state.entries.length > 0 ? false:true}>Download PDFs</Button>
+                        </Form>
+                      </Col>
+                    </Row>
                   </Dropdown.Menu>
                 </Dropdown>
                 </ButtonGroup>

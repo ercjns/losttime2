@@ -2,7 +2,7 @@ import { LtEntry } from "../lt/Entry";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
 
-export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderText:string=''): pdfMake.TCreatedPdf {
+export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderText:string=''): {name:string, doc:pdfMake.TCreatedPdf}[] {
     
     const fonts:TFontDictionary = {
         // download default Roboto font from cdnjs.com
@@ -58,10 +58,10 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
         })
     };
 
-    function footer():any {
+    function buildfooter(currentPage:number, pageCount:number):any {
         return({
             columns: [{
-                text: 'Created: ' + nowtimestring(),
+                text: 'Page ' + currentPage.toString() + ' of ' + pageCount + '. Created: ' + nowtimestring(),
                 fontSize: 8,
                 margin: [50,0,0,0]
                 },
@@ -72,9 +72,7 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
                     alignment: 'right'
                 }
             ]
-        }
-
-        )
+        })
     }
 
     let instructionsRegOwned:any = () => {return({
@@ -157,10 +155,10 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
         return H.concat(':',M,' ',day,' ',d,' ',month,', ',y);
       }
 
-    const docDefinition:TDocumentDefinitions = {
+    const docDefinitionOwned:TDocumentDefinitions = {
         pageSize: 'LETTER',
         pageOrientation: 'landscape',
-        footer: footer(),
+        footer: buildfooter,
         content: [
             header('Pre-Registration List: OWNED punches'),
             instructionsRegOwned(),
@@ -171,10 +169,15 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
                     dontBreakRows: true,
                     body: tablebodyowned
                 },
-                pageBreak: 'after'
-            },
+            }
+        ]
+    }
 
-
+    const docDefinitionRented1:TDocumentDefinitions = {
+        pageSize: 'LETTER',
+        pageOrientation: 'landscape',
+        footer: buildfooter,
+        content: [
             header('Pre-Registration List: RENTAL punches (list A)'),
             instructionsRegRent(),
             instructionsFinishRent(),
@@ -184,9 +187,15 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
                     headerRows: 1,
                     body: tablebodyrented
                 },
-                pageBreak: 'after'
             },
+        ]
+    }
 
+    const docDefinitionRented2:TDocumentDefinitions = {
+        pageSize: 'LETTER',
+        pageOrientation: 'landscape',
+        footer: buildfooter,
+        content: [
             header('Pre-Registration List: RENTAL punches (list B)'),
             instructionsRegRent(),
             instructionsFinishRent(),
@@ -195,12 +204,25 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
                 table: {
                     headerRows: 1,
                     body: tablebodyrented2
-                }
-            }
-
+                },
+            },
         ]
-    };
-    return(pdfMake.createPdf(docDefinition, {}, fonts));
+    }
+
+    return([
+        {
+            name: "Owned", 
+            doc: pdfMake.createPdf(docDefinitionOwned, {}, fonts)
+        }, 
+        {
+            name: "RentalA", 
+            doc: pdfMake.createPdf(docDefinitionRented1, {}, fonts)
+        },
+        {
+            name: "RentalB", 
+            doc: pdfMake.createPdf(docDefinitionRented2, {}, fonts)
+        }
+    ]);
 }
 
 
