@@ -8,14 +8,12 @@
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from router import api 
 
 
 losttime = FastAPI()
 
-
-api = FastAPI()
 losttime.mount("/api", app=api)
-
 
 
 frontend = FastAPI()
