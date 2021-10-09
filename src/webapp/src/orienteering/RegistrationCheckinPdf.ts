@@ -18,9 +18,11 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
     const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
     const tablebodyrented2: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
 
-    const ownedepunchentries = entries.filter(entry => entry.Epunch.length > 0).map(buildRegPdfRow);
-    const rentalepunchentries = entries.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
-    const rentalepunchentries2 = entries.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
+    const GroupLeaders = entries.filter(entry => entry.GroupLeader === true);
+
+    const ownedepunchentries = GroupLeaders.filter(entry => entry.Epunch.length > 0).map(buildRegPdfRow);
+    const rentalepunchentries = GroupLeaders.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
+    const rentalepunchentries2 = GroupLeaders.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
 
     tablebodyowned.push(...ownedepunchentries);
     tablebodyrented.push(...rentalepunchentries);

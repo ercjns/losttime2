@@ -23,6 +23,7 @@ export function fromLtEntries(entries: LtEntry[]): OeEntryCsv[] {
   nextstartno = maxstartnoinuse > 1001 ? maxstartnoinuse+1 : 1001;
 
   for (let e of entries) {
+    if (!e.GroupLeader) {continue}
     if (!e.StartNo) {
       e.StartNo = nextstartno;
       nextstartno++;

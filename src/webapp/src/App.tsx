@@ -138,6 +138,9 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
     );
 
     const regclasshist = this.state.entries.reduce(function(regclasshist: {[key:string]: number}, reg:LtEntry) {
+      if (!reg.GroupLeader) {
+        return regclasshist;
+      }
       if (!regclasshist[reg.ClassId]) {
         regclasshist[reg.ClassId] = 1;
       } else {
@@ -175,7 +178,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
             <Row>
               <p>Files Uploaded: {this.state.filesprocessed.length}</p>
               <p><ul>{files}</ul></p>
-              <p>Registrations by Class (Total: {this.state.entries.length})</p>
+              <p>Registrations by Class (Total: {this.state.entries.filter(entry => entry.GroupLeader === true).length}) <i>This total does not include group members</i>.</p>
               <p>
               <Row>
                 {counts}
@@ -230,6 +233,7 @@ class EntryProcessor extends React.Component<{}, myformstate, {}> {
                 <tr>
                   <th>First</th>
                   <th>Last</th>
+                  <th>Group</th>
                   <th>Chip</th>
                   <th>Rented?</th>
                   <th>Class</th>
