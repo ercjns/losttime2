@@ -1,5 +1,5 @@
 import React from 'react';
-import { LtEntry } from '../lt/Entry';
+import { LtEntry } from '../../lt/Entry';
 
 export class Entry extends React.Component<{value: LtEntry}, {}, {}> {
 
