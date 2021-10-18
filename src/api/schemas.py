@@ -14,3 +14,18 @@ class Event(EventBase):
 
     class Config:
         orm_mode = True
+
+
+class EventClassBase(BaseModel):
+    event_id: int
+    name: str
+    event_scoring: str
+
+class EventClassCreate(EventClassBase):
+    pass
+
+class EventClass(EventClassBase):
+    id: int
+
+    class Config:
+        orm_mode = True

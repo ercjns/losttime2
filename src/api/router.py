@@ -77,13 +77,22 @@ async def create_single_race_event(
     # parse xml file
     raceresults = ResultListReader(file.file)
 
-    eventname = raceresults.race_name
-
     # create event
+    eventname = raceresults.race_name
     e = dba.create_event(db, schemas.EventCreate(name=eventname))
 
-    # create race classes
     # create event classes
+    for rc in raceresults.class_results:
+        classresults = ClassResultReader(rc)
+        dba.create_event_class(db,
+            schemas.EventClassCreate(
+                event_id = e.id,
+                name = classresults.class_name,
+                event_scoring = 'Time'
+            )
+        )
+    # create race classes
+    
     # map race class and event class
     # create race courses
     # create race results

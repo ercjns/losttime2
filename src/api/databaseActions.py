@@ -29,3 +29,14 @@ def update_event(db: Session, id: int, update: schemas.Event):
     db.commit()
     db.refresh(db_event)
     return db_event.without_key()
+
+def create_event_class(db: Session, eventclass: schemas.EventClassCreate):
+    db_eventclass = models.EventClass(
+        event_id = eventclass.event_id,
+        name= eventclass.name, 
+        event_scoring = eventclass.event_scoring
+        )
+    db.add(db_eventclass)
+    db.commit()
+    db.refresh(db_eventclass)
+    return db_eventclass
