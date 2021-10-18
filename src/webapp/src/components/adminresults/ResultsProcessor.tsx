@@ -6,6 +6,16 @@ export class ResultsProcessor extends React.Component<{}, {}, {}> {
 
     loadNewResults(file:File) {
         console.log(file.name);
+        var formData = new FormData();
+        formData.append('file', file);
+        
+        fetch('/api/race', {
+            method: 'POST',
+            body: formData})
+        .then((res) => res.json())
+        .then((result) => {
+            console.log(result)
+        });
     }
 
     render () {

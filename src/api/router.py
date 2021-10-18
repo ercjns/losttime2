@@ -1,6 +1,7 @@
-from fastapi import Depends, FastAPI, Response, Header, status
+from fastapi import Depends, FastAPI, Response, Header, status, File, UploadFile
 from sqlalchemy.orm import Session
 from database import *
+from IofXmlReader.ResultsReader import ResultListReader, ClassResultReader, PersonResultReader
 import schemas
 import databaseActions as dba
 
@@ -67,3 +68,29 @@ def update_event(
         return e
 
     return dba.update_event(db, eventid, event)
+
+@api.post("/race")
+async def create_single_race_event(
+        file: UploadFile = File(...),
+        db: Session = Depends(get_db)):
+
+    # parse xml file
+    raceresults = ResultListReader(file.file)
+
+    eventname = raceresults.race_name
+
+    # create event
+    e = dba.create_event(db, schemas.EventCreate(name=eventname))
+
+    # create race classes
+    # create event classes
+    # map race class and event class
+    # create race courses
+    # create race results
+    # return event info and key for further editing?
+    
+    
+    return {"filename": file.filename, "event": e}
+    # takes an xml file and maybe some properties
+    # creates structures in db to house everything
+    # returns the new *event* with key, for further editing as needed.
