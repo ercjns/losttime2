@@ -1,11 +1,11 @@
 import React from 'react';
 import { PageTitle } from '../PageTitle';
-import { Event } from '../../lt/Event';
+import { ltEvent } from '../../lt/Event';
 
 type resultspagestate = {
     error: Error|null,
     isLoaded: Boolean
-    events: Event[]
+    events: ltEvent[]
   }
 
 

@@ -96,10 +96,9 @@ async def create_single_race_event(
     # map race class and event class
     # create race courses
     # create race results
-    # return event info and key for further editing?
+    # return event info and key for further editing? 
     
-    
-    return {"filename": file.filename, "event": e}
+    return {"filename": file.filename, "event": e.toJSON(key=True)}
     # takes an xml file and maybe some properties
     # creates structures in db to house everything
     # returns the new *event* with key, for further editing as needed.

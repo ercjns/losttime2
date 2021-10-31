@@ -17,6 +17,13 @@ class Event(Base):
         self.api_key = ""
         return self
 
+    def toJSON(self, key=False):
+        return {
+            "id": self.id,
+            "api_key": self.api_key if key else "",
+            "name": self.name
+        }
+
 class EventClass(Base):
     __tablename__ = "eventclasses"
 

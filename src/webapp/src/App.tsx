@@ -1,5 +1,5 @@
 import './App.css';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { Col, Container} from 'react-bootstrap';
 import { Header } from './components/Header';
 import {EntryProcessor} from './components/adminentries/EntryProcessor';
