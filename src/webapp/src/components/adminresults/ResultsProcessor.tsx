@@ -29,7 +29,7 @@ export class ResultsProcessor extends React.Component<{}, resultsprocessingstate
         .then((result) => {
             console.log(result);
             this.setState({event:result.event});
-        })
+        });
     }
 
     render () {

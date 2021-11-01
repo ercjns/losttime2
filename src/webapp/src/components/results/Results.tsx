@@ -32,7 +32,7 @@ export class Results extends React.Component<{}, resultspagestate, {}> {
         (error) => {
             this.setState({
                 isLoaded: true,
-                error
+                error:error
             });
         }
         )

@@ -40,6 +40,26 @@ def create_event(
 async def get_events(db: Session = Depends(get_db)):
     return dba.get_events(db)
 
+@api.get("/events/{eventid}/classes", status_code=status.HTTP_200_OK)
+async def get_event_classes(
+        eventid: int,
+        response: Response,
+        db: Session = Depends(get_db)):
+    # This is simplified to only suport single-race events right now. This will have to change, possibly including the url, when that changes.
+    items = dba.get_event_classes(db, eventid)
+    if (items is None):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {}
+    res = []
+    for eventclass, link in items:
+        a = {}
+        a['eventclass_id'] = link.eventclass_id
+        a['raceclass_id'] = link.raceclass_id
+        a['name'] = eventclass.name
+        a['scoring'] = link.race_scoring
+        res.append(a)
+    return res
+
 @api.get("/events/{eventid}", status_code=status.HTTP_200_OK)
 def get_event_details(
         eventid: int,

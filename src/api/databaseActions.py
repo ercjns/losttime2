@@ -72,3 +72,14 @@ def assign_raceclass_to_eventclass(
     db.add(db_EventClassRaceClass)
     db.commit()
     return
+
+def get_event_classes(
+        db: Session,
+        eventid: int):
+    items = db.query(models.EventClass,
+        models.EventClassRaceClass).\
+        join(models.EventClassRaceClass).\
+        filter(models.EventClass.event_id==eventid).\
+        all()
+    return(items)
+    
