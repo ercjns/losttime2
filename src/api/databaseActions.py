@@ -30,6 +30,13 @@ def update_event(db: Session, id: int, update: schemas.Event):
     db.refresh(db_event)
     return db_event.without_key()
 
+def create_race(db: Session, race=schemas.RaceCreate):
+    db_race = models.Race(name=race.name, date=race.date, venue=race.venue)
+    db.add(db_race)
+    db.commit()
+    db.refresh(db_race)
+    return db_race
+
 def create_event_class(db: Session, eventclass: schemas.EventClassCreate):
     db_eventclass = models.EventClass(
         event_id = eventclass.event_id,
@@ -40,3 +47,28 @@ def create_event_class(db: Session, eventclass: schemas.EventClassCreate):
     db.commit()
     db.refresh(db_eventclass)
     return db_eventclass
+
+def create_race_class(db: Session, raceclass: schemas.RaceClassCreate):
+    db_raceclass = models.RaceClass(
+        race_id = raceclass.race_id,
+        name= raceclass.name, 
+        )
+    db.add(db_raceclass)
+    db.commit()
+    db.refresh(db_raceclass)
+    return db_raceclass
+
+def assign_raceclass_to_eventclass(
+        db: Session, 
+        raceclass_id: int,
+        eventclass_id: int,
+        race_scoring: str
+    ):
+    db_EventClassRaceClass = models.EventClassRaceClass(
+        eventclass_id = eventclass_id,
+        raceclass_id = raceclass_id,
+        race_scoring = race_scoring
+    )
+    db.add(db_EventClassRaceClass)
+    db.commit()
+    return

@@ -4,6 +4,7 @@ from database import *
 from IofXmlReader.ResultsReader import ResultListReader, ClassResultReader, PersonResultReader
 import schemas
 import databaseActions as dba
+from datetime import datetime
 
 
 Base.metadata.create_all(bind=engine)
@@ -77,23 +78,36 @@ async def create_single_race_event(
     # parse xml file
     raceresults = ResultListReader(file.file)
 
-    # create event
+    # create event (a bucket for 1+ races)
     eventname = raceresults.race_name
     e = dba.create_event(db, schemas.EventCreate(name=eventname))
 
-    # create event classes
+    # create race
+    r = dba.create_race(db, schemas.RaceCreate(name=eventname, date=datetime.today(), venue=""))
+
+    # create event classes and race classes
+    # link event classes and race classes
     for rc in raceresults.class_results:
         classresults = ClassResultReader(rc)
-        dba.create_event_class(db,
+        db_eventclass = dba.create_event_class(db,
             schemas.EventClassCreate(
                 event_id = e.id,
                 name = classresults.class_name,
                 event_scoring = 'Time'
             )
         )
-    # create race classes
+        db_raceclass = dba.create_race_class(db,
+            schemas.RaceClassCreate(
+                race_id = r.id,
+                name = classresults.class_name
+            )
+        )
+        dba.assign_raceclass_to_eventclass(db,
+            raceclass_id = db_raceclass.id,
+            eventclass_id = db_eventclass.id,
+            race_scoring = 'Time'
+        )
     
-    # map race class and event class
     # create race courses
     # create race results
     # return event info and key for further editing? 
