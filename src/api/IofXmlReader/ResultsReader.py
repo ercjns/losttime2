@@ -7,8 +7,10 @@
 from tempfile import SpooledTemporaryFile
 from typing import List
 from defusedxml.ElementTree import parse
+from datetime import datetime
 
 NAMESPACE = "{http://www.orienteering.org/datastandard/3.0}"
+TIMEFORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 def _ns(name: str) -> str:
     return NAMESPACE + name
@@ -20,7 +22,7 @@ def _nspath(path: List[str]) -> str:
     xpath = xpath.rstrip('/')
     return xpath
 
-def _findText(root, xpath):
+def _findText(root, xpath) -> str:
     try:
         return root.find(xpath).text
     except AttributeError:
@@ -42,7 +44,7 @@ class ResultListReader:
                 raise TypeError(f'{root.tag} is not an ResultList')
             self.root = root
         self.race_name = _findText(self.root, _nspath(["Event", "Name"]))
-        self.class_results = _findNodes(self.root, _nspath(["ClassResult"]))        
+        self.class_results = _findNodes(self.root, _nspath(["ClassResult"]))
 
 class ClassResultReader:
     def __init__(self, el):
@@ -69,7 +71,11 @@ class PersonResultReader:
         self.last_name = _findText(self.root, _nspath(["Person", "Name", "Family"]))
         self.bib = _findText(self.root, _nspath(["Result", "BibNumber"]))
         self.start_time = _findText(self.root, _nspath(["Result", "StartTime"]))
+        if self.start_time is not None:
+            self.start_time = datetime.strptime(self.start_time, TIMEFORMAT)
         self.finish_time = _findText(self.root, _nspath(["Result", "FinishTime"]))
+        if self.finish_time is not None:
+            self.finish_time = datetime.strptime(self.finish_time, TIMEFORMAT)
         self.time = _findText(self.root, _nspath(["Result", "Time"]))
         self.status = _findText(self.root, _nspath(["Result", "Status"]))
         self.control_card = _findText(self.root, _nspath(["Result", "ControlCard"]))

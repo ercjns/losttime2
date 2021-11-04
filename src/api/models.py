@@ -57,17 +57,6 @@ class RaceCourse(Base):
     distance = Column(DECIMAL)
     climb = Column(DECIMAL)
 
-class RaceResult(Base):
-    __tablename__ = "results"
-
-    id = Column(Integer, primary_key=True, index=True)
-    race_id = Column(Integer, ForeignKey(Race.id), index=True)
-    course_id = Column(Integer, ForeignKey(RaceCourse.id), index=True)
-    start_time = Column(DateTime)
-    end_time = Column(DateTime)
-    course_completed = Column(String)
-    finish_status = Column(String)
-
 class EventClassRaceClass(Base):
     __tablename__ = "eventclass_raceclass_link"
 
@@ -75,6 +64,23 @@ class EventClassRaceClass(Base):
     raceclass_id = Column(Integer, ForeignKey(RaceClass.id), primary_key=True, index=True)
     race_scoring = Column(String)
 
+class RaceEntry(Base):
+    __tablename__ = "raceentries"
 
+    id = Column(Integer, primary_key=True, index=True)
+    person = Column(String)
+    bib = Column(String)
+    epunch = Column(String)
+    raceclass_id = Column(Integer, ForeignKey(RaceClass.id), index=True)
+    competitive = Column(Boolean)
 
-    
+class RaceResult(Base):
+    __tablename__ = "raceresults"
+
+    id = Column(Integer, primary_key=True, index=True)
+    raceentry_id = Column(Integer, ForeignKey(RaceEntry.id))
+    # course_id = Column(Integer, ForeignKey(RaceCourse.id), index=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    course_completed = Column(String)
+    finish_status = Column(String)

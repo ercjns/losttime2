@@ -122,6 +122,34 @@ async def create_single_race_event(
                 name = classresults.class_name
             )
         )
+
+        for rcr in classresults.result_nodes:
+
+            raceresult = PersonResultReader(rcr)
+
+            person_temp = "{} {} ({})".format(raceresult.first_name, raceresult.last_name, raceresult.club_name_short)
+
+            db_raceentry = dba.create_race_entry(db,
+                schemas.RaceEntryCreate(
+                    person = person_temp,
+                    bib = raceresult.bib,
+                    epunch = raceresult.control_card,
+                    raceclass_id = db_raceclass.id,
+                    competitive = True
+                )
+            )
+            db_raceresult = dba.create_race_result(db,
+                schemas.RaceResultCreate(
+                    entry_id = db_raceentry.id,
+                    start_time = raceresult.start_time,
+                    end_time = raceresult.finish_time,
+                    course_completed = raceresult.status,
+                    finish_status = raceresult.status
+                )
+            )
+            
+
+
         dba.assign_raceclass_to_eventclass(db,
             raceclass_id = db_raceclass.id,
             eventclass_id = db_eventclass.id,
@@ -129,7 +157,7 @@ async def create_single_race_event(
         )
     
     # create race courses
-    # create race results
+
     # return event info and key for further editing? 
     
     return {"filename": file.filename, "event": e.toJSON(key=True)}

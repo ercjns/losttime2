@@ -2,7 +2,7 @@
 
 from typing import Optional
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, datetime
 
 ### EVENT ###
 
@@ -62,5 +62,42 @@ class RaceClassCreate(RaceClassBase):
 class RaceClass(RaceClassBase):
     id:int
     
+    class Config:
+        orm_mode = True
+
+### RACEENTRY ###
+
+class RaceEntryBase(BaseModel):
+    person: str
+    bib: str
+    epunch: str
+    raceclass_id: int
+    competitive: bool
+
+class RaceEntryCreate(RaceEntryBase):
+    pass
+
+class RaceEntry(RaceEntryBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+### RACERESULT ###
+
+class RaceResultBase(BaseModel):
+    entry_id: int
+    start_time: Optional[datetime]
+    end_time: Optional[datetime]
+    course_completed: str
+    finish_status: str
+
+class RaceResultCreate(RaceResultBase):
+    pass
+
+class RaceResult(RaceResultBase):
+    id: int
+
     class Config:
         orm_mode = True

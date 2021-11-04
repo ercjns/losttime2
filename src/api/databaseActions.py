@@ -83,3 +83,28 @@ def get_event_classes(
         all()
     return(items)
     
+def create_race_entry(db: Session, entry: schemas.RaceEntryCreate):
+    db_raceentry = models.RaceEntry(
+        person = entry.person,
+        bib = entry.bib,
+        epunch = entry.epunch,
+        raceclass_id = entry.raceclass_id,
+        competitive = entry.competitive
+    )
+    db.add(db_raceentry)
+    db.commit()
+    db.refresh(db_raceentry)
+    return db_raceentry
+
+def create_race_result(db: Session, result: schemas.RaceResultCreate):
+    db_raceresult = models.RaceResult(
+        raceentry_id = result.entry_id,
+        start_time = result.start_time,
+        end_time = result.end_time,
+        course_completed = result.course_completed,
+        finish_status = result.finish_status
+    )
+    db.add(db_raceresult)
+    db.commit()
+    db.refresh(db_raceresult)
+    return db_raceresult
