@@ -108,3 +108,9 @@ def create_race_result(db: Session, result: schemas.RaceResultCreate):
     db.commit()
     db.refresh(db_raceresult)
     return db_raceresult
+
+def get_raceclass_results(db: Session, raceclass_id: int):
+    return db.query(models.RaceResult).\
+        join(models.RaceEntry).\
+        filter(models.RaceEntry.raceclass_id==raceclass_id).\
+        all()

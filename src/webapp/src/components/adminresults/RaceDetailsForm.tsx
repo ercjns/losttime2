@@ -41,6 +41,8 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         });
     }
 
+    // get other results data here? currently plan to collect it all here, but may want to pass that off to child components later.
+
     componentDidMount() {
         this.getRaceClasses();
     }
@@ -62,7 +64,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                 <ul>
                     {races.map(race => (
                     <li key={race.eventclass_id}>
-                        {race.name},{race.scoring}
+                        {race.name},{race.scoring},{race.raceresults.length}
                     </li>
                 ))}
                 </ul>

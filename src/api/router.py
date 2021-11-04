@@ -57,6 +57,7 @@ async def get_event_classes(
         a['raceclass_id'] = link.raceclass_id
         a['name'] = eventclass.name
         a['scoring'] = link.race_scoring
+        a['raceresults'] = dba.get_raceclass_results(db, link.raceclass_id)
         res.append(a)
     return res
 
