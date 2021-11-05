@@ -6,6 +6,7 @@ import { RaceDetailsForm } from './RaceDetailsForm';
 
 type resultsprocessingstate = {
     event: ltEvent|null
+    isProcessing: boolean
   }
 
 export class ResultsProcessor extends React.Component<{}, resultsprocessingstate, {}> {
@@ -13,12 +14,14 @@ export class ResultsProcessor extends React.Component<{}, resultsprocessingstate
     constructor(props:{}) {
         super(props);
         this.state = {
-            event: null
+            event: null,
+            isProcessing: false
         }
     }
 
     loadNewResults = (file:File) => {
         console.log(file.name);
+        this.setState({isProcessing:true})
         var formData = new FormData();
         formData.append('file', file);
         
@@ -28,12 +31,12 @@ export class ResultsProcessor extends React.Component<{}, resultsprocessingstate
         .then((res) => res.json())
         .then((result) => {
             console.log(result);
-            this.setState({event:result.event});
+            this.setState({event:result.event, isProcessing:false});
         });
     }
 
     render () {
-        if (this.state.event === null) {
+        if (this.state.event === null && !this.state.isProcessing) {
             return (<div>
                 <PageTitle 
                     title="Process Results Files" 
@@ -48,19 +51,20 @@ export class ResultsProcessor extends React.Component<{}, resultsprocessingstate
                 </p>
                 </div>
             </div>)
-        } else {
+        } else if (this.state.event !== null) {
             return (<div>
                 <PageTitle 
                     title="Process Results Files" 
                 />
-                <p>
-                    Save event results using the IOF XML v3 format. Upload here, then follow the prompts to set scoring methods.
-                </p>
                 <div>
-                <h4>Deatils</h4>
                 <RaceDetailsForm event={this.state.event}/>
                 </div>
             </div>)
+        } else {
+            return(<div>
+                <h4>Processing...</h4>
+                <p>Please be patient, this can take a minute or two.</p>
+                </div>)
         }
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ltEvent } from '../../lt/Event';
-import { ltEventClassSingleRace } from '../../lt/EventClassSingleRace';
+import { filledRaceResult, ltEventClassSingleRace } from '../../lt/EventClassSingleRace';
 
 
 type RaceDetailsFormProps = {
@@ -47,6 +47,62 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         this.getRaceClasses();
     }
 
+    formatTimeMMMSS(seconds:number) {
+        if (!seconds) {
+            return "";
+        }
+        const m = Math.floor(seconds / 60).toString();
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    compareResults(a:filledRaceResult, b:filledRaceResult) {
+        if (a.entry.competitive && b.entry.competitive) {
+            if (a.result.finish_status === 'OK' && b.result.finish_status === 'OK') {
+                if (a.time && b.time) {
+                    if (a.time < b.time) {
+                        return -1; // lower time is faster, order first
+                    } 
+                    else if (a.time > b.time) {
+                        return 1;
+                    } 
+                    else {
+                        return 0;
+                    }
+                }
+                // never expect to hit cases with ok status but no time:
+                else if (a.time) {
+                    return -1;
+                }
+                else if (b.time) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            }
+            else if (a.result.finish_status === 'OK') {
+                return -1;
+            }
+            else if (b.result.finish_status === 'OK') {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (a.entry.competitive) {
+            return -1;
+        }
+        else if (b.entry.competitive) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
+
     render () {
     const {error, isLoaded, races} = this.state;
     if (error) {
@@ -57,17 +113,80 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         return (
             <div>
                 <ul>
-                    <li>Name: {this.props.event.name}</li>
-                    <li>Key: {this.props.event.api_key}</li>
+                    <li>Event Name: {this.props.event.name}</li>
+                    <li>Event Key: {this.props.event.api_key}</li>
                 </ul>
                 <p>Classes</p>
-                <ul>
-                    {races.map(race => (
-                    <li key={race.eventclass_id}>
-                        {race.name},{race.scoring},{race.raceresults.length}
-                    </li>
+                {races.map(race => (
+                    <div>
+                    <h3>{race.name}</h3>
+                    <table>
+                        <tr>
+                            <th>Pos.</th>
+                            <th>Name</th>
+                            <th>Time</th>
+                            <th>Score</th>
+                        </tr>
+                        {race.raceresults.sort(this.compareResults).map((result, index, array) => {
+
+                            var pos = '';
+                            var score = '';
+                            
+                            if (result.result.finish_status !== 'OK') {
+                                pos = '';
+                            } else if (index === 0 || this.compareResults(result, array[index-1]) !== 0) {
+                                // first or different from previous, add 1 to convert index to position
+                                pos = (index+1).toString()
+                            } else {
+                                console.log('index:', index)
+                                console.log('person:', result.entry.person)
+                                for (var i = index-1; i >= 0; i--) {
+                                    // look backwards until front of array, or find a value that is not equal
+                                    console.log('i:', i)
+                                    if (i === 0) {
+                                        console.log('i is zero')
+                                        pos = (i+1).toString();
+                                        break;
+                                    }
+                                    if (this.compareResults(result, array[i]) !== 0) {
+                                        console.log('i is not match to current result')
+                                        // when find index of non-equal item, step forward 1,
+                                        // then add 1 to convert index to position.
+                                        pos = (i+1+1).toString()+'tie';
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (pos === '') {
+                                score = '';
+                            } else if (pos === '1') {
+                                score = '100';
+                            } else if (pos === '2') {
+                                score = '95';
+                            } else if (pos === '3') {
+                                score = '92';
+                            } else {
+                                score = (94 - parseInt(pos)).toString()
+                            }
+                            
+                            var timestring = this.formatTimeMMMSS(result.time)
+
+                            if (result.result.finish_status !== 'OK') {
+                                timestring += ` (${result.result.finish_status})`;
+                            } 
+                            return(
+                                <tr>
+                                    <td>{pos}</td>
+                                    <td>{result.entry.person}</td>
+                                    <td>{timestring}</td>
+                                    <td>{score}</td>
+                                </tr>
+                            )
+                        })}
+                    </table>
+                    </div>
                 ))}
-                </ul>
             </div>
         );
     }

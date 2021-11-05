@@ -14,6 +14,7 @@ function App() {
         backgroundColor: '#F7F7F7',
         paddingLeft: 0,
         paddingRight: 0,
+        minHeight: '100vh'
       }}>
         <Header />
           <Col xs={{span:10, offset:1}}>

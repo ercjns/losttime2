@@ -110,7 +110,19 @@ def create_race_result(db: Session, result: schemas.RaceResultCreate):
     return db_raceresult
 
 def get_raceclass_results(db: Session, raceclass_id: int):
-    return db.query(models.RaceResult).\
+    results =  db.query(models.RaceResult, models.RaceEntry).\
         join(models.RaceEntry).\
         filter(models.RaceEntry.raceclass_id==raceclass_id).\
         all()
+
+    res = []
+    for (result, entry) in results:
+        if result.finish_status == 'DidNotStart':
+            continue
+        if result.end_time and result.start_time:
+            timespan = result.end_time - result.start_time
+        else:
+            timespan = None
+        res.append({"result":result, "entry": entry, "time": timespan})
+    return res
+
