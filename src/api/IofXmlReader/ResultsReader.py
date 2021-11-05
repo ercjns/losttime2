@@ -72,10 +72,16 @@ class PersonResultReader:
         self.bib = _findText(self.root, _nspath(["Result", "BibNumber"]))
         self.start_time = _findText(self.root, _nspath(["Result", "StartTime"]))
         if self.start_time is not None:
-            self.start_time = datetime.strptime(self.start_time, TIMEFORMAT)
+            try:
+                self.start_time = datetime.strptime(self.start_time, TIMEFORMAT)
+            except ValueError:
+                self.start_time = datetime.strptime(self.start_time[:-6], TIMEFORMAT)
         self.finish_time = _findText(self.root, _nspath(["Result", "FinishTime"]))
         if self.finish_time is not None:
-            self.finish_time = datetime.strptime(self.finish_time, TIMEFORMAT)
+            try:
+                self.finish_time = datetime.strptime(self.finish_time, TIMEFORMAT)
+            except ValueError:
+                self.finish_time = datetime.strptime(self.finish_time[:-6], TIMEFORMAT)
         self.time = _findText(self.root, _nspath(["Result", "Time"]))
         self.status = _findText(self.root, _nspath(["Result", "Status"]))
         self.control_card = _findText(self.root, _nspath(["Result", "ControlCard"]))
