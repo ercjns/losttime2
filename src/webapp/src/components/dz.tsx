@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import Dropzone from 'react-dropzone';
 
-export class BasicDz extends Component<{parser:any}, {files:File[]}, {}> {
+export class BasicDz extends Component<{parser:any, helpText:String}, {files:File[]}, {}> {
   onDrop: (files: File[]) => void;
-  constructor(props:{parser:any}) {
+  constructor(props:{parser:any, helpText:String}) {
     super(props);
     this.onDrop = (files) => {
         console.log(files);
@@ -56,7 +56,7 @@ export class BasicDz extends Component<{parser:any}, {files:File[]}, {}> {
                 style: this.baseStyle,
                    })}>
               <input {...getInputProps()} />
-              <p>Drop csv file(s) here or click to open file browser.</p>
+              <p>{this.props.helpText}</p>
             </div>
           </section>
         )}

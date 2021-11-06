@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import wordmark from  '../assets/LostTimeWordmark.svg';
 import mapblur from '../assets/mapmontageblur.jpg';
 
@@ -7,27 +8,29 @@ export class Header extends React.Component<{}, {}, {}> {
 
   render () {
   return (
-    <Row>
-    <nav className="nav-bar" style={{
+    <Navbar expand="md" style={{
       backgroundImage: `url(${mapblur})`,
       backgroundRepeat: 'repeat-xy',
-      marginBottom: '20px'
+      marginBottom: '20px',
+      maxWidth: '100%',
+      width: '100%'
     }}>
-      <Col xs={{span:10, offset:1}}>
-        <div className="nav-img" style={{
-          paddingTop: '5px',
-          paddingBottom: '5px'
-        }}>
-          <a href="/">
-            <img src={wordmark} alt="Lost Time Orienteering" style={{
+      <Navbar.Brand as={Link} to="/" style={{paddingLeft: '1rem'}}><img src={wordmark} alt="Lost Time Orienteering" style={{
               height: '60px',
               margin: '0px'
             }}></img>
-          </a>
-        </div>
-      </Col>
-    </nav>
-    </Row>
+      </Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" style={{marginRight: '2rem'}}/>
+      <Navbar.Collapse id="basic-navbar-nav" >
+        <Nav>
+          {/* <Nav.Link href="#events" style={{marginLeft: '1rem'}}>Events</Nav.Link> */}
+          <NavDropdown title="Admin" id="basic-nav-dropdown" style={{marginLeft: '1rem'}}>
+            <NavDropdown.Item as={Link} to="/registrations">Process Registrations</NavDropdown.Item>
+            <NavDropdown.Item as={Link} to="/results">Add Results</NavDropdown.Item>
+          </NavDropdown>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
   );
   }
 }

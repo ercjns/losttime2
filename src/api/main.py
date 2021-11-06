@@ -8,14 +8,28 @@
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from router import api 
+
 
 
 losttime = FastAPI()
 
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5000",
+    "http://localhost:8000"
+]
 
-api = FastAPI()
+losttime.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
 losttime.mount("/api", app=api)
-
 
 
 frontend = FastAPI()
