@@ -85,6 +85,14 @@ def get_event_classes(
         filter(models.EventClass.event_id==eventid).\
         all()
     return(items)
+
+def get_WT2_class(
+        db: Session,
+        eventid: int):
+    return db.query(models.EventClass).\
+        filter(models.EventClass.event_id==eventid).\
+        filter(models.EventClass.name=='Middle School Teams').\
+        first()
     
 def create_race_entry(db: Session, entry: schemas.RaceEntryCreate):
     db_raceentry = models.RaceEntry(

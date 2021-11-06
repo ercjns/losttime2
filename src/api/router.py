@@ -9,6 +9,10 @@ from datetime import datetime
 
 Base.metadata.create_all(bind=engine)
 
+WORLDCUP_SCORE_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W3M', 'W4F', 'W5M','W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M', '8F', '8M']
+WIOL_MS_CLASSES = ['W2F', 'W2M']
+WIOL_TEAMSCORE_CLASSES = ['W3F', 'W3M', 'W4F', 'W5M','W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M']
+
 api = FastAPI()
 
 def get_db():
@@ -57,7 +61,8 @@ async def get_event_classes(
         a['raceclass_id'] = link.raceclass_id
         a['name'] = eventclass.name
         a['name_short'] = raceclass.name_short
-        a['scoring'] = link.race_scoring
+        a['race_scoring'] = link.race_scoring
+        a['event_scoring'] = eventclass.event_scoring
         a['raceresults'] = dba.get_raceclass_results(db, link.raceclass_id)
         res.append(a)
     return res
@@ -125,6 +130,41 @@ async def create_single_race_event(
                 name_short = classresults.class_name_short
             )
         )
+        dba.assign_raceclass_to_eventclass(db,
+            raceclass_id = db_raceclass.id,
+            eventclass_id = db_eventclass.id,
+            race_scoring = 'WorldCup' if classresults.class_name_short in WORLDCUP_SCORE_CLASSES else 'Time'
+        )
+
+        if classresults.class_name_short in WIOL_MS_CLASSES:
+            wt2 = dba.get_WT2_class(db, e.id)
+            if not wt2:
+                wt2 = dba.create_event_class(db,
+                    schemas.EventClassCreate(
+                        event_id = e.id,
+                        name = 'Middle School Teams',
+                        event_scoring = 'WIOLTeams'
+                    )
+                )
+            dba.assign_raceclass_to_eventclass(db,
+                raceclass_id = db_raceclass.id,
+                eventclass_id = wt2.id,
+                race_scoring = 'WorldCup'
+            )
+        elif classresults.class_name_short in WIOL_TEAMSCORE_CLASSES:
+            db_eventteamclass = dba.create_event_class(db,
+                schemas.EventClassCreate(
+                    event_id = e.id,
+                    name = classresults.class_name + ' Teams',
+                    event_scoring = 'WIOLTeams'
+                )
+            )
+            dba.assign_raceclass_to_eventclass(db,
+                raceclass_id = db_raceclass.id,
+                eventclass_id = db_eventteamclass.id,
+                race_scoring = 'WorldCup'
+            )
+
 
         for rcr in classresults.result_nodes:
 
@@ -139,7 +179,7 @@ async def create_single_race_event(
                     bib = raceresult.bib,
                     epunch = raceresult.control_card,
                     raceclass_id = db_raceclass.id,
-                    competitive = True
+                    competitive = False if raceresult.status == 'NotCompeting' else True
                 )
             )
             db_raceresult = dba.create_race_result(db,
@@ -153,12 +193,6 @@ async def create_single_race_event(
             )
             
 
-
-        dba.assign_raceclass_to_eventclass(db,
-            raceclass_id = db_raceclass.id,
-            eventclass_id = db_eventclass.id,
-            race_scoring = 'Time'
-        )
     
     # create race courses
 

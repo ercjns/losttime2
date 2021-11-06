@@ -1,6 +1,6 @@
 import React from 'react';
 import { ltEvent } from '../../lt/Event';
-import { filledRaceResult, ltEventClassSingleRace } from '../../lt/EventClassSingleRace';
+import { filledRaceResult, ltEventClassSingleRace, singleTeamResult } from '../../lt/EventClassSingleRace';
 
 
 type RaceDetailsFormProps = {
@@ -11,6 +11,10 @@ type RaceDetailsFormState = {
     error: Error|null,
     isLoaded: Boolean,
     races: ltEventClassSingleRace[]
+}
+
+type ResultsByTeam = {
+    [key:string] : filledRaceResult[]
 }
 
 export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceDetailsFormState, {}> {
@@ -41,15 +45,30 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         });
     }
 
-    // get other results data here? currently plan to collect it all here, but may want to pass that off to child components later.
-
     componentDidMount() {
         this.getRaceClasses();
     }
 
+    formatTimeString(result:filledRaceResult) {
+        var res = '';
+        if (result.result.finish_status === 'MissingPunch') {
+            res += ' msp'
+        } else if (result.result.finish_status === 'DidNotFinish') {
+            res += ' dnf'
+        } else if (result.result.finish_status === 'NotCompeting') {
+            res += ' nc'
+        } else if (result.result.finish_status === 'OverTime') {
+            res += ' ovt'
+        } else if (result.result.finish_status === 'Disqualified') {
+            res += ' DQ'
+        }
+        res += ' ' + this.formatTimeMMMSS(result.time)
+        return res
+    }
+
     formatTimeMMMSS(seconds:number) {
         if (!seconds) {
-            return "";
+            return "--:--";
         }
         const m = Math.floor(seconds / 60).toString();
         const s = (seconds % 60).toString().padStart(2, '0');
@@ -102,9 +121,201 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         }
     }
 
+    compareResultsByScore(a:filledRaceResult, b:filledRaceResult) {
+        if (a.score && b.score) {
+            return b.score - a.score
+        } else if (a.score) {
+            return -1
+        } else if (b.score) {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+    compareTeamResults(a:singleTeamResult, b:singleTeamResult) {
+        if (a.score !== b.score) {
+            return (b.score - a.score)
+        } else {
+            return (0)
+        }
+    }
+
+    combineResultsForEventClasses(eventresults:ltEventClassSingleRace[]) {
+        const neweventresults = eventresults.reduce<ltEventClassSingleRace[]>((acc, result) => {
+            if (!acc.some(el => el.eventclass_id === result.eventclass_id)) {
+                acc.push(result)
+            } else {
+                const toadd = acc.findIndex(el => el.eventclass_id === result.eventclass_id)
+                acc[toadd].raceresults.push(...result.raceresults)
+            }
+            return acc
+        }, [])
+        return neweventresults
+    }
+
+    buildTeams(results:filledRaceResult[]) {
+        const resultsByTeam = results.reduce<ResultsByTeam>((acc, result) => {
+            if (!acc[result.entry.club]) {
+                acc[result.entry.club] = []
+            }
+            acc[result.entry.club].push(result)
+            return acc;
+        }, {} as ResultsByTeam)
+
+        var res:singleTeamResult[] = []
+        Object.entries(resultsByTeam).forEach(team => {
+            const [club, results] = team;
+            const top = results.sort(this.compareResultsByScore).slice(0,3);
+            res.push({
+                club: club,
+                score: top.reduce<number>((prev, result) => {if(result.score === undefined) {return(prev)} return (prev+result.score)}, 0),
+                results: top
+            });
+        })
+        return(res)
+    }
+
+    assignIndvScores(results:filledRaceResult[]) {
+        results
+            .filter(result=>result.result.finish_status==='OK' && result.entry.competitive)
+            .sort(this.compareResults)
+            .map((result, index, array) => {
+               
+                if (result.result.finish_status !== 'OK') {
+                    result.pos = undefined
+                } else if (index === 0 || this.compareResults(result, array[index-1]) !== 0) {
+                    // first or different from previous, add 1 to convert index to position
+                    result.pos = (index+1)
+                } else {
+                    for (var i = index-1; i >= 0; i--) {
+                        // look backwards until front of array, or find a value that is not equal
+                        if (i === 0) {
+                            result.pos = (i+1)
+                            break;
+                        }
+                        if (this.compareResults(result, array[i]) !== 0) {
+                            // when find index of non-equal item, step forward 1,
+                            // then add 1 to convert index to position.
+                            result.pos = (i+1+1)
+                            break;
+                        }
+                    }
+                }
+
+                if (result.pos === undefined) {
+                    result.score = undefined;
+                } else if (result.pos === 1) {
+                    result.score = 100;
+                } else if (result.pos === 2) {
+                    result.score = 95;
+                } else if (result.pos === 3) {
+                    result.score = 92;
+                } else {
+                    result.score = (94 - result.pos)
+                }
+            })
+
+        results.filter(result=>result.result.finish_status==='MissingPunch' || result.result.finish_status==='DidNotFinish')
+            .map(res =>{
+                res.score = 0
+            })
+        return(results);
+    }
 
     render () {
+
     const {error, isLoaded, races} = this.state;
+
+    races.filter(race=>race.event_scoring==='RaceScoring').forEach(race => {
+        race.raceresults = this.assignIndvScores(race.raceresults)
+    })
+
+    const indvClasses = races.filter(race=>race.event_scoring==='RaceScoring').map(race => (
+        <div>
+        <h3>{race.name}</h3>
+        <table>
+            <tr>
+                <th>Pos.</th>
+                <th>Name</th>
+                <th>Club</th>
+                <th>Time</th>
+                <th>Score</th>
+            </tr>
+            {race.raceresults.map(result => {
+                if (race.race_scoring === 'WorldCup') {
+                    return(
+                        <tr>
+                            <td>{result.pos?.toString()}</td>
+                            <td>{result.entry.person}</td>
+                            <td>{result.entry.club}</td>
+                            <td style={{textAlign: "right"}}>{this.formatTimeString(result)}</td>
+                            <td style={{textAlign: "right"}}>{result.score?.toString()}</td>
+                        </tr>
+                    )
+                } else {
+                    return(
+                        <tr>
+                            <td>{result.pos?.toString()}</td>
+                            <td>{result.entry.person}</td>
+                            <td>{result.entry.club}</td>
+                            <td style={{textAlign: "right"}}>{this.formatTimeMMMSS(result.time)}</td>
+                            <td></td>
+                        </tr>
+                    )
+                }
+            })}
+        </table>
+        </div>
+    ))
+    
+    races.filter(race=>race.event_scoring==='WIOLTeams').forEach(race => {
+        race.raceresults = this.assignIndvScores(race.raceresults).filter(res => res.score !== undefined)
+    });
+
+    const teamClassesToProcess = this.combineResultsForEventClasses(races.filter(race=>race.event_scoring==='WIOLTeams'))
+    
+    teamClassesToProcess.forEach(race => {
+        race.teamresults = this.buildTeams(race.raceresults).sort(this.compareTeamResults)
+    });
+
+    const teamClasses = teamClassesToProcess.map(race => (
+        <div>
+        <h3>{race.name}</h3>
+        <table>
+            <tr>
+                <th>Pos.</th>
+                <th>Name</th>
+                <th>Club</th>
+                <th>Score</th>
+            </tr>
+            {race.teamresults?.map(result => {
+                return(
+                    <React.Fragment>
+                    <tr>
+                        <td></td>
+                        <td>{result.club}</td>
+                        <td>{result.club}</td>
+                        <td>{result.score}</td>
+                    </tr>
+                    {result.results.map(result => {
+                        return(
+                            <tr>
+                                <td></td>
+                                <td>{result.entry.person}</td>
+                                <td>{result.entry.club}</td>
+                                <td>{result.score}</td>
+                            </tr>
+                        )
+                    })}
+                    </React.Fragment>
+                )
+            })}
+        </table>
+        </div>
+    ))
+
+
     if (error) {
         return (<div>Error: {error.message}</div>)
     } else if (!isLoaded) {
@@ -117,73 +328,12 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                     <li>Event Key: {this.props.event.api_key}</li>
                 </ul>
                 <p>Classes</p>
-                {races.map(race => (
-                    <div>
-                    <h3>{race.name} ({race.name_short})</h3>
-                    <table>
-                        <tr>
-                            <th>Pos.</th>
-                            <th>Name</th>
-                            <th>Club</th>
-                            <th>Time</th>
-                            <th>Score</th>
-                        </tr>
-                        {race.raceresults.sort(this.compareResults).map((result, index, array) => {
 
-                            var pos = '';
-                            var score = '';
-                            
-                            if (result.result.finish_status !== 'OK') {
-                                pos = '';
-                            } else if (index === 0 || this.compareResults(result, array[index-1]) !== 0) {
-                                // first or different from previous, add 1 to convert index to position
-                                pos = (index+1).toString()
-                            } else {
-                                for (var i = index-1; i >= 0; i--) {
-                                    // look backwards until front of array, or find a value that is not equal
-                                    if (i === 0) {
-                                        pos = (i+1).toString();
-                                        break;
-                                    }
-                                    if (this.compareResults(result, array[i]) !== 0) {
-                                        // when find index of non-equal item, step forward 1,
-                                        // then add 1 to convert index to position.
-                                        pos = (i+1+1).toString()+'tie';
-                                        break;
-                                    }
-                                }
-                            }
+                {indvClasses}
 
-                            if (pos === '') {
-                                score = '';
-                            } else if (pos === '1') {
-                                score = '100';
-                            } else if (pos === '2') {
-                                score = '95';
-                            } else if (pos === '3') {
-                                score = '92';
-                            } else {
-                                score = (94 - parseInt(pos)).toString()
-                            }
-                            
-                            var timestring = this.formatTimeMMMSS(result.time)
+                {teamClasses}
 
-                            if (result.result.finish_status !== 'OK') {
-                                timestring += ` (${result.result.finish_status})`;
-                            } 
-                            return(
-                                <tr>
-                                    <td>{pos}</td>
-                                    <td>{result.entry.person}</td>
-                                    <td>{result.entry.club}</td>
-                                    <td>{timestring}</td>
-                                    <td>{score}</td>
-                                </tr>
-                            )
-                        })}
-                    </table>
-                    </div>
-                ))}
+
             </div>
         );
     }

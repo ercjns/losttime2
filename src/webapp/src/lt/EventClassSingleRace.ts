@@ -3,14 +3,18 @@ export type ltEventClassSingleRace = {
     raceclass_id: number,
     name: string,
     name_short: string,
-    scoring: string,
+    race_scoring: string,
+    event_scoring: string,
     raceresults: filledRaceResult[]
+    teamresults?: singleTeamResult[]
   }
 
 export type filledRaceResult = {
   result: ltRaceResult,
   entry: ltRaceEntry, 
-  time: number
+  time: number,
+  score?: number,
+  pos?: number
 }
 
 type ltRaceResult = {
@@ -30,4 +34,10 @@ type ltRaceEntry = {
   epunch: string,
   raceclass_id: number,
   competitive: boolean
+}
+
+export type singleTeamResult = {
+  club: string,
+  score: number,
+  results: filledRaceResult[]
 }
