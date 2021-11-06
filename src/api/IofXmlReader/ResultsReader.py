@@ -86,4 +86,8 @@ class PersonResultReader:
         self.status = _findText(self.root, _nspath(["Result", "Status"]))
         self.control_card = _findText(self.root, _nspath(["Result", "ControlCard"]))
         self.club_name = _findText(self.root, _nspath(["Organisation", "Name"]))
+        if self.club_name == 'None':
+            self.club_name = None
         self.club_name_short = _findText(self.root, _nspath(["Organisation", "ShortName"]))
+        if self.club_name_short == 'None':
+            self.club_name_short = None

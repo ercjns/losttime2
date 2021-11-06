@@ -69,6 +69,7 @@ class RaceClass(RaceClassBase):
 
 class RaceEntryBase(BaseModel):
     person: str
+    club: Optional[str]
     bib: Optional[str]
     epunch: Optional[str]
     raceclass_id: int

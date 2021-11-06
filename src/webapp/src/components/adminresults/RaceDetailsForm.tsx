@@ -124,6 +124,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                         <tr>
                             <th>Pos.</th>
                             <th>Name</th>
+                            <th>Club</th>
                             <th>Time</th>
                             <th>Score</th>
                         </tr>
@@ -179,6 +180,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                                 <tr>
                                     <td>{pos}</td>
                                     <td>{result.entry.person}</td>
+                                    <td>{result.entry.club}</td>
                                     <td>{timestring}</td>
                                     <td>{score}</td>
                                 </tr>

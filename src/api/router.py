@@ -128,11 +128,12 @@ async def create_single_race_event(
 
             raceresult = PersonResultReader(rcr)
 
-            person_temp = "{} {} ({})".format(raceresult.first_name, raceresult.last_name, raceresult.club_name_short)
+            person_temp = "{} {}".format(raceresult.first_name, raceresult.last_name)
 
             db_raceentry = dba.create_race_entry(db,
                 schemas.RaceEntryCreate(
                     person = person_temp,
+                    club = raceresult.club_name_short,
                     bib = raceresult.bib,
                     epunch = raceresult.control_card,
                     raceclass_id = db_raceclass.id,

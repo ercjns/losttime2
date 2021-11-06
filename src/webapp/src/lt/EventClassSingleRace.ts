@@ -24,6 +24,7 @@ type ltRaceResult = {
 type ltRaceEntry = {
   id: number,
   person: string,
+  club: string,
   bib: string,
   epunch: string,
   raceclass_id: number,

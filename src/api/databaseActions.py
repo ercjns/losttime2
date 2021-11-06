@@ -86,6 +86,7 @@ def get_event_classes(
 def create_race_entry(db: Session, entry: schemas.RaceEntryCreate):
     db_raceentry = models.RaceEntry(
         person = entry.person,
+        club = entry.club,
         bib = entry.bib,
         epunch = entry.epunch,
         raceclass_id = entry.raceclass_id,

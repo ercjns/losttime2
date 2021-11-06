@@ -69,6 +69,7 @@ class RaceEntry(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     person = Column(String)
+    club = Column(String)
     bib = Column(String)
     epunch = Column(String)
     raceclass_id = Column(Integer, ForeignKey(RaceClass.id), index=True)
