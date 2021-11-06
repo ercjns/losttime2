@@ -45,7 +45,7 @@ export class Results extends React.Component<{}, resultspagestate, {}> {
     }
 
     render () {
-    const {error, isLoaded, events } = this.state;
+    const {error, isLoaded } = this.state;
     if (error) {
         return (<div>Error: {error.message}</div>)
     } else if (!isLoaded) {

@@ -214,11 +214,14 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                 } else {
                     result.score = (94 - result.pos)
                 }
+
+                return(result);
             })
 
         results.filter(result=>result.result.finish_status==='MissingPunch' || result.result.finish_status==='DidNotFinish')
             .map(res =>{
                 res.score = 0
+                return(res);
             })
         return(results);
     }
