@@ -259,7 +259,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                             <td>{result.pos?.toString()}</td>
                             <td>{result.entry.person}</td>
                             <td>{result.entry.club}</td>
-                            <td style={{textAlign: "right"}}>{this.formatTimeMMMSS(result.time)}</td>
+                            <td style={{textAlign: "right"}}>{this.formatTimeString(result)}</td>
                             <td></td>
                         </tr>
                     )
