@@ -10,6 +10,8 @@ python_version = "3.8"
 
 [packages]
 aiofiles = "*"
+sqlalchemy = "*"
+defusedxml = "*"
 
 [packages.fastapi]
 extras = [ "all",]
