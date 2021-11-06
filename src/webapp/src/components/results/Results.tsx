@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageTitle } from '../PageTitle';
 import { ltEvent } from '../../lt/Event';
+import { Button } from 'react-bootstrap';
 
 type resultspagestate = {
     error: Error|null,
@@ -53,18 +54,22 @@ export class Results extends React.Component<{}, resultspagestate, {}> {
         return (
             <div>
                 <PageTitle 
-                    title="Results" 
+                    title="Lost Time Orienteering"
                 />
                 <p>
-                    Events
+                    <Button href="/registrations">Process Registrations</Button>
+                    <Button href="/results">Process Results</Button>
                 </p>
-                <ul>
+                {/* <p>
+                    Events
+                </p> */}
+                {/* <ul>
                     {events.map(event => (
                         <li key={event.id}>
                             {event.name}
                         </li>
                     ))}
-                </ul>
+                </ul> */}
             </div>
         );
     }
