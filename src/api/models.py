@@ -46,6 +46,7 @@ class RaceClass(Base):
     id = Column(Integer, primary_key=True, index=True)
     race_id = Column(Integer, ForeignKey(Race.id), index=True)
     name = Column(String)
+    name_short = Column(String)
 
 class RaceCourse(Base):
     __tablename__ = "racecources"

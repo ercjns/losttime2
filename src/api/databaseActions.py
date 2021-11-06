@@ -51,7 +51,8 @@ def create_event_class(db: Session, eventclass: schemas.EventClassCreate):
 def create_race_class(db: Session, raceclass: schemas.RaceClassCreate):
     db_raceclass = models.RaceClass(
         race_id = raceclass.race_id,
-        name= raceclass.name, 
+        name= raceclass.name,
+        name_short = raceclass.name_short
         )
     db.add(db_raceclass)
     db.commit()
@@ -77,8 +78,10 @@ def get_event_classes(
         db: Session,
         eventid: int):
     items = db.query(models.EventClass,
-        models.EventClassRaceClass).\
-        join(models.EventClassRaceClass).\
+        models.EventClassRaceClass,
+        models.RaceClass).\
+        join(models.EventClassRaceClass, models.EventClass.id == models.EventClassRaceClass.eventclass_id).\
+        join(models.RaceClass, models.RaceClass.id == models.EventClassRaceClass.raceclass_id).\
         filter(models.EventClass.event_id==eventid).\
         all()
     return(items)

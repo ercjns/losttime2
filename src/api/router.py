@@ -51,11 +51,12 @@ async def get_event_classes(
         response.status_code = status.HTTP_404_NOT_FOUND
         return {}
     res = []
-    for eventclass, link in items:
+    for eventclass, link, raceclass in items:
         a = {}
         a['eventclass_id'] = link.eventclass_id
         a['raceclass_id'] = link.raceclass_id
         a['name'] = eventclass.name
+        a['name_short'] = raceclass.name_short
         a['scoring'] = link.race_scoring
         a['raceresults'] = dba.get_raceclass_results(db, link.raceclass_id)
         res.append(a)
@@ -114,13 +115,14 @@ async def create_single_race_event(
             schemas.EventClassCreate(
                 event_id = e.id,
                 name = classresults.class_name,
-                event_scoring = 'Time'
+                event_scoring = 'RaceScoring'
             )
         )
         db_raceclass = dba.create_race_class(db,
             schemas.RaceClassCreate(
                 race_id = r.id,
-                name = classresults.class_name
+                name = classresults.class_name,
+                name_short = classresults.class_name_short
             )
         )
 

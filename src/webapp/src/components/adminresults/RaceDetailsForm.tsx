@@ -119,7 +119,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                 <p>Classes</p>
                 {races.map(race => (
                     <div>
-                    <h3>{race.name}</h3>
+                    <h3>{race.name} ({race.name_short})</h3>
                     <table>
                         <tr>
                             <th>Pos.</th>
@@ -139,18 +139,13 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                                 // first or different from previous, add 1 to convert index to position
                                 pos = (index+1).toString()
                             } else {
-                                console.log('index:', index)
-                                console.log('person:', result.entry.person)
                                 for (var i = index-1; i >= 0; i--) {
                                     // look backwards until front of array, or find a value that is not equal
-                                    console.log('i:', i)
                                     if (i === 0) {
-                                        console.log('i is zero')
                                         pos = (i+1).toString();
                                         break;
                                     }
                                     if (this.compareResults(result, array[i]) !== 0) {
-                                        console.log('i is not match to current result')
                                         // when find index of non-equal item, step forward 1,
                                         // then add 1 to convert index to position.
                                         pos = (i+1+1).toString()+'tie';

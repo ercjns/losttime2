@@ -2,6 +2,7 @@ export type ltEventClassSingleRace = {
     eventclass_id: number,
     raceclass_id: number,
     name: string,
+    name_short: string,
     scoring: string,
     raceresults: filledRaceResult[]
   }

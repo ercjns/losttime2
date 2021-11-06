@@ -55,6 +55,7 @@ class Race(RaceBase):
 class RaceClassBase(BaseModel):
     race_id: int
     name: str
+    name_short: str
 
 class RaceClassCreate(RaceClassBase):
     pass
