@@ -28,7 +28,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         };
     }
 
-    getRaceClasses() {
+    getRaceClasses = () => {
         fetch('/api/events/' + this.props.event.id + '/classes')
         .then((res) => res.json())
         .then((result) => {
@@ -49,7 +49,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         this.getRaceClasses();
     }
 
-    formatTimeString(result:filledRaceResult) {
+    formatTimeString = (result:filledRaceResult) => {
         var res = '';
         if (result.result.finish_status === 'MissingPunch') {
             res += ' msp'
@@ -66,7 +66,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         return res
     }
 
-    formatTimeMMMSS(seconds:number) {
+    formatTimeMMMSS = (seconds:number) => {
         if (!seconds) {
             return "--:--";
         }
@@ -75,7 +75,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         return `${m}:${s}`;
     }
 
-    compareResults(a:filledRaceResult, b:filledRaceResult) {
+    compareResults = (a:filledRaceResult, b:filledRaceResult) => {
         if (a.entry.competitive && b.entry.competitive) {
             if (a.result.finish_status === 'OK' && b.result.finish_status === 'OK') {
                 if (a.time && b.time) {
@@ -121,27 +121,34 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         }
     }
 
-    compareResultsByScore(a:filledRaceResult, b:filledRaceResult) {
-        if (a.score && b.score) {
-            return b.score - a.score
-        } else if (a.score) {
-            return -1
-        } else if (b.score) {
-            return 1
-        } else {
-            return 0
-        }
+    compareScoreHelper = (a:number|undefined|null, b:number|undefined|null) => {
+        if (!(a == null) && !(b == null)) {return (b - a);}
+        else if (a) {return -1;}
+        else if (b) {return 1;}
+        else {return 0}
     }
 
-    compareTeamResults(a:singleTeamResult, b:singleTeamResult) {
+    compareTeamResults = (a:singleTeamResult, b:singleTeamResult) => {
         if (a.score !== b.score) {
-            return (b.score - a.score)
+            return (b.score - a.score);
         } else {
-            return (0)
+            const first = this.compareScoreHelper(a.results[0].score, b.results[0].score);
+            if (first !== 0) {
+                return (first);
+            }
+            const second = this.compareScoreHelper(a.results[1]?.score, b.results[1]?.score);
+            if (second !== 0) {
+                return (second);
+            }
+            return this.compareScoreHelper(a.results[2]?.score, b.results[2]?.score);
         }
     }
 
-    combineResultsForEventClasses(eventresults:ltEventClassSingleRace[]) {
+    compareResultsByScore = (a:filledRaceResult, b:filledRaceResult) => {
+        return this.compareScoreHelper(a.score, b.score)
+    }
+
+    combineResultsForEventClasses = (eventresults:ltEventClassSingleRace[]) => {
         const neweventresults = eventresults.reduce<ltEventClassSingleRace[]>((acc, result) => {
             if (!acc.some(el => el.eventclass_id === result.eventclass_id)) {
                 acc.push(result)
@@ -154,7 +161,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         return neweventresults
     }
 
-    buildTeams(results:filledRaceResult[]) {
+    buildTeams = (results:filledRaceResult[]) => {
         const resultsByTeam = results.reduce<ResultsByTeam>((acc, result) => {
             if (!acc[result.entry.club]) {
                 acc[result.entry.club] = []
@@ -176,7 +183,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         return(res)
     }
 
-    assignIndvScores(results:filledRaceResult[]) {
+    assignIndvScores = (results:filledRaceResult[]) => {
         results
             .filter(result=>result.result.finish_status==='OK' && result.entry.competitive)
             .sort(this.compareResults)
@@ -224,6 +231,34 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                 return(res);
             })
         return(results);
+    }
+
+    assignTeamScores = (teamresults:singleTeamResult[]) => {
+        teamresults
+            .sort(this.compareTeamResults)
+            .map((result, index, array) => {
+                if (index === 0 || this.compareTeamResults(result, array[index-1]) !== 0) {
+                    result.pos = (index+1)
+                } else {
+                    for (var i = index-1; i >= 0; i--) {
+                        // look backwards until front of array, or find a value that is not equal
+                        if (i === 0) {
+                            result.pos = (i+1)
+                            break;
+                        }
+                        if (this.compareTeamResults(result, array[i]) !== 0) {
+                            // when find index of non-equal item, step forward 1,
+                            // then add 1 to convert index to position.
+                            result.pos = (i+1+1)
+                            break;
+                        }
+                    }
+                }
+
+                return(result);
+            })
+        
+        return(teamresults);
     }
 
     render () {
@@ -279,7 +314,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
     const teamClassesToProcess = this.combineResultsForEventClasses(races.filter(race=>race.event_scoring==='WIOLTeams'))
     
     teamClassesToProcess.forEach(race => {
-        race.teamresults = this.buildTeams(race.raceresults).sort(this.compareTeamResults)
+        race.teamresults = this.assignTeamScores(this.buildTeams(race.raceresults))
     });
 
     const teamClasses = teamClassesToProcess.map(race => (
@@ -296,7 +331,7 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                 return(
                     <React.Fragment>
                     <tr>
-                        <td></td>
+                        <td>{result.pos}</td>
                         <td>{result.club}</td>
                         <td>{result.club}</td>
                         <td>{result.score}</td>

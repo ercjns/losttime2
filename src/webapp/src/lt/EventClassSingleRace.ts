@@ -39,5 +39,6 @@ type ltRaceEntry = {
 export type singleTeamResult = {
   club: string,
   score: number,
-  results: filledRaceResult[]
+  results: filledRaceResult[],
+  pos?: number
 }
