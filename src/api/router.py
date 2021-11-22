@@ -11,7 +11,8 @@ Base.metadata.create_all(bind=engine)
 
 WORLDCUP_SCORE_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W3M', 'W4F', 'W5M','W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M', '8F', '8M']
 WIOL_MS_CLASSES = ['W2F', 'W2M']
-WIOL_TEAMSCORE_CLASSES = ['W3F', 'W3M', 'W4F', 'W5M','W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M']
+WIOL_HSROOKIE_CLASSES = ['W3F', 'W3M']
+WIOL_TEAMSCORE_CLASSES = ['W4F', 'W5M','W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M']
 
 api = FastAPI()
 
@@ -150,6 +151,21 @@ async def create_single_race_event(
                 raceclass_id = db_raceclass.id,
                 eventclass_id = wt2.id,
                 race_scoring = 'WorldCup'
+            )
+        elif classresults.class_name_short in WIOL_HSROOKIE_CLASSES:
+            wt3 = dba.get_WT3_class(db, e.id)
+            if not wt3:
+                wt3 = dba.create_event_class(db,
+                    schemas.EventClassCreate(
+                        event_id = e.id,
+                        name = 'High School Rookie Teams',
+                        event_scoring = 'WIOLTeams'
+                    )
+                )
+            dba.assign_raceclass_to_eventclass(db,
+                raceclass_id = db_raceclass.id,
+                eventclass_id = wt3.id,
+                race_scoring= 'WorldCup'
             )
         elif classresults.class_name_short in WIOL_TEAMSCORE_CLASSES:
             db_eventteamclass = dba.create_event_class(db,
