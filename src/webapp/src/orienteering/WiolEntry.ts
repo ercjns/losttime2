@@ -1,11 +1,11 @@
 export class WiolEntryCsv {
-    "Bib #"!: number;
+    "Bib"!: number;
     "SI Card"!: string;
-    Rent!: "X" | null;
+    Rental!: "X" | null;
     "First Name"!: string;
     "Last Name"!: string;
-    Gen!: "M" | "F";
-    School!: string;
+    Gender!: "M" | "F";
+    "School Code"!: string;
     Course!: string;
     NC!: "X" | null;
 }
@@ -13,13 +13,13 @@ export class WiolEntryCsv {
 export function isWiolEntryCsv(row:any): boolean {
     return (
         Object.keys(row).length === 9 &&
-        'Bib #' in row &&
+        'Bib' in row &&
         "SI Card" in row &&
-        'Rent' in row &&
+        'Rental' in row &&
         "First Name" in row &&
         "Last Name" in row &&
-        'Gen' in row &&
-        'School' in row &&
+        'Gender' in row &&
+        'School Code' in row &&
         'Course' in row &&
         'NC' in row
     )

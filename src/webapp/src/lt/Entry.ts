@@ -34,16 +34,16 @@ export class LtEntry {
     fromWiolEntryCsv(
         entry: WiolEntryCsv
     ) {
-        this.StartNo = entry["Bib #"];
+        this.StartNo = entry["Bib"];
         this.Epunch = entry["SI Card"];
-        this.EpunchRented= (entry.Rent === 'X') ? true: false;
+        this.EpunchRented= (entry.Rental === 'X') ? true: false;
         this.FirstName= entry["First Name"];
         this.LastName= entry["Last Name"];
-        this.Club= entry.School;
+        this.Club= entry["School Code"];
         this.Course= '';
         this.ClassId= entry.Course;
         this.NonCompetitive= (entry.NC === 'X') ? true:false;
-        this.Sex= entry.Gen;
+        this.Sex= entry.Gender;
         this.Phone= '';
         this.EmergencyPhone= '';
         this.CarLicense= '';
