@@ -1,6 +1,8 @@
 import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 import { ltEvent } from '../../lt/Event';
 import { filledRaceResult, ltEventClassSingleRace, singleTeamResult } from '../../lt/EventClassSingleRace';
+import { Button } from 'react-bootstrap';
 
 
 type RaceDetailsFormProps = {
@@ -15,6 +17,79 @@ type RaceDetailsFormState = {
 
 type ResultsByTeam = {
     [key:string] : filledRaceResult[]
+}
+
+const SCORE_METHODS_WITH_SCORE = ['WorldCup'];
+
+class RaceClassResultTable extends React.Component<ltEventClassSingleRace, {}, {}> {
+    constructor(props:ltEventClassSingleRace) {
+        super(props);
+    }
+
+    formatTimeString(result:filledRaceResult) {
+        var res = '';
+        if (result.result.finish_status === 'MissingPunch') {
+            res += ' msp'
+        } else if (result.result.finish_status === 'DidNotFinish') {
+            res += ' dnf'
+        } else if (result.result.finish_status === 'NotCompeting') {
+            res += ' nc'
+        } else if (result.result.finish_status === 'OverTime') {
+            res += ' ovt'
+        } else if (result.result.finish_status === 'Disqualified') {
+            res += ' DQ'
+        }
+        res += ' ' + this.formatTimeMMMSS(result.time)
+        return res
+    }
+
+    formatTimeMMMSS(seconds:number) {
+        if (!seconds) {
+            return "--:--";
+        }
+        const m = Math.floor(seconds / 60).toString();
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    render() {
+
+        const race = this.props;
+
+        const displayScoreColumn = SCORE_METHODS_WITH_SCORE.includes(race.race_scoring);
+
+
+        return(
+        <div>
+        <h3 id={race.name_short}>{race.name}</h3>
+        <table id={'ResultsTable-'+race.name_short} className='table table-striped'>
+            <thead>
+            <tr id='column-titles'>
+                <th>Pos.</th>
+                <th>Name</th>
+                <th>Club</th>
+                <th className='text-right'>Time</th>
+                {displayScoreColumn?<th className='text-right'>Score</th>:''}
+            </tr>
+            </thead>
+            <tbody>
+            {race.raceresults.map(result => {
+                return(
+                    <tr>
+                        <td>{result.pos?.toString()}</td>
+                        <td>{result.entry.person}</td>
+                        <td>{result.entry.club}</td>
+                        <td className='text-right'>{this.formatTimeString(result)}</td>
+                        {displayScoreColumn?<td className='text-right'>{result.score?.toString()}</td>:''}
+                    </tr>
+                )})
+            }
+            </tbody>
+        </table>
+        </div>
+        )
+    }
+
 }
 
 export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceDetailsFormState, {}> {
@@ -47,32 +122,6 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
 
     componentDidMount() {
         this.getRaceClasses();
-    }
-
-    formatTimeString = (result:filledRaceResult) => {
-        var res = '';
-        if (result.result.finish_status === 'MissingPunch') {
-            res += ' msp'
-        } else if (result.result.finish_status === 'DidNotFinish') {
-            res += ' dnf'
-        } else if (result.result.finish_status === 'NotCompeting') {
-            res += ' nc'
-        } else if (result.result.finish_status === 'OverTime') {
-            res += ' ovt'
-        } else if (result.result.finish_status === 'Disqualified') {
-            res += ' DQ'
-        }
-        res += ' ' + this.formatTimeMMMSS(result.time)
-        return res
-    }
-
-    formatTimeMMMSS = (seconds:number) => {
-        if (!seconds) {
-            return "--:--";
-        }
-        const m = Math.floor(seconds / 60).toString();
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
     }
 
     compareResults = (a:filledRaceResult, b:filledRaceResult) => {
@@ -260,56 +309,27 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         
         return(teamresults);
     }
+    
+    copycode() {
+        navigator.clipboard.writeText(document.getElementById("raw-results-html")!.innerText)
+    }
 
     render () {
 
     const {error, isLoaded, races} = this.state;
 
-    races.filter(race=>race.event_scoring==='RaceScoring').forEach(race => {
-        race.raceresults = this.assignIndvScores(race.raceresults)
-    })
+    races.filter(race=>race.event_scoring==='RaceScoring')
+        .forEach(race => {race.raceresults = this.assignIndvScores(race.raceresults)});
 
-    const indvClasses = races.filter(race=>race.event_scoring==='RaceScoring').map(race => (
-        <div>
-        <h3>{race.name}</h3>
-        <table>
-            <tr>
-                <th>Pos.</th>
-                <th>Name</th>
-                <th>Club</th>
-                <th>Time</th>
-                <th>Score</th>
-            </tr>
-            {race.raceresults.map(result => {
-                if (race.race_scoring === 'WorldCup') {
-                    return(
-                        <tr>
-                            <td>{result.pos?.toString()}</td>
-                            <td>{result.entry.person}</td>
-                            <td>{result.entry.club}</td>
-                            <td style={{textAlign: "right"}}>{this.formatTimeString(result)}</td>
-                            <td style={{textAlign: "right"}}>{result.score?.toString()}</td>
-                        </tr>
-                    )
-                } else {
-                    return(
-                        <tr>
-                            <td>{result.pos?.toString()}</td>
-                            <td>{result.entry.person}</td>
-                            <td>{result.entry.club}</td>
-                            <td style={{textAlign: "right"}}>{this.formatTimeString(result)}</td>
-                            <td></td>
-                        </tr>
-                    )
-                }
-            })}
-        </table>
-        </div>
-    ))
+    const indvClasses = races
+        .filter(race=>race.event_scoring==='RaceScoring')
+        .map(race => (<RaceClassResultTable {...race}/>));
     
-    races.filter(race=>race.event_scoring==='WIOLTeams').forEach(race => {
-        race.raceresults = this.assignIndvScores(race.raceresults).filter(res => res.score !== undefined)
-    });
+    races.filter(race=>race.event_scoring==='WIOLTeams')
+        .forEach(race => {
+            race.raceresults = this.assignIndvScores(race.raceresults).filter(res => res.score !== undefined);
+        }
+    );
 
     const teamClassesToProcess = this.combineResultsForEventClasses(races.filter(race=>race.event_scoring==='WIOLTeams'))
     
@@ -321,12 +341,15 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
         <div>
         <h3>{race.name}</h3>
         <table>
+            <thead>
             <tr>
                 <th>Pos.</th>
                 <th>Name</th>
                 <th>Club</th>
                 <th>Score</th>
             </tr>
+            </thead>
+            <tbody>
             {race.teamresults?.map(result => {
                 return(
                     <React.Fragment>
@@ -349,10 +372,22 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                     </React.Fragment>
                 )
             })}
+            </tbody>
         </table>
         </div>
     ))
 
+    let resultsRaw = '';
+    console.log(resultsRaw);
+    console.log(indvClasses.length);
+    for (let i = 0; i < indvClasses.length; i++) {
+        const rawhtml = ReactDOMServer.renderToStaticMarkup(indvClasses[i])
+            .replaceAll(/\s*([<>:;&#=])\s*/g, '$1')
+            .replaceAll(/></g, '>\n<');
+        console.log(rawhtml);
+        resultsRaw = resultsRaw + rawhtml;
+        console.log(resultsRaw);
+    }
 
     if (error) {
         return (<div>Error: {error.message}</div>)
@@ -365,7 +400,19 @@ export class RaceDetailsForm extends React.Component<RaceDetailsFormProps, RaceD
                     <li>Event Name: {this.props.event.name}</li>
                     <li>Event Key: {this.props.event.api_key}</li>
                 </ul>
-                <p>Classes</p>
+
+                <hr/>
+
+                <pre style={{maxHeight:'150px'}} id="raw-results-html">
+                    {resultsRaw}
+                </pre>
+                
+                <Button
+                    onClick={this.copycode}>
+                    Copy HTML to my clipboard
+                </Button>
+
+                <hr/>
 
                 {indvClasses}
 
