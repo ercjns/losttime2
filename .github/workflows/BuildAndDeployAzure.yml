@@ -16,6 +16,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          cache: npm
 
       # build frontend
       - name: npm install 
@@ -34,7 +37,7 @@ jobs:
       - name: move api to top level
         run: |
           rm -r src/webapp/*
-          mv src/api/* . -r
+          mv src/api/* .
 
       - name: Set up Python version
         uses: actions/setup-python@v1
