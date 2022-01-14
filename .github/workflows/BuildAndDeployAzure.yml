@@ -37,7 +37,7 @@ jobs:
       - name: move api to top level
         run: |
           rm -r src/webapp/*
-          mv src/api/* . -r
+          mv src/api/* .
 
       - name: Set up Python version
         uses: actions/setup-python@v1
