@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and Deploy JS and Python
+name: Build JS and deploy Python to Azure
 
 on: workflow_dispatch
   # push:
