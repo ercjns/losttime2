@@ -14,33 +14,30 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
      },
     }
     
-    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
-    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
-    const tablebodyrented2: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency. Ph.', noWrap:true}, 'Vehicle']]
+    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency Ph.', noWrap:true}, 'Vehicle']]
+    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency Ph.', noWrap:true}, 'Vehicle']]
+    // const tablebodyrented2: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', {text:'Emergency Ph.', noWrap:true}, 'Vehicle']]
 
     const GroupLeaders = entries.filter(entry => entry.GroupLeader === true);
 
-    const ownedepunchentries = GroupLeaders.filter(entry => entry.Epunch.length > 0).map(buildRegPdfRow);
-    const rentalepunchentries = GroupLeaders.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
-    const rentalepunchentries2 = GroupLeaders.filter(entry => entry.Epunch.length === 0).map(buildRegPdfRow);
+    const ownedepunchentries = GroupLeaders.filter(entry => entry.Epunch.length > 0)
+    const rentalepunchentries = GroupLeaders.filter(entry => entry.Epunch.length === 0)
 
-    tablebodyowned.push(...ownedepunchentries);
-    tablebodyrented.push(...rentalepunchentries);
-    tablebodyrented2.push(...rentalepunchentries2);
+    ownedepunchentries.sort(function(a:LtEntry, b:LtEntry) {return a.LastName.localeCompare(b.LastName)})
+    rentalepunchentries.sort(function(a:LtEntry, b:LtEntry) {return a.LastName.localeCompare(b.LastName)})
 
-    tablebodyowned.sort(lastNameSort);
-    tablebodyrented.sort(lastNameSort);
-    tablebodyrented2.sort(lastNameSort);
+    for (let leader of ownedepunchentries.filter(entry => entry.GroupId !== null)) {
+        let groupmembers = entries.filter(entry => entry.GroupId===leader.GroupId && entry.GroupLeader===false)
+        ownedepunchentries.splice(ownedepunchentries.indexOf(leader)+1, 0, ...groupmembers)
+    }
+    tablebodyowned.push(...(ownedepunchentries.map(buildRegPdfRow)))
 
-    function lastNameSort(a:any[any][], b:any[any][]):number {
-        if (a[2].text && b[2].text) {
-            return a[2].text.localeCompare(b[2].text);
-        } else if (a[2].text) {
-            return 1;
-        } else {
-            return -1;
-        }
-    };
+    for (let leader of rentalepunchentries.filter(entry => entry.GroupId !== null)) {
+        let groupmembers = entries.filter(entry => entry.GroupId===leader.GroupId && entry.GroupLeader===false)
+        rentalepunchentries.splice(rentalepunchentries.indexOf(leader)+1, 0, ...groupmembers)
+    }
+    tablebodyrented.push(...(rentalepunchentries.map(buildRegPdfRow)))
+
 
     function header(pageTitle:string):any {
         return({
@@ -205,7 +202,7 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
                 layout: tableLayoutRent(),
                 table: {
                     headerRows: 1,
-                    body: tablebodyrented2
+                    body: tablebodyrented
                 },
             },
         ]
@@ -230,7 +227,7 @@ export function buildCheckInPdf(entries:LtEntry[], files:String[], userHeaderTex
 
 function buildRegPdfRow(entry:LtEntry): any[]{
     const row = [
-        {
+        entry.GroupLeader === true ? {
             table: {
                 widths: [12],
                 heights: [10],
@@ -241,12 +238,15 @@ function buildRegPdfRow(entry:LtEntry): any[]{
                     border: [true, true, true, true]}
                 ]]
             }
-        },
-        {text: entry.FirstName, fontSize: 11},
-        {text: entry.LastName, fontSize: 11},
+        } : {text: entry.Owed > 0? '$'.concat(entry.Owed.toString()) : "", color:'#999999', fontSize: 7},
+        entry.GroupLeader === true ? {text: entry.FirstName, fontSize: 11} : {text: "+ "+entry.FirstName, fontSize: 10, italics:true},
+        entry.GroupLeader === true ? 
+            entry.GroupId === null ? {text: entry.LastName, fontSize: 11} : 
+            {text: [{text: entry.LastName.replace('_Group',''), fontSize: 11}, {text:" GROUP", bold:true, fontSize: 11}]} :
+            {text: entry.LastName, fontSize: 10, italics:true},
         entry.Owed > 0? {text:'$'.concat(entry.Owed.toString()), fontSize: 11, bold:true}: "",
-        {text: entry.ClassId, fontSize: 11},
-        entry.Epunch.length === 0 ? 
+        entry.GroupLeader === true ? {text: entry.ClassId, fontSize: 11}: "",
+        entry.Epunch.length === 0 ? entry.GroupLeader === false ? {text: "Group Member", fontSize: 10, italics:true}:
             {
                 table: {
                     widths: [100],

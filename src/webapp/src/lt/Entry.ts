@@ -27,6 +27,7 @@ export class LtEntry {
     CarLicense!: string;
     Newcomer!: true | false | "unknown";
     Group!: number;
+    GroupId!: number | null;
     GroupLeader!: boolean;
     Paid!: true | false | "unknown";
     Owed!: number;
@@ -57,6 +58,7 @@ export class LtEntry {
     }
     fromCascadeRegistrationCsv(
         entry: CascadeRegistrationCsv,
+        nextGroupId: number | null
     ) {
         this.StartNo = null;
         this.Epunch = entry.EPunch
@@ -74,6 +76,7 @@ export class LtEntry {
         this.Newcomer= entry.Newcomer
         this.Group= (entry.Group) ? (entry.Group === '*' ? 0 : entry.Group): 1;
         this.GroupLeader= (entry.Group === '*') ? false : true;
+        this.GroupId= nextGroupId;
         this.Paid= entry.Paid
         this.Owed= (entry.Owed) ? entry.Owed: 0;
 
@@ -86,14 +89,20 @@ export function parseEnties(indata:any[], nextbib?:number): ParseResult {
     const newentries:LtEntry[] = [];
     let empty = 0;
     let failed = 0;
+    let nextgroupid = 0;
     for (const row of indata) {
 
         if (isWiolEntryCsv(row)) {
             const e = new LtEntry().fromWiolEntryCsv(row);
             newentries.push(e);
             continue;
-        } else if (isCascadeRegistrationCsv(row)) {
-            const e = new LtEntry().fromCascadeRegistrationCsv(row);
+        } else if (isCascadeRegistrationCsv(row) === "group") {
+            if (row.Group !== '*') {nextgroupid += 1;} 
+            const e = new LtEntry().fromCascadeRegistrationCsv(row,nextgroupid);
+            newentries.push(e);
+            continue;
+        } else if (isCascadeRegistrationCsv(row) === true) {
+            const e = new LtEntry().fromCascadeRegistrationCsv(row,null);
             newentries.push(e);
             continue;
         } else if (Object.keys(row).length <= 1) {
