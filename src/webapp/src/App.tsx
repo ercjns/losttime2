@@ -20,7 +20,7 @@ function App() {
           <Col xs={{span:10, offset:1}}>
             <Switch>
               <Route exact path="/">
-                <Results />
+                <EntryProcessor />
               </Route>
               <Route path="/registrations">
                 <EntryProcessor />

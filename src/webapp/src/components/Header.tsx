@@ -26,7 +26,7 @@ export class Header extends React.Component<{}, {}, {}> {
           {/* <Nav.Link href="#events" style={{marginLeft: '1rem'}}>Events</Nav.Link> */}
           <NavDropdown title="Admin" id="basic-nav-dropdown" style={{marginLeft: '1rem'}}>
             <NavDropdown.Item as={Link} to="/registrations">Process Registrations</NavDropdown.Item>
-            <NavDropdown.Item as={Link} to="/results">Add Results</NavDropdown.Item>
+            {/* <NavDropdown.Item as={Link} to="/results">Add Results</NavDropdown.Item> */}
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
