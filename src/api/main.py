@@ -9,7 +9,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from router import api 
+# from router import api 
 
 
 
@@ -29,7 +29,7 @@ losttime.add_middleware(
     allow_headers=["*"]
 )
 
-losttime.mount("/api", app=api)
+# losttime.mount("/api", app=api)
 
 
 frontend = FastAPI()
