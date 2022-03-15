@@ -15,7 +15,7 @@ export class CascadeRegistrationCsv {
     Owed!: number | null
 }
 
-export function isCascadeRegistrationCsv(row:any): boolean {
+export function isCascadeRegistrationCsv(row:any): boolean | "group" {
     if (
         // Object.keys(row).length === 14 &&
         'FirstName' in row &&
@@ -33,6 +33,9 @@ export function isCascadeRegistrationCsv(row:any): boolean {
         'Paid' in row &&
         'Owed' in row
     ) {
+        if (row.Group > 1 || row.Group === '*') {
+            return "group"
+        } 
         return true;
     }
     return false;
