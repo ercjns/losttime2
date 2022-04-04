@@ -4,7 +4,7 @@ import { Col, Container} from 'react-bootstrap';
 import { Header } from './components/Header';
 import {EntryProcessor} from './components/adminentries/EntryProcessor';
 import { ResultsProcessor } from './components/adminresults/ResultsProcessor';
-import { Results } from './components/results/Results';
+// import { Results } from './components/results/Results';
 
 
 function App() {
