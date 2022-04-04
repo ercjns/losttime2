@@ -193,6 +193,7 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
                 layout: tableLayoutRent(),
                 table: {
                     headerRows: 1,
+                    dontBreakRows: true,
                     body: tablebodyrented
                 },
             },
@@ -211,6 +212,7 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
                 layout: tableLayoutRent(),
                 table: {
                     headerRows: 1,
+                    dontBreakRows: true,
                     body: tablebodyrented
                 },
             },
