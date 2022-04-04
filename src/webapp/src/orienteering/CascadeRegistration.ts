@@ -1,4 +1,6 @@
 export class CascadeRegistrationCsv {
+    // Keys here must match the exact key names in the csv file
+    // Datatypes here are can only be string, number, or null.
     FirstName!: string;
     LastName!: string;
     Email!: string;
@@ -9,10 +11,11 @@ export class CascadeRegistrationCsv {
     Phone!: string;
     EmergencyPhone!: string;
     CarLicense!: string;
-    Newcomer!: true | false;
+    Newcomer!: string;
     Group!: number | '*' | null;
-    Paid!: true | false;
-    Owed!: number | null
+    Paid!: string;
+    Owed!: number | null;
+    Waiver!: string;
 }
 
 export function isCascadeRegistrationCsv(row:any): boolean | "group" {
@@ -31,7 +34,8 @@ export function isCascadeRegistrationCsv(row:any): boolean | "group" {
         'Newcomer' in row &&
         'Group' in row &&
         'Paid' in row &&
-        'Owed' in row
+        'Owed' in row &&
+        'Waiver' in row
     ) {
         if (row.Group > 1 || row.Group === '*') {
             return "group"
