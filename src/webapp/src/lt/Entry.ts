@@ -31,6 +31,7 @@ export class LtEntry {
     GroupLeader!: boolean;
     Paid!: true | false | "unknown";
     Owed!: number;
+    SignedWaiver!: true | false;
 
     fromWiolEntryCsv(
         entry: WiolEntryCsv
@@ -53,6 +54,7 @@ export class LtEntry {
         this.GroupLeader= true;
         this.Paid= "unknown";
         this.Owed= 0;
+        this.SignedWaiver= true;
 
         return this;
     }
@@ -73,12 +75,13 @@ export class LtEntry {
         this.Phone= entry.Phone
         this.EmergencyPhone= entry.EmergencyPhone;
         this.CarLicense= entry.CarLicense
-        this.Newcomer= entry.Newcomer
+        this.Newcomer= (entry.Newcomer === 'True') ? true:false;
         this.Group= (entry.Group) ? (entry.Group === '*' ? 0 : entry.Group): 1;
         this.GroupLeader= (entry.Group === '*') ? false : true;
         this.GroupId= nextGroupId;
-        this.Paid= entry.Paid
+        this.Paid= (entry.Paid === 'True') ? true:false;
         this.Owed= (entry.Owed) ? entry.Owed: 0;
+        this.SignedWaiver= (entry.Waiver === 'True') ? true:false;
 
         return this;
     }

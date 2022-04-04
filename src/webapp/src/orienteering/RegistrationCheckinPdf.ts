@@ -14,8 +14,8 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
         }
     }
 
-    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emergency Ph.', noWrap: true }, 'Vehicle']]
-    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emergency Ph.', noWrap: true }, 'Vehicle']]
+    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
+    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
 
     const GroupLeaders = entries.filter(entry => entry.GroupLeader === true);
 
@@ -100,15 +100,11 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
                 fillColor: function (rowIndex: number) {
                     return (rowIndex % 2 === 1) ? '#EEEEEE' : null;
                 },
-                paddingLeft: function () { return 4; },
-                paddingRight: function () { return 4; },
-                paddingTop: function () { return 2; },
-                paddingBottom: function () { return 2; },
                 hLineWidth(i: number, node: any) {
                     if (i === 0 || i === node.table.body.length) {
                         return 0;
                     }
-                    return (i === node.table.headerRows) ? 2 : 1;
+                    return (i === node.table.headerRows) ? 2 : 0;
                 },
                 vLineWidth() {
                     return 0;
@@ -126,10 +122,6 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
                 fillColor: function (rowIndex: number) {
                     return (rowIndex % 2 === 1) ? '#EEEEEE' : null;
                 },
-                paddingLeft: function () { return 4; },
-                paddingRight: function () { return 4; },
-                paddingTop: function () { return 6; },
-                paddingBottom: function () { return 4; },
                 hLineWidth(i: number, node: any) {
                     if (i === 0 || i === node.table.body.length) {
                         return 0;
@@ -238,6 +230,7 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
 
 function buildRegPdfRow(entry: LtEntry): any[] {
     const row = [
+        // checkbox
         entry.GroupLeader === true ? {
             table: {
                 widths: [12],
@@ -252,13 +245,22 @@ function buildRegPdfRow(entry: LtEntry): any[] {
                 ]]
             }
         } : { text: entry.Owed > 0 ? '$'.concat(entry.Owed.toString()) : "", color: '#999999', fontSize: 7 },
-        entry.GroupLeader === true ? { text: entry.FirstName, fontSize: 11 } : { text: "+ " + entry.FirstName, fontSize: 10, italics: true },
+        // first
+        entry.GroupLeader === true ? { text: entry.FirstName, fontSize: 11 } : { text: "+ " + entry.FirstName, fontSize: 10, italics: true, noWrap: true },
+        // last
         entry.GroupLeader === true ?
             entry.GroupId === null ? { text: entry.LastName, fontSize: 11 } :
                 { text: [{ text: entry.LastName.replace('_Group', ''), fontSize: 11 }, { text: " GROUP", bold: true, fontSize: 11 }] } :
             { text: entry.LastName, fontSize: 10, italics: true },
+        // owed
         entry.Owed > 0 ? { text: '$'.concat(entry.Owed.toString()), fontSize: 11, bold: true } : "",
+        // waiver
+        entry.SignedWaiver === true ? {text: "On File", fontSize: 9} : {
+            table: {body: [[{text: "waiver", fontSize:7, color: '#999999'}]]}
+        },
+        // class/course
         entry.GroupLeader === true ? { text: entry.ClassId, fontSize: 11 } : "",
+        // epunch number
         entry.Epunch.length === 0 ? entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
             {
                 table: {
@@ -304,9 +306,13 @@ function buildRegPdfRow(entry: LtEntry): any[] {
                 }
             } :
             { text: entry.Epunch, fontSize: 11, alignment: 'right' },
+        // Club
         { text: entry.Club, fontSize: 11 },
-        { text: formatPhoneNumber(entry.Phone), fontSize: 11, noWrap: true },
-        { text: formatPhoneNumber(entry.EmergencyPhone), fontSize: 11, noWrap: true },
+        // Phone
+        { text: formatPhoneNumber(entry.Phone), fontSize: 10, noWrap: true },
+        // Emergency Phone
+        { text: formatPhoneNumber(entry.EmergencyPhone), fontSize: 10, noWrap: true },
+        // Vehicle
         { text: entry.CarLicense, fontSize: 8 }
     ]
     return (row);
