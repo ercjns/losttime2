@@ -11,6 +11,7 @@ export class CascadeRegistrationCsv {
     Phone!: string;
     EmergencyPhone!: string;
     CarLicense!: string;
+    BirthYear!: number | null;
     Newcomer!: string;
     Group!: number | '*' | null;
     Paid!: string;
@@ -31,6 +32,7 @@ export function isCascadeRegistrationCsv(row:any): boolean | "group" {
         'Phone' in row &&
         'EmergencyPhone' in row &&
         'CarLicense' in row &&
+        'BirthYear' in row &&
         'Newcomer' in row &&
         'Group' in row &&
         'Paid' in row &&
