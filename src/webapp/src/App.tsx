@@ -3,7 +3,8 @@ import { Switch, Route } from 'react-router-dom';
 import { Col, Container} from 'react-bootstrap';
 import { Header } from './components/Header';
 import {EntryProcessor} from './components/adminentries/EntryProcessor';
-import { ResultsProcessor } from './components/adminresults/ResultsProcessor';
+// import { ResultsProcessor } from './components/adminresults/ResultsProcessor';
+import { ResultsBuilder } from './components/staticresults/ResultsBuilder';
 // import { Results } from './components/results/Results';
 
 
@@ -20,13 +21,14 @@ function App() {
           <Col xs={{span:10, offset:1}}>
             <Switch>
               <Route exact path="/">
-                <EntryProcessor />
+                {/* <EntryProcessor /> */}
+                <ResultsBuilder />
               </Route>
               <Route path="/registrations">
                 <EntryProcessor />
               </Route>
               <Route path="/results">
-                <ResultsProcessor />
+                <ResultsBuilder />
               </Route>
             </Switch>
           </Col>
