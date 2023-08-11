@@ -2,14 +2,14 @@ import React from 'react';
 
 export type splitsByClassXmlMeta = {
     name: string,
-    success: number
+    raceClasses: number
   }
 
 export class SplitsByClassXml extends React.Component<splitsByClassXmlMeta, {}, any> {
 
   render () {
     return (
-      <li>{this.props.name} (Race Classes: {this.props.success})</li>
+      <li>Race Splits File: {this.props.name} (Found <b>{this.props.raceClasses}</b> race classes.)</li>
     )
   }
 }
