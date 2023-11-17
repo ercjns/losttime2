@@ -38,14 +38,14 @@ export type Person = {
 }
 
 export type Name = {
-    Family?: string;
-    Given?: string;
+    Family?: String;
+    Given?: String;
 }
 
 export type Organisation = {
     Id: Number;
-    Name: string;
-    ShortName: string;
+    Name: String;
+    ShortName: String;
 }
 
 export type Result = {
@@ -53,15 +53,15 @@ export type Result = {
     ControlCard: Number;
     StartTime: string;
     FinishTime: string;
-    Time: Number;
-    TimeBehind: Number;
+    Time: number;
+    TimeBehind: number;
     Status: string;
-    Position?: Number;
+    Position?: number;
     SplitTime: SplitTime[];
     AssignedFee?: any;
 }
 
 export type SplitTime = {
-    ControlCode: Number;
-    Time?: Number;
+    ControlCode: number;
+    Time?: number;
 }
