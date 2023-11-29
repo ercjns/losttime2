@@ -38,19 +38,19 @@ export type Person = {
 }
 
 export type Name = {
-    Family?: String;
-    Given?: String;
+    Family?: string;
+    Given?: string;
 }
 
 export type Organisation = {
-    Id: Number;
-    Name: String;
-    ShortName: String;
+    Id: number;
+    Name: string;
+    ShortName: string;
 }
 
 export type Result = {
-    BibNumber: Number;
-    ControlCard: Number;
+    BibNumber: number;
+    ControlCard: number;
     StartTime: string;
     FinishTime: string;
     Time: number;

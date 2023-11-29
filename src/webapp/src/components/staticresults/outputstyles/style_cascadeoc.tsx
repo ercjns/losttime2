@@ -1,16 +1,23 @@
-import { html_beautify } from 'js-beautify';
-import { CodeCheckingStatus, CompetitionClass, CompetitiveStatus } from "../CompetitionClass";
+import { stringify_html } from './stylehelpers';
+import { CodeCheckingStatus, CompetitionClass, CompetitiveStatus, ScoredCompetitionClassType, WorldCupResult, WorldCupTeamResult } from "../CompetitionClass";
 
-export function createCompHeaderDocument_CascadeOc(x:CompetitionClass[]) {
-    const outer = document.createElement("div");
+export function createOutputDoc_CascadeOc(data:CompetitionClass[]) {
     const wrap = document.createElement("div");
     wrap.setAttribute("class", "LostTimeContent");
     wrap.setAttribute("id", "lt-top");
 
+    wrap.appendChild(createCompHeader_CascadeOc(data));
+    for (const compclass of data) {
+        wrap.appendChild(createCompClassOutput_CascadeOc(compclass))
+    }
+    wrap.appendChild(StatusCodeHelpText());
+
+    return stringify_html(wrap);
+}
+
+function createCompHeader_CascadeOc(x:CompetitionClass[]) {
     const head = document.createElement("div");
     head.setAttribute("class", "lg-mrg-bottom");
-    wrap.appendChild(head);
-
     const h2 = document.createElement("h2");
     h2.textContent = "Competition Classes";
     head.appendChild(h2);
@@ -25,36 +32,35 @@ export function createCompHeaderDocument_CascadeOc(x:CompetitionClass[]) {
     })
     h4s.forEach(x => head.appendChild(x));
 
-    outer.appendChild(wrap);
-    return html_beautify(outer.innerHTML);
+    return head
 }
 
 
-export function createCompClassDocument_CascadeOc(x:CompetitionClass) {
+function createCompClassOutput_CascadeOc(x:CompetitionClass) {
     if (!x.ScoredCompetitionClass) {
         throw new Error("Not ready to create HTML")
     }
 
-    const outer = document.createElement("div");
     const wrap = document.createElement("div");
     wrap.setAttribute("class", "classResults lg-mrg-bottom")
-
     const h3 = document.createElement("h3")
     h3.textContent = x.Name
     h3.setAttribute("id", x.ID.toString())
     wrap.appendChild(h3);
     const data = document.createElement("table")
     
-    if (x.ScoredCompetitionClass.Type === "COC_WorldCup") {
+    // convert this to a swtich/case
+    // have some way to fall back to plaintext if not implemented specifically?
+    if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.CocWorldCup) {
         data.textContent = WorldCupHtml_Indv(x);
-    } else if (x.ScoredCompetitionClass.Type === "Time") {
+    } else if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.CocWorldCupTeams) {
+        data.textContent = WorldCupHtml_Teams(x); //TODO NEW TEAM HTML
+    } else if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.Time) {
         data.textContent = TimeHtml_Indv(x);
     }
 
     wrap.appendChild(data);
-    outer.appendChild(wrap);
-    return html_beautify(outer.innerHTML);
-
+    return wrap;
 }
 
 function TimeHtml_Indv(x:CompetitionClass) {
@@ -64,6 +70,7 @@ function TimeHtml_Indv(x:CompetitionClass) {
     let doc = "";
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
+        if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
         doc += "Check:"
         doc += CodeCheckingStatus[el.CodeCheckingStatus];
         doc += " Comp:"
@@ -87,6 +94,8 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
     let doc = "";
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
+        if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
+        // TODO: replace with proper html for results table
         doc += "Check:"
         doc += CodeCheckingStatus[el.CodeCheckingStatus];
         doc += " Comp:"
@@ -104,10 +113,34 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
     return doc;
 }
 
+function WorldCupHtml_Teams(x:CompetitionClass) {
+    if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
+        return "No results for this class";
+    }
+
+    let doc = "";
+    for (const el of x.ScoredCompetitionClass.Results) {
+        if (el === undefined) { continue; }
+        if (!(el instanceof WorldCupTeamResult)) {throw Error("Not WorldCupTeamResult")}
+        doc += "Place: " + el.Place ?? ""
+        doc += "Team: " + el.TeamName
+        doc += "Members: " + (el.Contributors.length + el.NonContributors.length)
+        doc += "Points: " + el.Points
+        doc += "\r\n"
+        for (const tm of el.Contributors) {
+            doc += " Time:"
+            doc += tm.Time ?? " ";
+            doc += " Name:";
+            doc += tm.Name;
+            doc += " Points:";
+            doc += tm.Points ?? ""
+            doc += "\r\n"
+        }
+    }
+    return doc;
+}
+
 function StatusCodeHelpText() {
-    // can't use this until I refactor so that this is a single function.
-    // otherwise it's inside every comp class, or I have to call it externally
-    // and that seems like the wrong approach.
     const codeHelpDiv = document.createElement("div")
     const h3 = document.createElement("h3");
     h3.textContent = "Result Status Codes";
@@ -133,8 +166,6 @@ function StatusCodeHelpText() {
         dd.textContent = def;
         dl.appendChild(dd);
     })
-
     codeHelpDiv.appendChild(dl)
     return codeHelpDiv;
 }
-    

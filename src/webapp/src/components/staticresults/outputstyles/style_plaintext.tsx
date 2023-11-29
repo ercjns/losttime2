@@ -1,12 +1,12 @@
-import { CompetitionClass } from "../CompetitionClass";
+import { CompetitionClass, ScoredCompetitionClassType, WorldCupResult } from "../CompetitionClass";
 
 export function createCompClassDocument_plaintext(x:CompetitionClass) {
         if (!x.ScoredCompetitionClass) {
             throw new Error("Not ready to create HTML")
         }
-        if (x.ScoredCompetitionClass.Type === "COC_WorldCup") {
+        if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.CocWorldCup) {
             return WorldCupHtml_Indv(x);
-        } else if (x.ScoredCompetitionClass.Type === "Time") {
+        } else if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.Time) {
             return TimeHtml_Indv(x);
         }
         
@@ -19,6 +19,7 @@ function TimeHtml_Indv(x:CompetitionClass) {
         let doc = "";
         for (const el of x.ScoredCompetitionClass.Results) {
             if (el === undefined) { continue; }
+            if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
             doc += "Check:"
             doc += el.CodeCheckingStatus;
             doc += " Comp:"
@@ -41,6 +42,7 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
         let doc = "";
         for (const el of x.ScoredCompetitionClass.Results) {
             if (el === undefined) { continue; }
+            if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
             doc += "Check:"
             doc += el.CodeCheckingStatus;
             doc += " Comp:"

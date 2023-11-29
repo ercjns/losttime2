@@ -2,8 +2,6 @@ import { Guid } from "guid-typescript";
 import { PersonResult } from "../../orienteering/IofResultXml";
 import { LtStaticRaceClassResult } from "./RaceResult";
 import { CocWorldCupScoreByPlace } from "./ScoreMethods";
-import { PassThrough } from "stream";
-
 
 export enum CodeCheckingStatus {
     FIN,
@@ -29,6 +27,25 @@ export enum IndividualScoreMethod {
     PointsOusaAverageWinningTime
 }
 
+export enum TeamScoreMethod {
+    SumAllHighestWins,
+    SumAllLowestWins
+}
+
+export enum TeamCollationMethod {
+    ScoreThenCombine,
+    CombineThenScore
+}
+
+export enum ScoredCompetitionClassType {
+    Time,
+    Scottish,
+    CocWorldCup,
+    CocWorldCupTeams,
+    OusaAvgWinTime,
+    OusaAvgWinTimeTeams
+}
+
 export class CompetitionClass {
     // TemplateClassCodes?: String[];
     // TemplateComplementClassCodes?: String[];
@@ -36,15 +53,16 @@ export class CompetitionClass {
     RaceResults!: LtStaticRaceClassResult[];
     ComplementRaceResults!: LtStaticRaceClassResult[];
     Name!: string;
-    IsMultiRace!: Boolean; //compute based on RaceResults?
-    IsTeamClass!: Boolean;
+    IsMultiRace!: boolean; //compute based on RaceResults?
+    IsTeamClass!: boolean;
     ScoreMethod!: IndividualScoreMethod;
     ScoreMethod_Multi?: MultiEventScoreMethodDefinition;
     ScoreMethod_Team?: TeamScoreMethodDefinition;
+    TempResults?: WorldCupResult[];
     ScoredCompetitionClass?: {
         TimeStamp: Date;
-        Type: string; //enum?
-        Results: WorldCupResult[];
+        Type: ScoredCompetitionClassType;
+        Results: WorldCupResult[] | WorldCupTeamResult[];
     };
 
     constructor() {
@@ -64,7 +82,6 @@ export class CompetitionClass {
         // are there scoring methods that make sense given other parameters
         // TODO
         return true;
-        return false;
     }
 
     computeScores() {
@@ -78,7 +95,7 @@ export class CompetitionClass {
             if (this.ScoreMethod===IndividualScoreMethod.Time) {
                 // This is a hack but I think it's ok?
                 this.WorldCupScoring_Indv()
-                if(this.ScoredCompetitionClass) {this.ScoredCompetitionClass.Type="Time"}
+                if(this.ScoredCompetitionClass) {this.ScoredCompetitionClass.Type = ScoredCompetitionClassType.Time}
                 this.ScoredCompetitionClass?.Results.forEach(x => x.Points = undefined);
             }
         }
@@ -86,18 +103,63 @@ export class CompetitionClass {
             // do individual scoring things first
             if (this.ScoreMethod===IndividualScoreMethod.PointsCocWorldCup) {
                 if (this.ScoreMethod_Team?.Collation===TeamCollationMethod.ScoreThenCombine) {
-                    this.WorldCupScoring_Indv(true)
+                    this.WorldCupScoring_Indv(true, true)
                 } else {
-                    this.WorldCupScoring_Indv()
+                    this.WorldCupScoring_Indv(true, false)
                 }
             }
             
             // now do team scoring things
+            if (this.ScoreMethod_Team === undefined) {
+                throw new Error("No Team Score Method for Team Competition Class")
+            }
+
+            // teams: array of objects, one per team, with all raw WorldCupResults
+            //   results are put on a team baesd on having the same WorldCupResult.Club
+            if (this.TempResults === undefined) {throw Error("No results - HANDLE THIS CASE IN THE FUTURE")}
+            
+            let teams:[{"club":string|undefined, "raw":WorldCupResult[]}] | undefined;
+            for (let i=0; i < this.TempResults.length; i++) {
+                let item = this.TempResults[i];
+                if (item instanceof WorldCupResult) {
+                    if (i===0) {
+                        teams = [{"club":item.Club, "raw":[item]}]
+                        continue;
+                    } 
+
+                    if (teams === undefined) {throw Error("handling")}
+                    let teamIdx = teams.findIndex((t) => t.club === item.Club);
+                    if (teamIdx === -1) {
+                        teams.push({"club":item.Club, "raw":[item]})
+                    } else {
+                        let team = teams[teamIdx];
+                        team.raw.push(item);
+                    }
+                } else {
+                    throw Error("not the right type")
+                }
+            }
+
+            // Create entries in the ScoredCompetitionClass property. Note these are not yet 
+            // ready to be used, they'll not be ranked.
+            let res:WorldCupTeamResult[] = []
+            teams!.forEach((x) => {
+                if (x.raw.length >= this.ScoreMethod_Team!.MinimumResults) {
+                    res.push(new WorldCupTeamResult(x.raw, this.ScoreMethod_Team!))
+                }
+            });
+            this.ScoredCompetitionClass = {
+                "TimeStamp": new Date(),
+                "Type": ScoredCompetitionClassType.CocWorldCupTeams,
+                "Results": res,
+            }
+
             if (this.ScoreMethod_Team?.ScoreMethod===TeamScoreMethod.SumAllHighestWins) {
-                // create teams
-                // assign team scores
-                // return scoredCompetitionClass with differnt object types?
+                // assign team scores based on the teams in scoredcompetitionclass.results.
+                console.log(this.ScoredCompetitionClass?.Results)
                 alert("TeamScores");
+                // TODO: assign team POSITIONS - 
+                //     update (set) the values in this.ScoredCompetitionClass.Results.Position
             }
         }
         return;
@@ -105,7 +167,7 @@ export class CompetitionClass {
 
 
 
-    private assignScores(res:WorldCupResult[]):WorldCupResult[] {
+    private WorldCupScoring_assignPoints(res:WorldCupResult[]):WorldCupResult[] {
         // For all COMP/FIN, sort by time, assign places, assign points.
         // For COMP/(MSP,DNF,UNK) - no place, assign 0 points.
         // For (OVT,SWD)/(ANY) - no place, assign 0 points.
@@ -143,7 +205,7 @@ export class CompetitionClass {
         return res;
     }
 
-    private WorldCupScoring_Indv(keepRaceClassesSeparate=false) {
+    private WorldCupScoring_Indv(tempForTeamScoring=false, keepRaceClassesSeparate=false) {
         // create an array that contains WorldCupResult objects
         // for each and every PersonResult in the loaded this.RaceResults
         let ans: WorldCupResult[] = [];
@@ -153,7 +215,7 @@ export class CompetitionClass {
                 let res: WorldCupResult[] = [];
                 if (race.PersonResults.length === undefined) {continue;}
                 res.push(...race.PersonResults.map(x => new WorldCupResult(x)));
-                ans.push(...this.assignScores(res));
+                ans.push(...this.WorldCupScoring_assignPoints(res));
             }
         } else {
             let res: WorldCupResult[] = [];
@@ -161,21 +223,53 @@ export class CompetitionClass {
                 if (race.PersonResults.length === undefined) {continue;}
                 res.push(...race.PersonResults.map(x => new WorldCupResult(x)));
             }
-            ans.push(...this.assignScores(res));
+            ans.push(...this.WorldCupScoring_assignPoints(res));
         }
 
-        this.ScoredCompetitionClass = {
-            TimeStamp: new Date(),
-            Type: "COC_WorldCup",
-            Results: ans
+        if (tempForTeamScoring) {
+            this.TempResults = ans.filter((x) => x.CompetitiveStatus !== CompetitiveStatus.NC)
+        } else {
+            this.ScoredCompetitionClass = {
+                TimeStamp: new Date(),
+                Type: ScoredCompetitionClassType.CocWorldCup,
+                Results: ans
+            }
         }
     }
 }
 
-class WorldCupResult {
+export class WorldCupTeamResult {
+    TeamName: string;
+    TeamShortName: string;
+    Points: number;
+    Place?: number;
+    Contributors: WorldCupResult[];
+    NonContributors: WorldCupResult[];
+
+    constructor(teammates:WorldCupResult[], scoring:TeamScoreMethodDefinition) {
+        if (teammates.length === 0) {
+            throw Error("can't create a team result with no teammates");
+        }
+        this.TeamName = teammates[0].Club ?? "";
+        this.TeamShortName = teammates[0].Club ?? "";
+        if (scoring.ScoreMethod === TeamScoreMethod.SumAllHighestWins) {
+            teammates.sort(WorldCupResultComparer);
+            this.Contributors = teammates.slice(0,scoring.MaximumResults);
+            this.NonContributors = teammates.slice(scoring.MaximumResults);
+            this.Points = this.Contributors.reduce(
+                (total, contributor) => total + (contributor.Points ?? 0),
+                0
+            )
+        } else {
+            throw Error("score method doesn't make sense for World Cup")
+        }
+    }
+}
+
+export class WorldCupResult {
     Raw: PersonResult;
-    Name: String;
-    Club?: String;
+    Name: string;
+    Club?: string;
     Time?: number;
     Points?: number;
     Place?: number;
@@ -243,13 +337,13 @@ function WorldCupResultComparer(a:WorldCupResult, b:WorldCupResult): number {
 
 class MultiEventScoreMethodDefinition {
     ScoreMethod: MultiEventScoreMethod;
-    MinimumRaces: Number;
-    ContributingRaces: Number;
+    MinimumRaces: number;
+    ContributingRaces: number;
 
     constructor(
         scoreMethod: MultiEventScoreMethod,
-        minimumRaces: Number,
-        contributingRaces: Number
+        minimumRaces: number,
+        contributingRaces: number
     ) {
         this.ScoreMethod = scoreMethod;
         this.MinimumRaces = minimumRaces;
@@ -265,14 +359,14 @@ enum MultiEventScoreMethod {
 
 export class TeamScoreMethodDefinition {
     ScoreMethod: TeamScoreMethod;
-    MinimumResults: Number;
-    MaximumResults: Number;
+    MinimumResults: number;
+    MaximumResults: number;
     Collation: TeamCollationMethod;
 
     constructor(
         scoreMethod: TeamScoreMethod,
-        minResults: Number,
-        maxResults: Number,
+        minResults: number,
+        maxResults: number,
         collation: TeamCollationMethod
     ) {
         this.ScoreMethod = scoreMethod;
@@ -280,14 +374,4 @@ export class TeamScoreMethodDefinition {
         this.MaximumResults = maxResults;
         this.Collation = collation;
     }
-}
-
-export enum TeamScoreMethod {
-    SumAllHighestWins,
-    SumAllLowestWins
-}
-
-export enum TeamCollationMethod {
-    ScoreThenCombine,
-    CombineThenScore
 }

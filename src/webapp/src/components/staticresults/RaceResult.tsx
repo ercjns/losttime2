@@ -1,8 +1,8 @@
 // model this on lt/Entry.ts
 
-import React from 'react';
+// import React from 'react';
 import { Class, Course, Event, PersonResult, ResultList, ClassResult } from "../../orienteering/IofResultXml";
-import { IndividualScoreMethod } from './CompetitionClass';
+// import { IndividualScoreMethod } from './CompetitionClass';
 import { Guid } from 'guid-typescript';
 
 

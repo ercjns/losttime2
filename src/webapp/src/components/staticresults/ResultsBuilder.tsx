@@ -6,12 +6,11 @@ import { SplitsByClassXml, splitsByClassXmlMeta } from './SplitsByClassXml';
 import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
 import { Button, ButtonGroup, ButtonToolbar, Collapse, Dropdown, DropdownButton, Form, Row, Table } from 'react-bootstrap';
 import { CompetitionClass, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
-import { createCompClassDocument_CascadeOc, createCompHeaderDocument_CascadeOc } from './outputstyles/style_cascadeoc';
-import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
+import { createOutputDoc_CascadeOc } from './outputstyles/style_cascadeoc';
+// import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
-import { toHaveAccessibleDescription } from '@testing-library/jest-dom/matchers';
 
 
 enum resultsOutputStyle {
@@ -72,7 +71,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     this.updateRaceResults = this.updateRaceResults.bind(this);
     this.myToggler1 = this.myToggler1.bind(this);
     this.myToggler2 = this.myToggler2.bind(this);
-    this.createHtml = this.createHtml.bind(this);
+    this.createOutputDoc = this.createOutputDoc.bind(this);
     this.handleSelectedRaceClass = this.handleSelectedRaceClass.bind(this);
     this.handleCompClassTypeChange = this.handleCompClassTypeChange.bind(this);
     this.handleCompClassNameChange = this.handleCompClassNameChange.bind(this);
@@ -256,35 +255,51 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     return;
   }
 
-  createHtml() {
+  createOutputDoc() {
     let doc = ""
 
     // add things to the doc based on the style requested
     switch (this.state.outputStyle) {
       case resultsOutputStyle.plaintext:
-        doc += "Title goes here"
-        doc += "\r\n"
-        doc += "\r\n"
+        // doc += createOutputDoc_plaintext(this.state.competitionClasses);
         break;
       case resultsOutputStyle.genericHtml:
+        // doc += createOutputDoc_genericHtml(this.state.competitionClasses);
+        break;
       case resultsOutputStyle.cascadeocHtml:
-        doc += createCompHeaderDocument_CascadeOc(this.state.competitionClasses);
+        doc += createOutputDoc_CascadeOc(this.state.competitionClasses);
         break;
     }
 
-    for (const x of this.state.competitionClasses) {
-      switch (this.state.outputStyle) {
-        case resultsOutputStyle.plaintext:
-          doc += x.Name;
-          doc += "\r\n";
-          doc += createCompClassDocument_plaintext(x);
-          break;
-        case resultsOutputStyle.genericHtml:
-        case resultsOutputStyle.cascadeocHtml:
-          doc += createCompClassDocument_CascadeOc(x)
-      }
+    // old way down here
 
-    }
+
+    // // add things to the doc based on the style requested
+    // switch (this.state.outputStyle) {
+    //   case resultsOutputStyle.plaintext:
+    //     doc += "Title goes here"
+    //     doc += "\r\n"
+    //     doc += "\r\n"
+    //     break;
+    //   case resultsOutputStyle.genericHtml:
+    //   case resultsOutputStyle.cascadeocHtml:
+    //     doc += createCompHeaderDocument_CascadeOc(this.state.competitionClasses);
+    //     break;
+    // }
+
+    // for (const x of this.state.competitionClasses) {
+    //   switch (this.state.outputStyle) {
+    //     case resultsOutputStyle.plaintext:
+    //       doc += x.Name;
+    //       doc += "\r\n";
+    //       doc += createCompClassDocument_plaintext(x);
+    //       break;
+    //     case resultsOutputStyle.genericHtml:
+    //     case resultsOutputStyle.cascadeocHtml:
+    //       doc += createCompClassDocument_CascadeOc(x)
+    //   }
+
+    // }
 
 
     this.downloadFile(doc)
@@ -520,7 +535,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
               </Form.Select>
             </Form.Group>
 
-            //TODO: only show the team stuff if a team class type is selected.
+            {/* TODO: only show the team stuff if a team class type is selected. */}
 
             <Form.Group>
               <Form.Label>Collation for Team competition class</Form.Label>
@@ -601,7 +616,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
                 variant="outline-primary">
                 <Dropdown.Item>Plaintext</Dropdown.Item>
                 <Dropdown.Item>Generic HTML</Dropdown.Item>
-                <Dropdown.Item onClick={this.createHtml}>COC HTML</Dropdown.Item>
+                <Dropdown.Item onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
               </DropdownButton>
             </ButtonGroup>
         </Row>
