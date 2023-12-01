@@ -4,26 +4,21 @@ import { BasicDz } from '../dz';
 import { X2jOptionsOptional, XMLParser } from 'fast-xml-parser';
 import { SplitsByClassXml, splitsByClassXmlMeta } from './SplitsByClassXml';
 import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
-import { Button, ButtonGroup, ButtonToolbar, Collapse, Dropdown, DropdownButton, Form, Row, Table } from 'react-bootstrap';
-import { CompetitionClass, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
+import { Button, ButtonGroup, Collapse, Dropdown, DropdownButton, Form, Row} from 'react-bootstrap';
+import { CompetitionClass, CompetitionClassType, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
 import { createOutputDoc_CascadeOc } from './outputstyles/style_cascadeoc';
 // import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
+import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 
 
 enum resultsOutputStyle {
   plaintext = 0,
   genericHtml,
   cascadeocHtml
-}
-
-enum CompClassType {
-  OneRaceIndv,
-  OneRaceTeam,
-  ManyRaceIndv,
-  ManyRaceTeam
 }
 
 type resultsBuilderState = {
@@ -36,7 +31,7 @@ type resultsBuilderState = {
   competitionDataToggleOpen: boolean,
   compClassForm_selectedRaceClasses: string[],
   compClassForm_name?: string,
-  compClassForm_type: CompClassType,
+  compClassForm_type: CompetitionClassType,
   compClassForm_indvScoreMethod: IndividualScoreMethod,
   compClassForm_teamCollation: TeamCollationMethod,
   compClassForm_teamSizeMin: number,
@@ -59,7 +54,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       competitionDataToggleOpen: false,
       compClassForm_selectedRaceClasses: [],
       compClassForm_name: undefined,
-      compClassForm_type: CompClassType.OneRaceIndv,
+      compClassForm_type: CompetitionClassType.OneRaceIndv,
       compClassForm_indvScoreMethod: IndividualScoreMethod.Time,
       compClassForm_teamCollation: TeamCollationMethod.ScoreThenCombine,
       compClassForm_teamSizeMin: 2,
@@ -81,6 +76,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     this.handleCompClassTeamSizeMaxChange = this.handleCompClassTeamSizeMaxChange.bind(this);
     this.handleCompClassTeamScoreMethodChange = this.handleCompClassTeamScoreMethodChange.bind(this)
     this.addSingleCompetitionClass = this.addSingleCompetitionClass.bind(this);
+    this.loadPreset = this.loadPreset.bind(this);
   }
 
   async updateRaceResults(file: File) {
@@ -194,15 +190,91 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     }
   }
 
+  private getRaceClassesByClassCode(classCode:string):string[] {
+    // takes a string class code like "W2F" or "1"
+    // returns an array of IDs for all race classes with that exaxtly match that class code
+    // class codes that are integers only are stored as numbers, so call toString() on
+    // the shortName to find them.
+    let matches = this.state.raceData.filter((x) => x.Class.ShortName?.toString() === classCode);
+    return matches.map(x => x.ID.toString());
+  }
+
+  private getRaceDataForRaceClassById(raceClassId:string):LtStaticRaceClassResult|undefined {
+    const data:LtStaticRaceClassResult|undefined = this.state.raceData.find(x => x.ID.toString() === raceClassId);
+    if (data && data.PersonResults.length > 0) {
+      return data;
+    }
+    return;
+  }
+
   private getRaceDataForSelectedRaceClasses():LtStaticRaceClassResult[] {
     let raceData:LtStaticRaceClassResult[] = [];
     for (const raceClassId of this.state.compClassForm_selectedRaceClasses) {
-      const data:LtStaticRaceClassResult|undefined = this.state.raceData.find(x => x.ID.toString() === raceClassId);
+      const data = this.getRaceDataForRaceClassById(raceClassId)
       if (data && data.PersonResults.length > 0) {
         raceData.push(data);
       }
     }
     return raceData;
+  }
+
+  loadPreset() {
+    CocWinterLeauge.Classes.forEach(preset =>
+      this.addSingleCompetitionClassFromPreset(preset));
+    return;
+  }
+
+  addSingleCompetitionClassFromPreset(CompClassParams:CompetitionClassPreset) {
+    let newCompClass = new CompetitionClass();
+    newCompClass.Name = CompClassParams.Name
+
+    switch (CompClassParams.CompClassType as CompetitionClassType) {
+      case CompetitionClassType.OneRaceIndv:
+        newCompClass.IsMultiRace = false;
+        newCompClass.IsTeamClass = false;
+        break;
+      case CompetitionClassType.OneRaceTeam:
+        newCompClass.IsMultiRace = false;
+        newCompClass.IsTeamClass = true;
+        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team
+        break;
+      case CompetitionClassType.ManyRaceIndv:
+        newCompClass.IsMultiRace = true;
+        newCompClass.IsTeamClass = false;
+        break;
+      case CompetitionClassType.ManyRaceTeam:
+        newCompClass.IsMultiRace = true;
+        newCompClass.IsTeamClass = true;
+        break;
+    }
+
+    let raceData:LtStaticRaceClassResult[] = [];
+    for (const raceClassId of CompClassParams.ClassCodes.flatMap(x =>
+      this.getRaceClassesByClassCode(x))) {
+      const data = this.getRaceDataForRaceClassById(raceClassId)
+      if (data && data.PersonResults.length > 0) {
+        raceData.push(data);
+      }
+    }
+    newCompClass.RaceResults = raceData;
+    newCompClass.ScoreMethod = CompClassParams.ScoreMethod;
+
+    // score it!
+    newCompClass.computeScores();
+
+    // add it to the competition!
+    this.setState((prevstate) => ({
+      competitionClasses: [...prevstate.competitionClasses, newCompClass]
+    }));
+
+
+    // option 2: this function updates the state and calls the existing functions
+    // this seems cleaner (re-use existing code)
+    // but also more dangerous (messing with form fields gets out of sync?)
+
+    // option 3: maybe some hybrid?
+    
+    return;
   }
   
   addSingleCompetitionClass(event:FormEvent) {
@@ -217,12 +289,12 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     // fill fields
     newCompClass.Name = this.state.compClassForm_name
 
-    switch (this.state.compClassForm_type as CompClassType) {
-      case CompClassType.OneRaceIndv:
+    switch (this.state.compClassForm_type as CompetitionClassType) {
+      case CompetitionClassType.OneRaceIndv:
         newCompClass.IsMultiRace = false;
         newCompClass.IsTeamClass = false;
         break;
-      case CompClassType.OneRaceTeam:
+      case CompetitionClassType.OneRaceTeam:
         newCompClass.IsMultiRace = false;
         newCompClass.IsTeamClass = true;
         newCompClass.ScoreMethod_Team = new TeamScoreMethodDefinition(
@@ -232,11 +304,11 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
           this.state.compClassForm_teamCollation
         );
         break;
-      case CompClassType.ManyRaceIndv:
+      case CompetitionClassType.ManyRaceIndv:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = false;
         break;
-      case CompClassType.ManyRaceTeam:
+      case CompetitionClassType.ManyRaceTeam:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = true;
         break;
@@ -270,37 +342,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         doc += createOutputDoc_CascadeOc(this.state.competitionClasses);
         break;
     }
-
-    // old way down here
-
-
-    // // add things to the doc based on the style requested
-    // switch (this.state.outputStyle) {
-    //   case resultsOutputStyle.plaintext:
-    //     doc += "Title goes here"
-    //     doc += "\r\n"
-    //     doc += "\r\n"
-    //     break;
-    //   case resultsOutputStyle.genericHtml:
-    //   case resultsOutputStyle.cascadeocHtml:
-    //     doc += createCompHeaderDocument_CascadeOc(this.state.competitionClasses);
-    //     break;
-    // }
-
-    // for (const x of this.state.competitionClasses) {
-    //   switch (this.state.outputStyle) {
-    //     case resultsOutputStyle.plaintext:
-    //       doc += x.Name;
-    //       doc += "\r\n";
-    //       doc += createCompClassDocument_plaintext(x);
-    //       break;
-    //     case resultsOutputStyle.genericHtml:
-    //     case resultsOutputStyle.cascadeocHtml:
-    //       doc += createCompClassDocument_CascadeOc(x)
-    //   }
-
-    // }
-
 
     this.downloadFile(doc)
   }
@@ -400,6 +441,9 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         </div>
         <hr />
         <div>
+          <Button size="lg" onClick={this.loadPreset}>
+            Load Preset Magic Button
+          </Button>
           <p>
             After loading relevant race results, most users should&nbsp;
             <ButtonGroup className="me-2" size="sm">
@@ -416,16 +460,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
           <p>
             <b>Need something more custom?</b> Select one or more race classes below, then click "create competition class" to make a class that considers the results of the selected race classes. Repeat for each competition class. Regular user with repeat event or series needs? Ask for a template to generate many competition classes at once.
           </p>
-          <Row>
-            <div>
-              <ButtonToolbar>
-              <ButtonGroup>
-                  <Button variant="primary" disabled>Create Compeition Class</Button>
-                </ButtonGroup>
-              </ButtonToolbar>
-            </div>
-          </Row>
 
+      {/*
           <Row>
             <div>
           <Table striped hover size="sm">
@@ -486,20 +522,12 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
           </Table>
             </div>
           </Row>
-          </div></Collapse>
-        </div>
+      */}
 
-
-
-
-
-
-        <div>
+<div>
           <Form onSubmit={this.addSingleCompetitionClass}>
             {raceClassCheckboxList}
-
             Selected Classes: //TODO
-
             <Form.Group>
               <Form.Label>Competition Class Name</Form.Label>
               <Form.Control 
@@ -514,8 +542,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
                   value={this.state.compClassForm_type}
                   onChange={this.handleCompClassTypeChange}
               >
-                <option value={CompClassType.OneRaceIndv}>Single Race - Individuals</option>
-                <option value={CompClassType.OneRaceTeam}>Single Race - Teams</option>
+                <option value={CompetitionClassType.OneRaceIndv}>Single Race - Individuals</option>
+                <option value={CompetitionClassType.OneRaceTeam}>Single Race - Teams</option>
                 {/* <option value={CompClassType.ManyRaceIndv}>Multiple Races - Individuals</option> */}
                 {/* <option value={CompClassType.ManyRaceTeam}>Multiple Races - Teams</option> */}
               </Form.Select>
@@ -588,10 +616,22 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
             <Button type="submit">Create Compeition Class</Button>
           </Form>
-
+          </div>
+          </div></Collapse>
         </div>
 
-        
+        <div>
+          <h4>Download Results</h4>
+          <ButtonGroup className="me-2">
+              <DropdownButton title="Download Results"
+                variant="outline-primary">
+                <Dropdown.Item>Plaintext</Dropdown.Item>
+                <Dropdown.Item>Generic HTML</Dropdown.Item>
+                <Dropdown.Item onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
+              </DropdownButton>
+            </ButtonGroup>
+        </div>
+
         <hr />
 
         <Row>
@@ -604,21 +644,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
             {configuredCompetitionClasses}
             </ul>
           </p>
-
-          <p>
-          {/* <Button size="sm" onClick={this.createHtml}>
-            Download Compeition Results
-          </Button> */}
-          </p>
-          <h4>Download Results</h4>
-          <ButtonGroup className="me-2">
-              <DropdownButton title="Download Results"
-                variant="outline-primary">
-                <Dropdown.Item>Plaintext</Dropdown.Item>
-                <Dropdown.Item>Generic HTML</Dropdown.Item>
-                <Dropdown.Item onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
-              </DropdownButton>
-            </ButtonGroup>
         </Row>
       </div>
     )

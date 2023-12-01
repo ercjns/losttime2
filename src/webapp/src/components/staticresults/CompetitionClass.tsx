@@ -37,6 +37,13 @@ export enum TeamCollationMethod {
     CombineThenScore
 }
 
+export enum CompetitionClassType {
+    OneRaceIndv,
+    OneRaceTeam,
+    ManyRaceIndv,
+    ManyRaceTeam
+}
+
 export enum ScoredCompetitionClassType {
     Time,
     Scottish,
@@ -63,6 +70,7 @@ export class CompetitionClass {
         TimeStamp: Date;
         Type: ScoredCompetitionClassType;
         Results: WorldCupResult[] | WorldCupTeamResult[];
+        // Results: Array<WorldCupResult | WorldCupTeamResult>;
     };
 
     constructor() {
@@ -148,24 +156,55 @@ export class CompetitionClass {
                     res.push(new WorldCupTeamResult(x.raw, this.ScoreMethod_Team!))
                 }
             });
+            let placed:WorldCupTeamResult[]|WorldCupResult[] = []
+            if (this.ScoreMethod_Team?.ScoreMethod===TeamScoreMethod.SumAllHighestWins) {
+                // assign team scores based on the teams in scoredcompetitionclass.results.
+                // TODO: assign team POSITIONS - 
+                //     update (set) the values in this.ScoredCompetitionClass.Results.Position
+                // this.ScoredCompetitionClass.Results.sort(this.scoredCompClassComparer);
+                placed = this.WorldCupTeamScoring_assignPlaces(res)
+            }
+
             this.ScoredCompetitionClass = {
                 "TimeStamp": new Date(),
                 "Type": ScoredCompetitionClassType.CocWorldCupTeams,
-                "Results": res,
+                "Results": placed ? placed: res,
             }
 
-            if (this.ScoreMethod_Team?.ScoreMethod===TeamScoreMethod.SumAllHighestWins) {
-                // assign team scores based on the teams in scoredcompetitionclass.results.
-                console.log(this.ScoredCompetitionClass?.Results)
-                alert("TeamScores");
-                // TODO: assign team POSITIONS - 
-                //     update (set) the values in this.ScoredCompetitionClass.Results.Position
-            }
+
         }
         return;
     }
 
+    private scoredCompClassComparer(a:any, b:any) {
+        if (a instanceof WorldCupResult && b instanceof WorldCupResult) {
+            return WorldCupResultComparer(a,b)
+        }
+        else if (a instanceof WorldCupTeamResult && b instanceof WorldCupTeamResult) {
+            return WorldCupTeamComparer(a,b)
+        }
+        else {
+            throw new Error("can't compare these things they're not the same");
+        }
+    }
 
+    private WorldCupTeamScoring_assignPlaces(res:WorldCupTeamResult[]|WorldCupResult[]):WorldCupTeamResult[]|WorldCupResult[] {
+        res.sort(this.scoredCompClassComparer)
+        res.forEach((result, index, arr) => {
+            if (!(result instanceof WorldCupTeamResult)) {throw new Error("HOW NOW")}
+            else {
+                if (index === 0) {
+                    result.Place = 1
+                }
+                else if (this.scoredCompClassComparer(result, arr[index-1]) === 0) {
+                    result.Place = arr[index-1].Place
+                } else {
+                    result.Place = index + 1
+                }
+            }
+        })
+        return res;
+    }
 
     private WorldCupScoring_assignPoints(res:WorldCupResult[]):WorldCupResult[] {
         // For all COMP/FIN, sort by time, assign places, assign points.
@@ -254,8 +293,11 @@ export class WorldCupTeamResult {
         this.TeamShortName = teammates[0].Club ?? "";
         if (scoring.ScoreMethod === TeamScoreMethod.SumAllHighestWins) {
             teammates.sort(WorldCupResultComparer);
-            this.Contributors = teammates.slice(0,scoring.MaximumResults);
-            this.NonContributors = teammates.slice(scoring.MaximumResults);
+            const maxContribThisTeam = teammates.findIndex((x) => x.Points === undefined);
+            const contributorsSlice = maxContribThisTeam === -1 ? 
+                scoring.MaximumResults : Math.min(scoring.MaximumResults, maxContribThisTeam);
+            this.Contributors = teammates.slice(0,contributorsSlice);
+            this.NonContributors = teammates.slice(contributorsSlice);
             this.Points = this.Contributors.reduce(
                 (total, contributor) => total + (contributor.Points ?? 0),
                 0
@@ -310,11 +352,30 @@ export class WorldCupResult {
     }
 }
 
+function WorldCupTeamComparer(a:WorldCupTeamResult, b:WorldCupTeamResult): number {
+    if (a.Place && b.Place) {
+        return a.Place - b.Place;
+    }
+    if (a.Points !== b.Points) {
+        return b.Points - a.Points;
+    }
+    const minContributors = Math.min(a.Contributors.length, b.Contributors.length);
+    for (let i=0; i<minContributors; i++) {
+        if (a.Contributors[i].Points !== b.Contributors[i].Points) {
+            return b.Contributors[i].Points! - a.Contributors[i].Points!;
+        }
+    }
+    if (a.Contributors[minContributors+1]) {return -1;}
+    else if (b.Contributors[minContributors+1]) {return 1;}
+    else {return 0;}
+}
+
+
 function WorldCupResultComparer(a:WorldCupResult, b:WorldCupResult): number {
     // ideally this works both before anything's been figured out, AND after.
     if (a.Place && b.Place) {
-            return a.Place - b.Place;
-        }
+        return a.Place - b.Place;
+    }
 
     if (a.CodeCheckingStatus !== b.CodeCheckingStatus) {
         return a.CodeCheckingStatus - b.CodeCheckingStatus;
@@ -358,20 +419,20 @@ enum MultiEventScoreMethod {
 }
 
 export class TeamScoreMethodDefinition {
-    ScoreMethod: TeamScoreMethod;
     MinimumResults: number;
     MaximumResults: number;
+    ScoreMethod: TeamScoreMethod;
     Collation: TeamCollationMethod;
 
     constructor(
-        scoreMethod: TeamScoreMethod,
         minResults: number,
         maxResults: number,
+        scoreMethod: TeamScoreMethod,
         collation: TeamCollationMethod
     ) {
-        this.ScoreMethod = scoreMethod;
         this.MinimumResults = minResults;
         this.MaximumResults = maxResults;
+        this.ScoreMethod = scoreMethod;
         this.Collation = collation;
     }
 }

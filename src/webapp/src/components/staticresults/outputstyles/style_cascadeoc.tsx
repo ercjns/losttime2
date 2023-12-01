@@ -1,5 +1,5 @@
-import { stringify_html } from './stylehelpers';
-import { CodeCheckingStatus, CompetitionClass, CompetitiveStatus, ScoredCompetitionClassType, WorldCupResult, WorldCupTeamResult } from "../CompetitionClass";
+import { stringify_html, timeWithStatusString} from './stylehelpers';
+import { CompetitionClass, ScoredCompetitionClassType, WorldCupResult, WorldCupTeamResult } from "../CompetitionClass";
 
 export function createOutputDoc_CascadeOc(data:CompetitionClass[]) {
     const wrap = document.createElement("div");
@@ -18,6 +18,7 @@ export function createOutputDoc_CascadeOc(data:CompetitionClass[]) {
 function createCompHeader_CascadeOc(x:CompetitionClass[]) {
     const head = document.createElement("div");
     head.setAttribute("class", "lg-mrg-bottom");
+    head.setAttribute("id", "lt-menu")
     const h2 = document.createElement("h2");
     h2.textContent = "Competition Classes";
     head.appendChild(h2);
@@ -47,97 +48,195 @@ function createCompClassOutput_CascadeOc(x:CompetitionClass) {
     h3.textContent = x.Name
     h3.setAttribute("id", x.ID.toString())
     wrap.appendChild(h3);
-    const data = document.createElement("table")
-    
-    // convert this to a swtich/case
-    // have some way to fall back to plaintext if not implemented specifically?
-    if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.CocWorldCup) {
-        data.textContent = WorldCupHtml_Indv(x);
-    } else if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.CocWorldCupTeams) {
-        data.textContent = WorldCupHtml_Teams(x); //TODO NEW TEAM HTML
-    } else if (x.ScoredCompetitionClass.Type === ScoredCompetitionClassType.Time) {
-        data.textContent = TimeHtml_Indv(x);
-    }
 
-    wrap.appendChild(data);
+    switch (x.ScoredCompetitionClass.Type) {
+        case ScoredCompetitionClassType.Time:
+            wrap.appendChild(TimeHtml_Indv(x));
+            break;
+        case ScoredCompetitionClassType.CocWorldCup:
+            wrap.appendChild(WorldCupHtml_Indv(x));
+            break;
+        case ScoredCompetitionClassType.CocWorldCupTeams:
+            wrap.appendChild(WorldCupHtml_Teams(x));
+            break;
+        default:
+            break;
+    }
+    const jumpdiv = document.createElement("div");
+    const jump = document.createElement("p");
+    jump.setAttribute("class", "lg-mrg-bottom text-center");
+    const jumplink = document.createElement("a");
+    jumplink.setAttribute("href", "#lt-menu");
+    jumplink.textContent = "Menu";
+    jump.appendChild(jumplink);
+    jumpdiv.appendChild(jump);
+    wrap.appendChild(jumpdiv);
+
     return wrap;
 }
 
 function TimeHtml_Indv(x:CompetitionClass) {
     if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
-        return "No results for this class";
+        const emptydiv = document.createElement("div");
+        emptydiv.textContent ="No results for this class";
+        return emptydiv;
     }
-    let doc = "";
+
+    const table = document.createElement("table");
+    table.setAttribute("class", "table table-striped");
+    table.setAttribute("id", "ResultsTable-"+x.ID.toString())
+
+    const trhead = document.createElement("tr");
+    const pos = document.createElement("th");
+    pos.textContent = "Pos.";
+    trhead.appendChild(pos);
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    trhead.appendChild(name);
+    const club = document.createElement("th");
+    club.textContent = "Club";
+    trhead.appendChild(club);
+    const time = document.createElement("th");
+    time.textContent = "Time";
+    trhead.appendChild(time);
+    table.appendChild(trhead);
+
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
-        doc += "Check:"
-        doc += CodeCheckingStatus[el.CodeCheckingStatus];
-        doc += " Comp:"
-        doc += CompetitiveStatus[el.CompetitiveStatus];
-        doc += " Time:"
-        doc += el.Time ?? " ";
-        doc += " Place:"
-        doc += el.Place ?? " ";
-        doc += " Name:";
-        doc += el.Name;
-        doc += "\r\n";
+        const trdata = document.createElement("tr");
+        const pos = document.createElement("td");
+        pos.textContent = el.Place?.toString() ?? "";
+        trdata.appendChild(pos);
+        const name = document.createElement("td");
+        name.textContent = el.Name;
+        trdata.appendChild(name);
+        const club = document.createElement("td");
+        club.textContent = el.Club ?? "";
+        trdata.appendChild(club);
+        const time = document.createElement("td");
+        time.textContent = timeWithStatusString(el);
+        trdata.appendChild(time);
+        table.appendChild(trdata);
     }
-    return doc;
+    return table;
 }
 
 function WorldCupHtml_Indv(x:CompetitionClass) {
     if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
-        return "No results for this class";
+        const emptydiv = document.createElement("div");
+        emptydiv.textContent ="No results for this class";
+        return emptydiv;
     }
 
-    let doc = "";
+    const table = document.createElement("table");
+    table.setAttribute("class", "table table-striped");
+    table.setAttribute("id", "ResultsTable-"+x.ID.toString())
+
+    const trhead = document.createElement("tr");
+    const pos = document.createElement("th");
+    pos.textContent = "Pos.";
+    trhead.appendChild(pos);
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    trhead.appendChild(name);
+    const club = document.createElement("th");
+    club.textContent = "Club";
+    trhead.appendChild(club);
+    const time = document.createElement("th");
+    time.textContent = "Time";
+    trhead.appendChild(time);
+    const score = document.createElement("th");
+    score.textContent = "Score";
+    trhead.appendChild(score);
+    table.appendChild(trhead);
+
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
-        // TODO: replace with proper html for results table
-        doc += "Check:"
-        doc += CodeCheckingStatus[el.CodeCheckingStatus];
-        doc += " Comp:"
-        doc += CompetitiveStatus[el.CompetitiveStatus];
-        doc += " Time:"
-        doc += el.Time ?? " ";
-        doc += " Place:"
-        doc += el.Place ?? " ";
-        doc += " Name:";
-        doc += el.Name;
-        doc += " Points:";
-        doc += el.Points ?? ""
-        doc += "\r\n";
+        const trdata = document.createElement("tr");
+        const pos = document.createElement("td");
+        pos.textContent = el.Place?.toString() ?? "";
+        trdata.appendChild(pos);
+        const name = document.createElement("td");
+        name.textContent = el.Name;
+        trdata.appendChild(name);
+        const club = document.createElement("td");
+        club.textContent = el.Club ?? "";
+        trdata.appendChild(club);
+        const time = document.createElement("td");
+        time.textContent = timeWithStatusString(el);
+        trdata.appendChild(time);
+        const score = document.createElement("td");
+        score.textContent = el.Points?.toString() ?? "";
+        trdata.appendChild(score);
+        table.appendChild(trdata);
     }
-    return doc;
+    return table
 }
 
 function WorldCupHtml_Teams(x:CompetitionClass) {
     if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
-        return "No results for this class";
+        const emptydiv = document.createElement("div");
+        emptydiv.textContent ="No results for this class";
+        return emptydiv;
     }
 
-    let doc = "";
+    const table = document.createElement("table");
+    table.setAttribute("class", "table table-striped");
+    table.setAttribute("id", "ResultsTable-"+x.ID.toString())
+
+    const trhead = document.createElement("tr");
+    const pos = document.createElement("th");
+    pos.textContent = "Pos.";
+    trhead.appendChild(pos);
+    const score = document.createElement("th");
+    score.textContent = "Score";
+    trhead.appendChild(score);
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    trhead.appendChild(name);
+    const finish = document.createElement("th");
+    finish.textContent = "Finish";
+    trhead.appendChild(finish);
+    table.appendChild(trhead);
+
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupTeamResult)) {throw Error("Not WorldCupTeamResult")}
-        doc += "Place: " + el.Place ?? ""
-        doc += "Team: " + el.TeamName
-        doc += "Members: " + (el.Contributors.length + el.NonContributors.length)
-        doc += "Points: " + el.Points
-        doc += "\r\n"
-        for (const tm of el.Contributors) {
-            doc += " Time:"
-            doc += tm.Time ?? " ";
-            doc += " Name:";
-            doc += tm.Name;
-            doc += " Points:";
-            doc += tm.Points ?? ""
-            doc += "\r\n"
+        const trdata = document.createElement("tr");
+        const pos = document.createElement("td");
+        pos.textContent = el.Place!.toString();
+        trdata.appendChild(pos);
+        const score = document.createElement("td");
+        score.textContent = el.Points.toString()
+        trdata.appendChild(score);
+        const name = document.createElement("td");
+        name.textContent = `${el.TeamName} (${el.TeamShortName})`
+        trdata.appendChild(name);
+        const finish = document.createElement("td");
+        finish.textContent = `${el.Contributors.length+el.NonContributors.length} competitors`
+        trdata.appendChild(finish);
+        table.appendChild(trdata);
+
+        for (const member of el.Contributors) {
+            const trdata = document.createElement("tr");
+            const pos = document.createElement("td");
+
+            trdata.appendChild(pos);
+            const score = document.createElement("td");
+            score.textContent = member.Points!.toString();
+            trdata.appendChild(score);
+            const name = document.createElement("td");
+            name.textContent = `${member.Name} (${member.Club!})`
+            trdata.appendChild(name);
+            const finish = document.createElement("td");
+            finish.textContent = timeWithStatusString(member);
+            trdata.appendChild(finish);
+            table.appendChild(trdata);
         }
     }
-    return doc;
+    return table;
 }
 
 function StatusCodeHelpText() {
@@ -158,7 +257,7 @@ function StatusCodeHelpText() {
         ["dns: did not start", "the competitor did not start"],
         ["<time>*", "the star indicates course completion status was not reported and may be valid, msp, or dnf"]
     ]
-    definitions.map(([term, def]) => {
+    definitions.forEach(([term, def]) => {
         const dt = document.createElement("dt");
         dt.textContent = term;
         dl.appendChild(dt);
