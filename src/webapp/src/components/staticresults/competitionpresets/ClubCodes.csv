@@ -1,0 +1,183 @@
+Namespace,Code,Name
+OCAN,GVOC,Greater Vancouver OC
+OUSA,BAOC,Bay Area OC
+OUSA,COC,Cascade OC
+OUSA,CROC,Columbia River OC
+OUSA,CSU,Cambridge Sports Union
+OUSA,CTOC,City of Trees OC
+OUSA,DVOA,Delaware Valley OA
+OUSA,EWOC,Eastern Washington OC
+OUSA,FRR,Forest Runs
+OUSA,GAOC,Georgia OC
+OUSA,LROC,Laramie Range OC
+OUSA,NEOC,New England OC
+OUSA,OCIN,Orienteering Cincinnati
+OUSA,OK,Orienteer Kansas
+OUSA,QOC,Quantico OC
+OUSA,RMOC,Rocky Mountain OC
+OUSA,SAMM,Sammamish OC
+WIOL,ABM,Archbishop Murphy
+WIOL,ALC,Attic Learning Community
+WIOL,ARL,Arlington
+WIOL,ART,Artondale Elementary
+WIOL,BBL,Bishop Blanchet
+WIOL,BCC,Bellevue College
+WIOL,BED,Burlington-Edison
+WIOL,BEL,Bellevue
+WIOL,BEN,Ben Rush Elementary
+WIOL,BES,Brier Elementary
+WIOL,BET,Bethel
+WIOL,BMS,Bethel Middle School
+WIOL,BPS,Big Picture School
+WIOL,BRE,Bremerton
+WIOL,BRT,Brier Terrace Middle School
+WIOL,BUS,The Bush School
+WIOL,BVM,Bellevue Montessori
+WIOL,BWW,Brightwater Waldorf
+WIOL,CAS,Cascadia Elementary
+WIOL,CBE,Clara Barton Elementary
+WIOL,CDR,Cedar River Elementary
+WIOL,CHE,Clyde Hill Elementary
+WIOL,CHM,Chehalis Middle
+WIOL,CKM,Chinook Middle
+WIOL,CLK,Chloe Clark Elementary
+WIOL,CLV,Cleveland
+WIOL,CME,Crista McAuliffe Elementary
+WIOL,CMP,Camas Prairie Elementary
+WIOL,CMT,Cougar Mountain Middle School
+WIOL,COL,Columbia Elementary
+WIOL,CSI,Chief Sealth
+WIOL,CSM,Colorado School of Mines
+WIOL,CTR,The Center School
+WIOL,CUR,Curtis
+WIOL,CWU,Central Washington University
+WIOL,DCS,Discovery Community School
+WIOL,DEN,Denny Middle School
+WIOL,DKS,Emily Dickinson Elementary
+WIOL,DSS,Downton School - Seattle
+WIOL,EAS,Environmental & Adventure School
+WIOL,ECK,Eckstein Middle School
+WIOL,EDC,Edmonds College
+WIOL,EGM,Evergreen Middle
+WIOL,EHS,Edmonds Heights K12
+WIOL,EIN,Einstein Middle School
+WIOL,ELK,Eastlake
+WIOL,ELP,Elk Plain K-8
+WIOL,EMS,Eisenhower Middle School
+WIOL,ENE,Enatai Elementary
+WIOL,ESM,Eagle Staff Middle School
+WIOL,ESP,Eastside Prepatory
+WIOL,EUW,Early Entrance UW
+WIOL,EVT,Everett
+WIOL,EXC,Explorer Community School
+WIOL,EXM,Explorer Middle School
+WIOL,FIN,Finn Hill Middle School
+WIOL,FRS,Forest Ridge School
+WIOL,GAR,Garfield
+WIOL,GAT,Gateway Middle school
+WIOL,GIG,Gig Harbor
+WIOL,GLP,Glacier Peak
+WIOL,GPK,Glacier Park Elementary
+WIOL,GRC,Green River College
+WIOL,HAZ,Hazen
+WIOL,HLT,Highland Terrace Elementary
+WIOL,HMS,Hamilton International MS
+WIOL,HOM,Home School
+WIOL,HZW,Hazel Wolf K-8
+WIOL,ICS,International Community School
+WIOL,IGH,Ingraham
+WIOL,ILM,Island Middle
+WIOL,ING,Inglemoor
+WIOL,IPE,Island Park Elementary
+WIOL,ISS,Issaquah
+WIOL,JAC,Jackson
+WIOL,JAM,Jane Addams Middle
+WIOL,JEF,Thomas Jefferson
+WIOL,JSI,John Stanford International
+WIOL,JTA,Juanita Elementary
+WIOL,JUA,Juanita
+WIOL,KAM,Kamiak
+WIOL,KIR,Kirkland Middle School
+WIOL,KKM,Kamiakin Middle School
+WIOL,KOE,Kokanee Elementary
+WIOL,KOP,Kopachuck Middle School
+WIOL,KSE,Karshner Elementary
+WIOL,LAK,Lakeside
+WIOL,LAW,Lawton Elementary
+WIOL,LEM,Leota Middle
+WIOL,LIB,Liberty
+WIOL,LIN,Lincoln
+WIOL,LKW,Lake Wilderness Elementary
+WIOL,LMS,Lakeside Middle School
+WIOL,LVW,Lakeview Elementary
+WIOL,LWA,Lake Washington
+WIOL,LYE,Lake Youngs Elementary
+WIOL,MAD,Madrona Elementary (Edmonds)
+WIOL,MAR,Mariner
+WIOL,MAY,Maywood Middle School
+WIOL,MCM,McMurray Middle School
+WIOL,MDP,Meridian Park Elementary
+WIOL,MLE,Moorlands Elementary
+WIOL,MON,Montlake Elementary
+WIOL,MSV,Marysville
+WIOL,MVM,Maple View Middle School
+WIOL,NCA,Northshore Christian Academy
+WIOL,NEW,Newport
+WIOL,NKT,North Kitsap
+WIOL,NST,Northstar
+WIOL,NWM,Northwest  Montessori
+WIOL,OAK,Oak Harbor
+WIOL,OVL,Overlake
+WIOL,OWS,Open Window School
+WIOL,PCM,Pacific Crest Montessori
+WIOL,PEN,Peninsula
+WIOL,PLE,Phantom Lake Elementary
+WIOL,PRV,Peace River Homeschool
+WIOL,RAV,Raisbeck Aviation
+WIOL,RCK,Rock Creek Elementary
+WIOL,RDE,Redmond Elementary
+WIOL,RED,Redmond
+WIOL,RHE,Rose Hill Elementary
+WIOL,RHL,Rose Hill Middle School
+WIOL,ROO,Roosevelt
+WIOL,SBG,Sandburg Elementary
+WIOL,SCD,Seattle Country Day School
+WIOL,SCU,Santa Clara University
+WIOL,SHA,Shadow Lake Elementary
+WIOL,SHW,Shorewood
+WIOL,SKT,South Kitsap
+WIOL,SMA,St. Mary's Academy
+WIOL,SMI,Science & Math Institute
+WIOL,SPA,Spanaway
+WIOL,SSE,Sunset Elementary
+WIOL,SSS,Summit Sierra School
+WIOL,STL,St. Lukes
+WIOL,STM,Summit Trails Middle School
+WIOL,STT,St. Thomas
+WIOL,SVC,Sky Valley Education Center
+WIOL,SVS,Soundview School
+WIOL,SWS,Seattle Waldorf School
+WIOL,TAH,Tahoma
+WIOL,TCE,Thornton Creek Elementary
+WIOL,TCO,Tahoma Co-Op
+WIOL,TEL,Tahoma Elementary
+WIOL,TES,Tesla STEM school
+WIOL,TGM,Thurgood Marshall Elementary
+WIOL,TIM,Tillicum Middle
+WIOL,TJH,Tahoma Junior High
+WIOL,TMS,Tahoma Middle School
+WIOL,TYE,Tyee Middle School
+WIOL,UCD,University Child Development School
+WIOL,UNP,University Prep
+WIOL,UWS,University of Washington
+WIOL,VIN,Vinland Elementary
+WIOL,VVW,Valley View Middle School
+WIOL,WAM,Washington Middle School
+WIOL,WDE,Woodridge elementary
+WIOL,WGE,Westgate Elementary
+WIOL,WHE,Whittier Elementary
+WIOL,WIW,Whidbey Island Waldorf
+WIOL,WMS,Woodinville-Montessori
+WIOL,WOT,World Orienteering Tour
+WIOL,WPS,willow Preparatory School
+WIOL,WVA,Washington Virtual Academy

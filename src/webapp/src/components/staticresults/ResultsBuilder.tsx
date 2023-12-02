@@ -328,6 +328,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
   }
 
   createOutputDoc() {
+    let extension = "txt"
     let doc = ""
 
     // add things to the doc based on the style requested
@@ -340,10 +341,15 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         break;
       case resultsOutputStyle.cascadeocHtml:
         doc += createOutputDoc_CascadeOc(this.state.competitionClasses);
+        extension = "html"
         break;
     }
+    const date = new Date();
+    const dateString = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getDate().toString().padStart(2,"0")}`;
+    const timeString = `${date.getHours().toString().padStart(2,"0")}${date.getMinutes().toString().padStart(2,"0")}`;
+    const filename = `${dateString}_${timeString}_results.${extension}`
 
-    this.downloadFile(doc)
+    this.downloadFile(doc, filename);
   }
 
   // https://www.youtube.com/watch?v=io2blfAlO6E
@@ -383,9 +389,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
       const configuredCompetitionClasses = this.state.competitionClasses.map((compclass) =>
       <li key={compclass.ID.toString()}>
-        <b>Name:</b> {compclass.Name} 
-        &nbsp;<b>Scoring:</b> {IndividualScoreMethod[compclass.ScoreMethod]} 
-        &nbsp;<Button
+        {/* <Button
           // onClick={(e) => this.handleRemoveCompClass(e)}
           id={"up-" + compclass.ID.toString()}
           variant="outline-secondary"
@@ -402,7 +406,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
           disabled
         >
           <FontAwesomeIcon icon={faArrowDown} />
-        </Button>
+        </Button> */}
         &nbsp;<Button
           onClick={(e) => this.handleRemoveCompClass(e)}
           id={"remove-" + compclass.ID.toString()}
@@ -411,6 +415,9 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         >
           <FontAwesomeIcon icon={faTrashCan} />
         </Button>
+        &nbsp;<b>Name:</b> {compclass.Name} 
+        &nbsp;<b>Scoring:</b> {compclass.IsTeamClass ? "TEAMS // " : ""} {IndividualScoreMethod[compclass.ScoreMethod]} 
+        &nbsp;
 
       </li>
     )
@@ -441,24 +448,24 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         </div>
         <hr />
         <div>
-          <Button size="lg" onClick={this.loadPreset}>
+          {/* <Button size="lg" onClick={this.loadPreset}>
             Load Preset Magic Button
-          </Button>
+          </Button> */}
           <p>
-            After loading relevant race results, most users should&nbsp;
+            After loading all relevant race results, most users should&nbsp;
             <ButtonGroup className="me-2" size="sm">
               <Button size="sm">click here</Button>
               <DropdownButton as={ButtonGroup} size="sm" title="">
-                <Dropdown.Item>Standard: One Per Race Class</Dropdown.Item>
-                <Dropdown.Item>COC: Winter 23-24</Dropdown.Item>
-                <Dropdown.Item>COC: Ultimate O 2024</Dropdown.Item>
+                {/* <Dropdown.Item>Standard: One Per Race Class</Dropdown.Item> */}
+                <Dropdown.Item onClick={this.loadPreset}>COC: Winter 23-24</Dropdown.Item>
+                {/* <Dropdown.Item>COC: Ultimate O 2024</Dropdown.Item> */}
               </DropdownButton>
             </ButtonGroup>
-            to create one competition class for each race class, or use a pre-defined template if one has been created for your events. You'll still be able to add competition classes (such as teams) using the <Button size="sm" variant="link" onClick={this.myToggler2}>advanced tools</Button> or remove classes that shouldn't be included.
+            to create one competition class for each race class, or use a pre-defined template if one has been created for your events. You'll still be able to add competition classes using the <Button size="sm" variant="link" onClick={this.myToggler2}>advanced tools</Button> or remove classes that shouldn't be included if you need to make tweaks.
           </p>
           <Collapse in={this.state.advancedCompetitionClassDefinitionOpen}><div>
           <p>
-            <b>Need something more custom?</b> Select one or more race classes below, then click "create competition class" to make a class that considers the results of the selected race classes. Repeat for each competition class. Regular user with repeat event or series needs? Ask for a template to generate many competition classes at once.
+            <b>Need something more custom?</b> Select one or more race classes below, specify the appropriate parameters, and then click "create competition class" to make a class that considers the results of the selected race classes. Repeat for each competition class. If you're a regular user with repeat events or series needs, ask for a template to generate many competition classes at once.
           </p>
 
       {/*

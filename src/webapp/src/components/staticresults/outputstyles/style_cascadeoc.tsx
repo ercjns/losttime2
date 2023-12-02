@@ -1,5 +1,5 @@
-import { stringify_html, timeWithStatusString} from './stylehelpers';
-import { CompetitionClass, ScoredCompetitionClassType, WorldCupResult, WorldCupTeamResult } from "../CompetitionClass";
+import { getClubNameString, stringify_html, timeWithStatusString} from './stylehelpers';
+import { CodeCheckingStatus, CompetitionClass, ScoredCompetitionClassType, WorldCupResult, WorldCupTeamResult } from "../CompetitionClass";
 
 export function createOutputDoc_CascadeOc(data:CompetitionClass[]) {
     const wrap = document.createElement("div");
@@ -212,10 +212,12 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
         score.textContent = el.Points.toString()
         trdata.appendChild(score);
         const name = document.createElement("td");
-        name.textContent = `${el.TeamName} (${el.TeamShortName})`
+        const teamlong = getClubNameString(el.TeamShortName)
+        name.textContent = `${teamlong} (${el.TeamShortName})`
         trdata.appendChild(name);
         const finish = document.createElement("td");
-        finish.textContent = `${el.Contributors.length+el.NonContributors.length} competitors`
+        // finish.textContent = `${el.Contributors.length+el.NonContributors.length} competitors`
+        finish.textContent = getTeamFinishesString(el);
         trdata.appendChild(finish);
         table.appendChild(trdata);
 
@@ -267,4 +269,13 @@ function StatusCodeHelpText() {
     })
     codeHelpDiv.appendChild(dl)
     return codeHelpDiv;
+}
+
+
+function getTeamFinishesString(x:WorldCupTeamResult):string {
+    let all = [...x.Contributors, ...x.NonContributors];
+    const total = all.length
+    const finished = all.filter(x => x.CodeCheckingStatus === CodeCheckingStatus.FIN).length
+    const percent = Math.round((finished*100)/total)
+    return `${percent}% (${finished} of ${total})`
 }
