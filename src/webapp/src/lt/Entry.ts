@@ -64,7 +64,7 @@ export class LtEntry {
     ) {
         this.StartNo = null;
         this.Epunch = entry.EPunch
-        this.EpunchRented= (entry.EPunch === '' && entry.Group !== '*') ? true:false;
+        this.EpunchRented= (entry.Rental === 'X' && entry.Group !== '*') ? true:(entry.EPunch === '' && entry.Group !== '*') ? true:false;
         this.FirstName= entry.FirstName
         this.LastName= entry.LastName
         this.Club= entry.Club
