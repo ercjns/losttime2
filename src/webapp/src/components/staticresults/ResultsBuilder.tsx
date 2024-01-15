@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
+import { Guid } from 'guid-typescript';
 
 
 enum resultsOutputStyle {
@@ -89,7 +90,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     try {
       const newfile: splitsByClassXmlMeta = {
         name: file.name,
-        raceClasses: resultsObj.ResultList.ClassResult.length
+        raceClasses: resultsObj.ResultList.ClassResult.length,
       };
 
       this.setState({
@@ -438,9 +439,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         </ol>
         <div>
           <h4>Add Race Results</h4>
-          <p>
-            <BasicDz parser={this.updateRaceResults} helpText="Drop xml file here or click to open file browser." />
-          </p>
+          <BasicDz parser={this.updateRaceResults} helpText="Drop xml file here or click to open file browser." />
         </div>
 
         <div>
@@ -448,21 +447,25 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         </div>
         <hr />
         <div>
+          Scoring Presets:
+          <Button id="scoring-preset-COC-WL2324" onClick={this.loadPreset}>COC: Winter 23-24</Button>
+        </div>
+        <div>
           {/* <Button size="lg" onClick={this.loadPreset}>
             Load Preset Magic Button
           </Button> */}
-          <p>
+          <div>
             After loading all relevant race results, most users should&nbsp;
             <ButtonGroup className="me-2" size="sm">
               <Button size="sm">click here</Button>
-              <DropdownButton as={ButtonGroup} size="sm" title="">
+              <DropdownButton id="scoring-presets-group" as={ButtonGroup} size="sm" title="">
                 {/* <Dropdown.Item>Standard: One Per Race Class</Dropdown.Item> */}
-                <Dropdown.Item onClick={this.loadPreset}>COC: Winter 23-24</Dropdown.Item>
+                <Dropdown.Item id="Scoring-Preset-COC-WL-23-24" onClick={this.loadPreset}>COC: Winter 23-24</Dropdown.Item>
                 {/* <Dropdown.Item>COC: Ultimate O 2024</Dropdown.Item> */}
               </DropdownButton>
             </ButtonGroup>
             to create one competition class for each race class, or use a pre-defined template if one has been created for your events. You'll still be able to add competition classes using the <Button size="sm" variant="link" onClick={this.myToggler2}>advanced tools</Button> or remove classes that shouldn't be included if you need to make tweaks.
-          </p>
+          </div>
           <Collapse in={this.state.advancedCompetitionClassDefinitionOpen}><div>
           <p>
             <b>Need something more custom?</b> Select one or more race classes below, specify the appropriate parameters, and then click "create competition class" to make a class that considers the results of the selected race classes. Repeat for each competition class. If you're a regular user with repeat events or series needs, ask for a template to generate many competition classes at once.
@@ -629,14 +632,15 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
         <div>
           <h4>Download Results</h4>
-          <ButtonGroup className="me-2">
-              <DropdownButton title="Download Results"
+          <Button id="dl-COC-html" onClick={this.createOutputDoc}>COC HTML</Button>
+          {/* <ButtonGroup className="me-2">
+              <DropdownButton id="download-results-group" title="Download Results"
                 variant="outline-primary">
                 <Dropdown.Item>Plaintext</Dropdown.Item>
                 <Dropdown.Item>Generic HTML</Dropdown.Item>
-                <Dropdown.Item onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
+                <Dropdown.Item id="Download-Results-Coc-Html" onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
               </DropdownButton>
-            </ButtonGroup>
+            </ButtonGroup> */}
         </div>
 
         <hr />
@@ -646,11 +650,11 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
           <p>
             These competition classes have been defined and will be included in output.
           </p>
-          <p>
+          <div>
             <ul>
             {configuredCompetitionClasses}
             </ul>
-          </p>
+          </div>
         </Row>
       </div>
     )

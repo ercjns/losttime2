@@ -55,7 +55,7 @@ export class BasicDz extends Component<{parser:any, helpText:String}, {files:Fil
                 className: 'dropzone',
                 style: this.baseStyle,
                    })}>
-              <input {...getInputProps()} />
+              <input id="dz-file-input" {...getInputProps()} />
               <p>{this.props.helpText}</p>
             </div>
           </section>
