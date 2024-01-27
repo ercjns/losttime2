@@ -86,6 +86,7 @@ function TimeHtml_Indv(x:CompetitionClass) {
     table.setAttribute("class", "table table-striped");
     table.setAttribute("id", "ResultsTable-"+x.ID.toString())
 
+    const thead = document.createElement("thead");
     const trhead = document.createElement("tr");
     const pos = document.createElement("th");
     pos.textContent = "Pos.";
@@ -98,8 +99,12 @@ function TimeHtml_Indv(x:CompetitionClass) {
     trhead.appendChild(club);
     const time = document.createElement("th");
     time.textContent = "Time";
+    time.setAttribute("class", "text-right");
     trhead.appendChild(time);
-    table.appendChild(trhead);
+    thead.appendChild(trhead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody")
 
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
@@ -116,9 +121,11 @@ function TimeHtml_Indv(x:CompetitionClass) {
         trdata.appendChild(club);
         const time = document.createElement("td");
         time.textContent = timeWithStatusString(el);
+        time.setAttribute("class", "text-right");
         trdata.appendChild(time);
-        table.appendChild(trdata);
+        tbody.appendChild(trdata);
     }
+    table.appendChild(tbody);
     return table;
 }
 
@@ -133,6 +140,7 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
     table.setAttribute("class", "table table-striped");
     table.setAttribute("id", "ResultsTable-"+x.ID.toString())
 
+    const thead = document.createElement("thead");
     const trhead = document.createElement("tr");
     const pos = document.createElement("th");
     pos.textContent = "Pos.";
@@ -145,11 +153,16 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
     trhead.appendChild(club);
     const time = document.createElement("th");
     time.textContent = "Time";
+    time.setAttribute("class", "text-right");
     trhead.appendChild(time);
     const score = document.createElement("th");
     score.textContent = "Score";
+    score.setAttribute("class", "text-right");
     trhead.appendChild(score);
-    table.appendChild(trhead);
+    thead.appendChild(trhead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody")
 
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
@@ -166,12 +179,15 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
         trdata.appendChild(club);
         const time = document.createElement("td");
         time.textContent = timeWithStatusString(el);
+        time.setAttribute("class", "text-right");
         trdata.appendChild(time);
         const score = document.createElement("td");
         score.textContent = el.Points?.toString() ?? "";
+        score.setAttribute("class", "text-right");
         trdata.appendChild(score);
-        table.appendChild(trdata);
+        tbody.appendChild(trdata);
     }
+    table.appendChild(tbody);
     return table
 }
 
@@ -186,6 +202,7 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
     table.setAttribute("class", "table table-striped");
     table.setAttribute("id", "ResultsTable-"+x.ID.toString())
 
+    const thead = document.createElement("thead");
     const trhead = document.createElement("tr");
     const pos = document.createElement("th");
     pos.textContent = "Pos.";
@@ -199,12 +216,16 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
     const finish = document.createElement("th");
     finish.textContent = "Finish";
     trhead.appendChild(finish);
-    table.appendChild(trhead);
+    thead.appendChild(trhead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody")
 
     for (const el of x.ScoredCompetitionClass.Results) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupTeamResult)) {throw Error("Not WorldCupTeamResult")}
         const trdata = document.createElement("tr");
+        trdata.setAttribute("class", "team-result-full");
         const pos = document.createElement("td");
         pos.textContent = el.Place!.toString();
         trdata.appendChild(pos);
@@ -219,10 +240,11 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
         // finish.textContent = `${el.Contributors.length+el.NonContributors.length} competitors`
         finish.textContent = getTeamFinishesString(el);
         trdata.appendChild(finish);
-        table.appendChild(trdata);
+        tbody.appendChild(trdata);
 
         for (const member of el.Contributors) {
             const trdata = document.createElement("tr");
+            trdata.setAttribute("class", "team-result-member");
             const pos = document.createElement("td");
 
             trdata.appendChild(pos);
@@ -235,9 +257,10 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
             const finish = document.createElement("td");
             finish.textContent = timeWithStatusString(member);
             trdata.appendChild(finish);
-            table.appendChild(trdata);
+            tbody.appendChild(trdata);
         }
     }
+    table.appendChild(tbody);
     return table;
 }
 

@@ -344,6 +344,14 @@ export class WorldCupResult {
                 this.CompetitiveStatus = CompetitiveStatus.NC;
                 this.CodeCheckingStatus = CodeCheckingStatus.UNK;
                 break;
+            case "Disqualified":
+                this.CompetitiveStatus = CompetitiveStatus.DSQ;
+                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
+                break;
+            case "Overtime":
+                this.CompetitiveStatus = CompetitiveStatus.OVT;
+                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
+                break;
             default:
                 this.CompetitiveStatus = CompetitiveStatus.NC; 
                 this.CodeCheckingStatus = CodeCheckingStatus.UNK;
