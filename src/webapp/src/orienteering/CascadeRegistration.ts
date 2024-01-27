@@ -16,6 +16,7 @@ export class CascadeRegistrationCsv {
     Paid!: string;
     Owed!: number | null;
     Waiver!: string;
+    Rental?: string | null;
 }
 
 export function isCascadeRegistrationCsv(row:any): boolean | "group" {
