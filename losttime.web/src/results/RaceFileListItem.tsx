@@ -1,12 +1,12 @@
 import { Guid } from 'guid-typescript';
 import React from 'react';
 
-export type splitsByClassXmlMeta = {
+export type RaceFileListItemProps = {
     name: string,
     raceClasses: number,
   }
 
-export class SplitsByClassXml extends React.Component<splitsByClassXmlMeta, {}, any> {
+export class RaceFileListItem extends React.Component<RaceFileListItemProps, {}, any> {
 
   render () {
     return (

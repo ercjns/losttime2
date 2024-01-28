@@ -2,7 +2,7 @@ import React, { FormEvent } from 'react';
 import { PageTitle } from '../shared/PageTitle';
 import { BasicDz } from '../shared/dz';
 import { X2jOptionsOptional, XMLParser } from 'fast-xml-parser';
-import { SplitsByClassXml, splitsByClassXmlMeta } from './SplitsByClassXml';
+import { RaceFileListItem, RaceFileListItemProps } from './RaceFileListItem';
 import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
 import { Button, ButtonGroup, Collapse, Dropdown, DropdownButton, Form, Row} from 'react-bootstrap';
 import { CompetitionClass, CompetitionClassType, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
@@ -23,7 +23,7 @@ enum resultsOutputStyle {
 }
 
 type resultsBuilderState = {
-  filesprocessed: splitsByClassXmlMeta[],
+  filesprocessed: RaceFileListItemProps[],
   races: number,
   raceData: LtStaticRaceClassResult[]
   competitionClasses: CompetitionClass[],
@@ -88,7 +88,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     const resultsObj = parser.parse(await file.text());
 
     try {
-      const newfile: splitsByClassXmlMeta = {
+      const newfile: RaceFileListItemProps = {
         name: file.name,
         raceClasses: resultsObj.ResultList.ClassResult.length,
       };
@@ -372,7 +372,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
   render() {
 
     const fileInfo = this.state.filesprocessed.map((filemeta) =>
-      <SplitsByClassXml
+      <RaceFileListItem
         name={filemeta.name}
         raceClasses={filemeta.raceClasses}
       />
