@@ -38,9 +38,12 @@ function createCompHeader_CascadeOc(x:CompetitionClass[]) {
 
 
 function createCompClassOutput_CascadeOc(x:CompetitionClass) {
-    if (!x.ScoredCompetitionClass) {
-        throw new Error("Not ready to create HTML")
-    }
+    // TODO:
+    // Replace with check for any of Results_<possibleType>
+    // if (!x.ScoredCompetitionClass) {
+    //     throw new Error("Not ready to create HTML")
+    // }
+
 
     const wrap = document.createElement("div");
     wrap.setAttribute("class", "classResults lg-mrg-bottom")
@@ -49,7 +52,7 @@ function createCompClassOutput_CascadeOc(x:CompetitionClass) {
     h3.setAttribute("id", x.ID.toString())
     wrap.appendChild(h3);
 
-    switch (x.ScoredCompetitionClass.Type) {
+    switch (x.ResultsCreatedType) {
         case ScoredCompetitionClassType.Time:
             wrap.appendChild(TimeHtml_Indv(x));
             break;
@@ -76,7 +79,7 @@ function createCompClassOutput_CascadeOc(x:CompetitionClass) {
 }
 
 function TimeHtml_Indv(x:CompetitionClass) {
-    if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
+    if (!x.Results_Time || x.Results_Time.length === 0) {
         const emptydiv = document.createElement("div");
         emptydiv.textContent ="No results for this class";
         return emptydiv;
@@ -106,7 +109,7 @@ function TimeHtml_Indv(x:CompetitionClass) {
 
     const tbody = document.createElement("tbody")
 
-    for (const el of x.ScoredCompetitionClass.Results) {
+    for (const el of x.Results_Time) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
         const trdata = document.createElement("tr");
@@ -130,7 +133,7 @@ function TimeHtml_Indv(x:CompetitionClass) {
 }
 
 function WorldCupHtml_Indv(x:CompetitionClass) {
-    if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
+    if (!x.Results_WorldCup || x.Results_WorldCup.length === 0) {
         const emptydiv = document.createElement("div");
         emptydiv.textContent ="No results for this class";
         return emptydiv;
@@ -164,7 +167,7 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
 
     const tbody = document.createElement("tbody")
 
-    for (const el of x.ScoredCompetitionClass.Results) {
+    for (const el of x.Results_WorldCup) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupResult)) {throw Error("Not WorldCupResult")}
         const trdata = document.createElement("tr");
@@ -192,7 +195,7 @@ function WorldCupHtml_Indv(x:CompetitionClass) {
 }
 
 function WorldCupHtml_Teams(x:CompetitionClass) {
-    if (!x.ScoredCompetitionClass?.Results || x.ScoredCompetitionClass.Results.length === 0) {
+    if (!x.Results_WorldCupTeams || x.Results_WorldCupTeams.length === 0) {
         const emptydiv = document.createElement("div");
         emptydiv.textContent ="No results for this class";
         return emptydiv;
@@ -221,7 +224,7 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
 
     const tbody = document.createElement("tbody")
 
-    for (const el of x.ScoredCompetitionClass.Results) {
+    for (const el of x.Results_WorldCupTeams) {
         if (el === undefined) { continue; }
         if (!(el instanceof WorldCupTeamResult)) {throw Error("Not WorldCupTeamResult")}
         const trdata = document.createElement("tr");

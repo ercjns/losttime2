@@ -206,3 +206,13 @@ CocWinterLeauge.addClass({
     CompClassType: CompetitionClassType.OneRaceIndv,
     ScoreMethod: IndividualScoreMethod.PointsCocWorldCup
 })
+CocWinterLeauge.addClass({
+    Name: "Collegiate Varsity Teams",
+    ClassCodes: ["W8F", "W8M"],
+    CompClassType: CompetitionClassType.OneRaceTeam,
+    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
+        TeamScoreMethod.SumAllHighestWins,
+        TeamCollationMethod.ScoreThenCombine
+    )
+})
