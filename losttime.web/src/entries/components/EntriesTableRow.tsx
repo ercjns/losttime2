@@ -1,7 +1,7 @@
 import React from 'react';
-import { LtEntry } from '../../lt/Entry';
+import { LtEntry } from '../EntryFileParser';
 
-export class Entry extends React.Component<{value: LtEntry}, {}, {}> {
+export class EntriesTableRow extends React.Component<{value: LtEntry}, {}, {}> {
 
   render () {
   return (

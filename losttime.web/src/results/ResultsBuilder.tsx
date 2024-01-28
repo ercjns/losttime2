@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react';
-import { PageTitle } from '../PageTitle';
-import { BasicDz } from '../dz';
+import { PageTitle } from '../shared/PageTitle';
+import { BasicDz } from '../shared/dz';
 import { X2jOptionsOptional, XMLParser } from 'fast-xml-parser';
 import { SplitsByClassXml, splitsByClassXmlMeta } from './SplitsByClassXml';
 import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';

@@ -1,5 +1,5 @@
 import { Guid } from "guid-typescript";
-import { PersonResult } from "../../orienteering/IofResultXml";
+import { PersonResult } from "../shared/orienteeringtypes/IofResultXml";
 import { LtStaticRaceClassResult } from "./RaceResult";
 import { CocWorldCupScoreByPlace } from "./ScoreMethods";
 

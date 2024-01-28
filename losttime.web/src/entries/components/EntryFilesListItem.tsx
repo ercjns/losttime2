@@ -7,8 +7,7 @@ export type entryFileMeta = {
     empty: number
   }
 
-export class EntryFile extends React.Component<entryFileMeta, {}, any> {
-
+export class EntryFilesListItem extends React.Component<entryFileMeta, {}, any> {
   render () {
     if (this.props.failed > 0) {
       return <li>{this.props.name} (Found: {this.props.success}, Failed: {this.props.failed})</li>
@@ -16,5 +15,6 @@ export class EntryFile extends React.Component<entryFileMeta, {}, any> {
     return (
       <li>{this.props.name} (Found: {this.props.success})</li>
     )
+
   }
 }

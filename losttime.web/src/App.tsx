@@ -1,9 +1,9 @@
 import './App.css';
 import { Switch, Route } from 'react-router-dom';
 import { Col, Container} from 'react-bootstrap';
-import { Header } from './components/Header';
-import { EntryProcessor } from './components/PreEvent/EntryProcessor';
-import { ResultsBuilder } from './components/PostEvent/ResultsBuilder';
+import { Header } from './shared/Header';
+import { EntryProcessor } from './entries/EntryProcessor';
+import { ResultsBuilder } from './results/ResultsBuilder';
 
 
 function App() {

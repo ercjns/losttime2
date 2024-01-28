@@ -1,5 +1,5 @@
-import { isWiolEntryCsv, WiolEntryCsv } from "../orienteering/WiolEntry"
-import { CascadeRegistrationCsv, isCascadeRegistrationCsv } from "../orienteering/CascadeRegistration"
+import { isWiolEntryCsv, WiolEntryCsv } from "../shared/orienteeringtypes/CascadeWiolRegisration"
+import { CascadeRegistrationCsv, isCascadeRegistrationCsv } from "../shared/orienteeringtypes/CascadeRegistration"
 
 export type ParseResult = {
     data: LtEntry[],

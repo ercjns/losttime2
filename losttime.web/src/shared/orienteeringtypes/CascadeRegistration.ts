@@ -21,7 +21,6 @@ export class CascadeRegistrationCsv {
 
 export function isCascadeRegistrationCsv(row:any): boolean | "group" {
     if (
-        // Object.keys(row).length === 14 &&
         'FirstName' in row &&
         'LastName' in row &&
         'Email' in row &&

@@ -1,4 +1,4 @@
-import { LtEntry } from "../lt/Entry";
+import { LtEntry } from "./EntryFileParser";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
 

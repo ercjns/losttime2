@@ -1,4 +1,6 @@
 export class WiolEntryCsv {
+    // Keys here must match the exact key names in the csv file
+    // Datatypes here are can only be string, number, or null.
     "Bib"!: number;
     "SI Card"!: string;
     Rental!: "X" | null;

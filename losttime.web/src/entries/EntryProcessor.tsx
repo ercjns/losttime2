@@ -1,14 +1,14 @@
 import React from 'react';
 import Papa from 'papaparse';
 import { Button, ButtonGroup, ButtonToolbar, Col, Dropdown, DropdownButton, Form, FormControl, Row } from 'react-bootstrap';
-import { BasicDz } from '../dz';
-import * as SS from '../../orienteering/SportSoftware'
-import { LtEntry, parseEnties } from '../../lt/Entry';
-import { PageTitle } from '../PageTitle';
-import {Entry} from './Entry';
-import {EntryFile, entryFileMeta} from './EntryFile';
-import { RegistrationClassCount } from './RegistrationClassCount';
-import { buildCheckInPdf } from '../../orienteering/RegistrationCheckinPdf';
+import { BasicDz } from '../shared/dz';
+import * as SS from '../shared/orienteeringtypes/SportSoftware'
+import { LtEntry, parseEnties } from './EntryFileParser';
+import { PageTitle } from '../shared/PageTitle';
+import {EntriesTableRow} from './components/EntriesTableRow';
+import {EntryFilesListItem, entryFileMeta} from './components/EntryFilesListItem';
+import { EntriesByClassItem } from './components/EntriesByClassItem';
+import { buildCheckInPdf } from './RegistrationCheckinPdf';
 
 type myformstate = {
     filesprocessed: entryFileMeta[],
@@ -116,7 +116,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
     render() {
       const entries = (this.state.entries.length > 0) ? 
         this.state.entries.map((entry) =>
-        <Entry 
+        <EntriesTableRow 
           value={entry}
         />) :
         <tr>
@@ -127,7 +127,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       ;
   
       const files = this.state.filesprocessed.map((filemeta) =>
-        <EntryFile
+        <EntryFilesListItem
           name={filemeta.name}
           success={filemeta.success}
           failed={filemeta.failed}
@@ -150,7 +150,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       const regmeta = Object.entries(regclasshist);
   
       const counts = regmeta.sort((a, b) => a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase())).map((regclass) => 
-      <RegistrationClassCount
+      <EntriesByClassItem
         classname={regclass[0]}
         regcount={regclass[1]}
       />

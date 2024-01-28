@@ -1,4 +1,4 @@
-import { LtEntry } from "../lt/Entry";
+import { LtEntry } from "../../entries/EntryFileParser";
 
 export type OeEntryCsv = {
     Stno: number,
