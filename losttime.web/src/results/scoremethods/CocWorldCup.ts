@@ -1,5 +1,29 @@
-import { CodeCheckingStatus, CompetitiveStatus, WorldCupResult, WorldCupResultsForClub, WorldCupTeamResult } from "../CompetitionClass";
+import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
+import { WorldCupResultsForClub, WorldCupTeamResult } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
+import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
+
+export class WorldCupResult {
+    Raw: PersonResult;
+    Name: string;
+    Club?: string;
+    Time?: number;
+    Points?: number;
+    Place?: number;
+    CodeCheckingStatus!: CodeCheckingStatus;
+    CompetitiveStatus!: CompetitiveStatus;
+
+    constructor(raceResult:PersonResult) {
+        this.Raw = raceResult;
+        this.Name = (raceResult.Person.Name.Given + " " + raceResult.Person.Name.Family).trim();
+        this.Club = raceResult.Organisation.ShortName;
+        this.Time = raceResult.Result.Time;
+        const statuses = iofStatusParser(this.Raw.Result.Status)
+        this.CodeCheckingStatus = statuses.CodeCheckingStatus;
+        this.CompetitiveStatus = statuses.CompetitiveStatus;
+    }
+}
+
 
 
 function CocWorldCupScoreByPlace(place:number):number {
@@ -85,7 +109,7 @@ export function WorldCupScoring_assignPoints(res:WorldCupResult[]):WorldCupResul
     // For COMP/(MSP,DNF,UNK) - no place, assign 0 points.
     // For (OVT,SWD)/(ANY) - no place, assign 0 points.
     // All others get no place and no points.
-    res.sort((a,b) => WorldCupResultComparer(a,b));
+    res.sort(WorldCupResultComparer);
     res.forEach((result, index, arr) => {
         if (index === 0) {
             if (result.CompetitiveStatus !== CompetitiveStatus.COMP) {

@@ -568,7 +568,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
                 <option value={IndividualScoreMethod.Time}>Time: No Additional Points/Scores</option>
                 {/* <option value={IndividualScoreMethod.Points1kScottish}>1000pts Ratio to Winner / Scottish</option> */}
                 <option value={IndividualScoreMethod.PointsCocWorldCup}>COC Winter League (100,95,92,90,...)</option>
-                {/* <option value={IndividualScoreMethod.PointsOusaAverageWinningTime}>OUSA Scholastic Average Winning Time points</option> */}
+                <option value={IndividualScoreMethod.PointsOusaAverageWinningTime}>OUSA Scholastic Average Winning Time points</option>
                 {/* <option value={IndividualScoreMethod.AlphaWithoutTimes}>Alpha: Remove times and status. List participants</option> */}
               </Form.Select>
             </Form.Group>

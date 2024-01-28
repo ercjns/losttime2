@@ -1,22 +1,7 @@
 import { Guid } from "guid-typescript";
-import { PersonResult } from "../shared/orienteeringtypes/IofResultXml";
 import { LtStaticRaceClassResult } from "./RaceResult";
-import { WorldCupResultComparer, WorldCupScoring_Indv, WorldCupTeamScoring_assignPlaces, groupByClub } from "./scoremethods/CocWorldCup";
-
-export enum CodeCheckingStatus {
-    FIN,
-    MSP,
-    DNF,
-    UNK
-}
-
-export enum CompetitiveStatus {
-    COMP,
-    SWD,
-    OVT,
-    NC,
-    DSQ
-}
+import { WorldCupResult, WorldCupResultComparer, WorldCupScoring_Indv, WorldCupTeamScoring_assignPlaces, groupByClub } from "./scoremethods/CocWorldCup";
+import { OusaAvgWinTimeResult, OusaAvgWinTimeScoring_Indv } from "./scoremethods/OusaAwt";
 
 export enum IndividualScoreMethod {
     AlphaWithoutTimes = -2,
@@ -69,6 +54,7 @@ export class CompetitionClass {
     Results_WorldCup?: WorldCupResult[];
     Results_Temp_WorldCupTeams?: WorldCupResult[];
     Results_WorldCupTeams?: WorldCupTeamResult[];
+    Results_OusaAvgWinTime?: OusaAvgWinTimeResult[];
 
     constructor() {
         this.ID = Guid.create();
@@ -105,13 +91,28 @@ export class CompetitionClass {
             }
             else if (this.ScoreMethod===IndividualScoreMethod.Time) {
                 // TODO:
-                // need to adjust this so that we actually get a Time result
+                // need to adjust this so that we actually get a Time result type object
                 this.Results_WorldCup = WorldCupScoring_Indv(this.RaceResults)
                 this.Results_Time = this.Results_WorldCup;
                 this.Results_Time.forEach(x => x.Points = undefined);
                 this.Results_WorldCup = undefined;
                 this.ResultsCreatedTime = new Date();
                 this.ResultsCreatedType = ScoredCompetitionClassType.Time;
+            } 
+            else if (this.ScoreMethod===IndividualScoreMethod.PointsOusaAverageWinningTime) {
+                // TODO: POPULATE THE COMPLEMENT CLASS.
+                // THIS IS INCOMPLETE!
+                // CAUTION 
+                // CAUTION!
+                // CAUTION
+                // CAUTION!
+                // THIS LIKELY HAS TO HAPPEN IN RESULTS BUILDER NOT HERE
+                this.Results_OusaAvgWinTime = OusaAvgWinTimeScoring_Indv(this.RaceResults, this.ComplementRaceResults)
+                this.ResultsCreatedTime = new Date();
+                this.ResultsCreatedType = ScoredCompetitionClassType.OusaAvgWinTime
+            }
+            else {
+                throw Error("Score method not implemented")
             }
         }
         
@@ -190,57 +191,6 @@ export class WorldCupTeamResult {
     }
 }
 
-export class WorldCupResult {
-    Raw: PersonResult;
-    Name: string;
-    Club?: string;
-    Time?: number;
-    Points?: number;
-    Place?: number;
-    CodeCheckingStatus!: CodeCheckingStatus;
-    CompetitiveStatus!: CompetitiveStatus;
-
-    constructor(raceResult:PersonResult) {
-        this.Raw = raceResult;
-        this.Name = (raceResult.Person.Name.Given + " " + raceResult.Person.Name.Family).trim();
-        this.Club = raceResult.Organisation.ShortName;
-        this.Time = raceResult.Result.Time;
-        this.setCompStatus();
-    }
-
-    private setCompStatus () {
-        switch (this.Raw.Result.Status) {
-            case "OK":
-                this.CompetitiveStatus = CompetitiveStatus.COMP;
-                this.CodeCheckingStatus = CodeCheckingStatus.FIN;
-                break;
-            case "DidNotFinish":
-                this.CompetitiveStatus = CompetitiveStatus.COMP;
-                this.CodeCheckingStatus = CodeCheckingStatus.DNF;
-                break;
-            case "MissingPunch":
-                this.CompetitiveStatus = CompetitiveStatus.COMP;
-                this.CodeCheckingStatus = CodeCheckingStatus.MSP;
-                break;
-            case "NotCompeting":
-                this.CompetitiveStatus = CompetitiveStatus.NC;
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-            case "Disqualified":
-                this.CompetitiveStatus = CompetitiveStatus.DSQ;
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-            case "Overtime":
-                this.CompetitiveStatus = CompetitiveStatus.OVT;
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-            default:
-                this.CompetitiveStatus = CompetitiveStatus.NC; 
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-        }
-    }
-}
 
 export type WorldCupResultsForClub = {
     "club": string|undefined,
