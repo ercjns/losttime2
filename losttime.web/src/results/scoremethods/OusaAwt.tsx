@@ -39,7 +39,7 @@ export class OusaAvgWinTimeResult {
 
 export function OusaAvgWinTimeScoring_Indv(
     raceResults:LtStaticRaceClassResult[],
-    complementRaceResults:LtStaticRaceClassResult[]=[]
+    pairedRaceResults:LtStaticRaceClassResult[]=[]
     ):OusaAvgWinTimeResult[] {
     
     // transform into native type
@@ -49,22 +49,22 @@ export function OusaAvgWinTimeScoring_Indv(
         results.push(...race.PersonResults.map(x => new OusaAvgWinTimeResult(x)))
     }
 
-    let complementResults: OusaAvgWinTimeResult[] = []
-    for (const race of complementRaceResults) {
+    let pairedResults: OusaAvgWinTimeResult[] = []
+    for (const race of pairedRaceResults) {
         if (race.PersonResults.length === undefined) {continue;}
-        complementResults.push(...race.PersonResults.map(x => new OusaAvgWinTimeResult(x)))
+        pairedResults.push(...race.PersonResults.map(x => new OusaAvgWinTimeResult(x)))
     }
 
-    // Calulate the AWT for this class and the complement class
+    // Calulate the AWT for this class and the paired class
     const classAWT = CalcAwtForClass(results);
-    let complementAWT = CalcAwtForClass(complementResults)
+    let pairedClassAWT = CalcAwtForClass(pairedResults)
 
     if (!classAWT) {
         // no valid results, so just return what we've got so far
         return results;
-    } else if (!complementAWT) {
-        // no complement results, continue as if there's no complement class
-        complementAWT = classAWT;
+    } else if (!pairedClassAWT) {
+        // no paired results, continue as if there's no paired class
+        pairedClassAWT = classAWT;
     }
 
     // HARD CODE THREE HOURS TIME LIMIT
@@ -75,7 +75,7 @@ export function OusaAvgWinTimeScoring_Indv(
     //     10+[60*(course time limit)/ (AWT for the male class)] 
     //     10+[60*(course time limit)/ (AWT for the female class)]
     const thisClassInvalidScore = 10 + (60 * TIME_LIMIT / classAWT)
-    const otherClassInvalidScore = 10 + (60 * TIME_LIMIT / complementAWT)
+    const otherClassInvalidScore = 10 + (60 * TIME_LIMIT / pairedClassAWT)
     const invalidResultScore = Math.max(thisClassInvalidScore, otherClassInvalidScore)
 
     // Assign points to competitors

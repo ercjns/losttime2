@@ -41,7 +41,7 @@ export enum ScoredCompetitionClassType {
 export class CompetitionClass {
     ID: Guid;
     RaceResults!: LtStaticRaceClassResult[];
-    ComplementRaceResults!: LtStaticRaceClassResult[];
+    PairedRaceResults!: LtStaticRaceClassResult[];
     Name!: string;
     IsMultiRace!: boolean; //compute based on RaceResults?
     IsTeamClass!: boolean;
@@ -59,13 +59,6 @@ export class CompetitionClass {
     constructor() {
         this.ID = Guid.create();
     }
-
-    findRaceResults() {
-        // loop through the template class codes
-        // add any race results that are supposed to be here.
-        // from... the loaded race results, which maybe are passed in?
-        return;
-    };
 
     readyToScore() : Boolean {
         // are there race results
@@ -100,14 +93,7 @@ export class CompetitionClass {
                 this.ResultsCreatedType = ScoredCompetitionClassType.Time;
             } 
             else if (this.ScoreMethod===IndividualScoreMethod.PointsOusaAverageWinningTime) {
-                // TODO: POPULATE THE COMPLEMENT CLASS.
-                // THIS IS INCOMPLETE!
-                // CAUTION 
-                // CAUTION!
-                // CAUTION
-                // CAUTION!
-                // THIS LIKELY HAS TO HAPPEN IN RESULTS BUILDER NOT HERE
-                this.Results_OusaAvgWinTime = OusaAvgWinTimeScoring_Indv(this.RaceResults, this.ComplementRaceResults)
+                this.Results_OusaAvgWinTime = OusaAvgWinTimeScoring_Indv(this.RaceResults, this.PairedRaceResults)
                 this.ResultsCreatedTime = new Date();
                 this.ResultsCreatedType = ScoredCompetitionClassType.OusaAvgWinTime
             }

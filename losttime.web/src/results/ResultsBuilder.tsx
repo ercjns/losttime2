@@ -14,6 +14,7 @@ import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 import { Guid } from 'guid-typescript';
+import { CocWinterLeaugeTestingJN } from './competitionpresets/preset_JNtesting';
 
 
 enum resultsOutputStyle {
@@ -191,6 +192,20 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     }
   }
 
+  private getRaceClassResultsFromClassCodes(classCodes:string[]): LtStaticRaceClassResult[] {
+    // takes a set of class codes like ["W2F", "W2M"]
+    // returns all the LtStaticRaceClassResults in a flat list.
+    let results:LtStaticRaceClassResult[] = [];
+    for (const raceClassId of classCodes.flatMap(x =>
+      this.getRaceClassesByClassCode(x))) {
+      const data = this.getRaceDataForRaceClassById(raceClassId)
+      if (data && data.PersonResults.length > 0) {
+        results.push(data);
+      }
+    }
+    return results;
+  }
+
   private getRaceClassesByClassCode(classCode:string):string[] {
     // takes a string class code like "W2F" or "1"
     // returns an array of IDs for all race classes with that exaxtly match that class code
@@ -220,7 +235,9 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
   }
 
   loadPreset() {
-    CocWinterLeauge.Classes.forEach(preset =>
+    // CocWinterLeauge.Classes.forEach(preset =>
+    //   this.addSingleCompetitionClassFromPreset(preset));
+    CocWinterLeaugeTestingJN.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));
     return;
   }
@@ -229,6 +246,16 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     let newCompClass = new CompetitionClass();
     newCompClass.Name = CompClassParams.Name
 
+    // get the race data
+    newCompClass.RaceResults = this.getRaceClassResultsFromClassCodes(CompClassParams.ClassCodes)
+
+    // get paired race data if specified
+    if (CompClassParams.PairedClassCodes) {
+      newCompClass.PairedRaceResults = this.getRaceClassResultsFromClassCodes(CompClassParams.PairedClassCodes);
+    }
+
+    // define the score method
+    newCompClass.ScoreMethod = CompClassParams.ScoreMethod;
     switch (CompClassParams.CompClassType as CompetitionClassType) {
       case CompetitionClassType.OneRaceIndv:
         newCompClass.IsMultiRace = false;
@@ -249,17 +276,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         break;
     }
 
-    let raceData:LtStaticRaceClassResult[] = [];
-    for (const raceClassId of CompClassParams.ClassCodes.flatMap(x =>
-      this.getRaceClassesByClassCode(x))) {
-      const data = this.getRaceDataForRaceClassById(raceClassId)
-      if (data && data.PersonResults.length > 0) {
-        raceData.push(data);
-      }
-    }
-    newCompClass.RaceResults = raceData;
-    newCompClass.ScoreMethod = CompClassParams.ScoreMethod;
-
     // score it!
     newCompClass.computeScores();
 
@@ -268,13 +284,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       competitionClasses: [...prevstate.competitionClasses, newCompClass]
     }));
 
-
-    // option 2: this function updates the state and calls the existing functions
-    // this seems cleaner (re-use existing code)
-    // but also more dangerous (messing with form fields gets out of sync?)
-
-    // option 3: maybe some hybrid?
-    
     return;
   }
   
