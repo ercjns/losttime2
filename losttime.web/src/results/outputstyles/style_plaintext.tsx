@@ -1,4 +1,4 @@
-import { CompetitionClass, ScoredCompetitionClassType, WorldCupResult } from "../CompetitionClass";
+import { CompetitionClass, ScoredCompetitionClassType } from "../CompetitionClass";
 
 export function createCompClassDocument_plaintext(x:CompetitionClass) {
     if (x.ResultsCreatedType === ScoredCompetitionClassType.CocWorldCup) {

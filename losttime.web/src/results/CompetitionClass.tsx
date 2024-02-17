@@ -1,22 +1,7 @@
 import { Guid } from "guid-typescript";
-import { PersonResult } from "../shared/orienteeringtypes/IofResultXml";
 import { LtStaticRaceClassResult } from "./RaceResult";
-import { WorldCupResultComparer, WorldCupScoring_Indv, WorldCupTeamScoring_assignPlaces, groupByClub } from "./scoremethods/CocWorldCup";
-
-export enum CodeCheckingStatus {
-    FIN,
-    MSP,
-    DNF,
-    UNK
-}
-
-export enum CompetitiveStatus {
-    COMP,
-    SWD,
-    OVT,
-    NC,
-    DSQ
-}
+import { WorldCupResult, WorldCupResultComparer, WorldCupScoring_Indv, WorldCupTeamScoring_assignPlaces, WorldCupScoring_groupByClub, WorldCupTeamResult } from "./scoremethods/CocWorldCup";
+import { OusaAvgWinTimeResult, OusaAvgWinTimeScoring_GroupByClub, OusaAvgWinTimeScoring_Indv, OusaAvgWinTimeTeamResult, OusaAvgWinTimeTeamScoring_AssignPlaces } from "./scoremethods/OusaAwt";
 
 export enum IndividualScoreMethod {
     AlphaWithoutTimes = -2,
@@ -29,7 +14,8 @@ export enum IndividualScoreMethod {
 
 export enum TeamScoreMethod {
     SumAllHighestWins,
-    SumAllLowestWins
+    SumAllLowestWins,
+    SumMinLowestWins
 }
 
 export enum TeamCollationMethod {
@@ -56,7 +42,7 @@ export enum ScoredCompetitionClassType {
 export class CompetitionClass {
     ID: Guid;
     RaceResults!: LtStaticRaceClassResult[];
-    ComplementRaceResults!: LtStaticRaceClassResult[];
+    PairedRaceResults!: LtStaticRaceClassResult[];
     Name!: string;
     IsMultiRace!: boolean; //compute based on RaceResults?
     IsTeamClass!: boolean;
@@ -69,17 +55,13 @@ export class CompetitionClass {
     Results_WorldCup?: WorldCupResult[];
     Results_Temp_WorldCupTeams?: WorldCupResult[];
     Results_WorldCupTeams?: WorldCupTeamResult[];
+    Results_OusaAvgWinTime?: OusaAvgWinTimeResult[];
+    Results_Temp_OusaAvgWinTimeTeams?: OusaAvgWinTimeResult[];
+    Results_OusaAvgWinTimeTeams?: OusaAvgWinTimeTeamResult[];
 
     constructor() {
         this.ID = Guid.create();
     }
-
-    findRaceResults() {
-        // loop through the template class codes
-        // add any race results that are supposed to be here.
-        // from... the loaded race results, which maybe are passed in?
-        return;
-    };
 
     readyToScore() : Boolean {
         // are there race results
@@ -105,146 +87,118 @@ export class CompetitionClass {
             }
             else if (this.ScoreMethod===IndividualScoreMethod.Time) {
                 // TODO:
-                // need to adjust this so that we actually get a Time result
+                // need to adjust this so that we actually get a Time result type object
                 this.Results_WorldCup = WorldCupScoring_Indv(this.RaceResults)
                 this.Results_Time = this.Results_WorldCup;
                 this.Results_Time.forEach(x => x.Points = undefined);
                 this.Results_WorldCup = undefined;
                 this.ResultsCreatedTime = new Date();
                 this.ResultsCreatedType = ScoredCompetitionClassType.Time;
+            } 
+            else if (this.ScoreMethod===IndividualScoreMethod.PointsOusaAverageWinningTime) {
+                this.Results_OusaAvgWinTime = OusaAvgWinTimeScoring_Indv(this.RaceResults, this.PairedRaceResults)
+                this.ResultsCreatedTime = new Date();
+                this.ResultsCreatedType = ScoredCompetitionClassType.OusaAvgWinTime
+            }
+            else {
+                throw Error("Score method not implemented")
             }
         }
         
         // Single Race, Teams
         if (!this.IsMultiRace && this.IsTeamClass) {
-            // do individual scoring things first
-            if (this.ScoreMethod===IndividualScoreMethod.PointsCocWorldCup) {
-                if (this.ScoreMethod_Team?.Collation===TeamCollationMethod.ScoreThenCombine) {
+            if (this.ScoreMethod_Team === undefined) {
+                throw new Error("No Team Score Method for Team Competition Class")
+            } 
+
+            else if (this.ScoreMethod===IndividualScoreMethod.PointsCocWorldCup) {
+                // COC World Cup Teams
+                if (this.ScoreMethod_Team.Collation===TeamCollationMethod.ScoreThenCombine) {
                     this.Results_Temp_WorldCupTeams = WorldCupScoring_Indv(this.RaceResults, true, true)
                 } else {
                     this.Results_Temp_WorldCupTeams = WorldCupScoring_Indv(this.RaceResults, true, false)
                 }
-            } else {
+
+                if (this.Results_Temp_WorldCupTeams === undefined) {throw Error("No results - HANDLE THIS CASE IN THE FUTURE")}
+                
+                let teams = WorldCupScoring_groupByClub(this.Results_Temp_WorldCupTeams);
+
+                let res:WorldCupTeamResult[] = []
+                teams.forEach((x) => {
+                    if (x.raw.length >= this.ScoreMethod_Team!.MinimumResults) {
+                        res.push(new WorldCupTeamResult(x.raw, this.ScoreMethod_Team!))
+                    }
+                });
+    
+                let placed:WorldCupTeamResult[] = []
+                if (this.ScoreMethod_Team?.ScoreMethod===TeamScoreMethod.SumAllHighestWins) {
+                    placed = WorldCupTeamScoring_assignPlaces(res)
+                } else {
+                    throw Error("Haven't yet implemented other team score methods")
+                }
+                
+                this.Results_WorldCupTeams = placed;
+                this.ResultsCreatedTime = new Date();
+                this.ResultsCreatedType = ScoredCompetitionClassType.CocWorldCupTeams;
+                return;
+            } 
+            else if (this.ScoreMethod === IndividualScoreMethod.PointsOusaAverageWinningTime) {
+                // AWT Teams for OUSA IS/IC Competition
+                // this.RaceResults has results from both M and F classes
+                // Teams are co-ed but classes are individual.
+                // Need to split out classes to score individually.
+
+                const classes = this.RaceResults.flatMap(x => x.Class);
+
+                if (classes.length !== 2) {
+                    if (classes.length === 0) {
+                        // no results
+                        this.Results_OusaAvgWinTimeTeams = undefined;
+                        this.Results_OusaAvgWinTime = undefined;
+                        this.ResultsCreatedTime = new Date();
+                        this.ResultsCreatedType = ScoredCompetitionClassType.OusaAvgWinTimeTeams;
+                        return;
+                    } else if (classes.length === 1) {
+                        // only results in M OR F, not yet both.
+                        this.Results_OusaAvgWinTime = OusaAvgWinTimeScoring_Indv(this.RaceResults)
+                    } else {
+                        // three or more? something's messed up.
+                        console.log(classes);
+                        throw Error("Gotta be exactly 2 classes for AWT Team scoring.")
+                    }
+                } else {
+                    // there are M and F classes, unknown order, so just a and b:
+                    const a = this.RaceResults.filter(x => x.Class === classes[0]);
+                    const b = this.RaceResults.filter(x => x.Class === classes[1]);
+    
+                    // score a with b as the paired class
+                    this.Results_OusaAvgWinTime = OusaAvgWinTimeScoring_Indv(a, b);
+                    // score b with a as the paired class, add those results to the mix
+                    this.Results_OusaAvgWinTime.push(...OusaAvgWinTimeScoring_Indv(b, a));
+                }
+                
+                let teams = OusaAvgWinTimeScoring_GroupByClub(this.Results_OusaAvgWinTime);
+
+                let res:OusaAvgWinTimeTeamResult[] = []
+                teams.forEach((x) => {
+                    res.push(new OusaAvgWinTimeTeamResult(x.raw, this.ScoreMethod_Team!))
+                });
+    
+                let placed = OusaAvgWinTimeTeamScoring_AssignPlaces(res);
+                
+                this.Results_OusaAvgWinTimeTeams = placed;
+                this.Results_OusaAvgWinTime = undefined;
+                this.ResultsCreatedTime = new Date();
+                this.ResultsCreatedType = ScoredCompetitionClassType.OusaAvgWinTimeTeams;
+                return;
+
+            }
+            else {
                 throw Error("Not sure how to do teams with individuals other than World Cup scoring")
             }
-            
-            // now do team scoring things
-            if (this.ScoreMethod_Team === undefined) {
-                throw new Error("No Team Score Method for Team Competition Class")
-            }
-
-            if (this.Results_Temp_WorldCupTeams === undefined) {throw Error("No results - HANDLE THIS CASE IN THE FUTURE")}
-
-            let teams = groupByClub(this.Results_Temp_WorldCupTeams);
-
-            let res:WorldCupTeamResult[] = []
-            teams.forEach((x) => {
-                if (x.raw.length >= this.ScoreMethod_Team!.MinimumResults) {
-                    res.push(new WorldCupTeamResult(x.raw, this.ScoreMethod_Team!))
-                }
-            });
-
-            let placed:WorldCupTeamResult[] = []
-            if (this.ScoreMethod_Team?.ScoreMethod===TeamScoreMethod.SumAllHighestWins) {
-                placed = WorldCupTeamScoring_assignPlaces(res)
-            } else {
-                throw Error("Haven't yet implemented other team score methods")
-            }
-
-            this.Results_WorldCupTeams = placed;
-            this.ResultsCreatedTime = new Date();
-            this.ResultsCreatedType = ScoredCompetitionClassType.CocWorldCupTeams;
         }
         return;
     }
-}
-
-export class WorldCupTeamResult {
-    TeamName: string;
-    TeamShortName: string;
-    Points: number;
-    Place?: number;
-    Contributors: WorldCupResult[];
-    NonContributors: WorldCupResult[];
-
-    constructor(teammates:WorldCupResult[], scoring:TeamScoreMethodDefinition) {
-        if (teammates.length === 0) {
-            throw Error("can't create a team result with no teammates");
-        }
-        this.TeamName = teammates[0].Club ?? "";
-        this.TeamShortName = teammates[0].Club ?? "";
-        if (scoring.ScoreMethod === TeamScoreMethod.SumAllHighestWins) {
-            teammates.sort(WorldCupResultComparer);
-            const maxContribThisTeam = teammates.findIndex((x) => x.Points === undefined);
-            const contributorsSlice = maxContribThisTeam === -1 ? 
-                scoring.MaximumResults : Math.min(scoring.MaximumResults, maxContribThisTeam);
-            this.Contributors = teammates.slice(0,contributorsSlice);
-            this.NonContributors = teammates.slice(contributorsSlice);
-            this.Points = this.Contributors.reduce(
-                (total, contributor) => total + (contributor.Points ?? 0),
-                0
-            )
-        } else {
-            throw Error("score method doesn't make sense for World Cup")
-        }
-    }
-}
-
-export class WorldCupResult {
-    Raw: PersonResult;
-    Name: string;
-    Club?: string;
-    Time?: number;
-    Points?: number;
-    Place?: number;
-    CodeCheckingStatus!: CodeCheckingStatus;
-    CompetitiveStatus!: CompetitiveStatus;
-
-    constructor(raceResult:PersonResult) {
-        this.Raw = raceResult;
-        this.Name = (raceResult.Person.Name.Given + " " + raceResult.Person.Name.Family).trim();
-        this.Club = raceResult.Organisation.ShortName;
-        this.Time = raceResult.Result.Time;
-        this.setCompStatus();
-    }
-
-    private setCompStatus () {
-        switch (this.Raw.Result.Status) {
-            case "OK":
-                this.CompetitiveStatus = CompetitiveStatus.COMP;
-                this.CodeCheckingStatus = CodeCheckingStatus.FIN;
-                break;
-            case "DidNotFinish":
-                this.CompetitiveStatus = CompetitiveStatus.COMP;
-                this.CodeCheckingStatus = CodeCheckingStatus.DNF;
-                break;
-            case "MissingPunch":
-                this.CompetitiveStatus = CompetitiveStatus.COMP;
-                this.CodeCheckingStatus = CodeCheckingStatus.MSP;
-                break;
-            case "NotCompeting":
-                this.CompetitiveStatus = CompetitiveStatus.NC;
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-            case "Disqualified":
-                this.CompetitiveStatus = CompetitiveStatus.DSQ;
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-            case "Overtime":
-                this.CompetitiveStatus = CompetitiveStatus.OVT;
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-            default:
-                this.CompetitiveStatus = CompetitiveStatus.NC; 
-                this.CodeCheckingStatus = CodeCheckingStatus.UNK;
-                break;
-        }
-    }
-}
-
-export type WorldCupResultsForClub = {
-    "club": string|undefined,
-    "raw": WorldCupResult[]
 }
 
 class MultiEventScoreMethodDefinition {

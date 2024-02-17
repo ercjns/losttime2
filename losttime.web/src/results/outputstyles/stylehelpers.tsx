@@ -1,6 +1,7 @@
 import { html_beautify } from 'js-beautify';
-import { CodeCheckingStatus, CompetitiveStatus, WorldCupResult } from '../CompetitionClass';
 import _ClubCodes from '../competitionpresets/ClubCodes.json'
+import { CodeCheckingStatus, CompetitiveStatus } from '../scoremethods/IofStatusParser';
+import { WorldCupResult } from '../scoremethods/CocWorldCup';
 const ClubCodes = _ClubCodes as ClubCodeLookup[]
 
 export function stringify_html(html:HTMLDivElement) {

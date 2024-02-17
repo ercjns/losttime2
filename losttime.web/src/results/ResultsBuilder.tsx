@@ -12,8 +12,9 @@ import { createOutputDoc_CascadeOc } from './outputstyles/style_cascadeoc';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
-import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 import { Guid } from 'guid-typescript';
+import { CocWinterLeaugeTestingJN } from './competitionpresets/preset_JNtesting';
+import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 
 
 enum resultsOutputStyle {
@@ -191,6 +192,20 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     }
   }
 
+  private getRaceClassResultsFromClassCodes(classCodes:string[]): LtStaticRaceClassResult[] {
+    // takes a set of class codes like ["W2F", "W2M"]
+    // returns all the LtStaticRaceClassResults in a flat list.
+    let results:LtStaticRaceClassResult[] = [];
+    for (const raceClassId of classCodes.flatMap(x =>
+      this.getRaceClassesByClassCode(x))) {
+      const data = this.getRaceDataForRaceClassById(raceClassId)
+      if (data && data.PersonResults.length > 0) {
+        results.push(data);
+      }
+    }
+    return results;
+  }
+
   private getRaceClassesByClassCode(classCode:string):string[] {
     // takes a string class code like "W2F" or "1"
     // returns an array of IDs for all race classes with that exaxtly match that class code
@@ -219,9 +234,14 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     return raceData;
   }
 
-  loadPreset() {
-    CocWinterLeauge.Classes.forEach(preset =>
+  loadPreset(presetName:string) {
+    if (presetName == 'COCWL2324') {
+      CocWinterLeauge.Classes.forEach(preset =>
+      this.addSingleCompetitionClassFromPreset(preset));  
+    } else if (presetName == 'COCWL2324_JNTEST') {
+      CocWinterLeaugeTestingJN.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));
+    }
     return;
   }
 
@@ -229,6 +249,16 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     let newCompClass = new CompetitionClass();
     newCompClass.Name = CompClassParams.Name
 
+    // get the race data
+    newCompClass.RaceResults = this.getRaceClassResultsFromClassCodes(CompClassParams.ClassCodes)
+
+    // get paired race data if specified
+    if (CompClassParams.PairedClassCodes) {
+      newCompClass.PairedRaceResults = this.getRaceClassResultsFromClassCodes(CompClassParams.PairedClassCodes);
+    }
+
+    // define the score method
+    newCompClass.ScoreMethod = CompClassParams.ScoreMethod;
     switch (CompClassParams.CompClassType as CompetitionClassType) {
       case CompetitionClassType.OneRaceIndv:
         newCompClass.IsMultiRace = false;
@@ -249,17 +279,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         break;
     }
 
-    let raceData:LtStaticRaceClassResult[] = [];
-    for (const raceClassId of CompClassParams.ClassCodes.flatMap(x =>
-      this.getRaceClassesByClassCode(x))) {
-      const data = this.getRaceDataForRaceClassById(raceClassId)
-      if (data && data.PersonResults.length > 0) {
-        raceData.push(data);
-      }
-    }
-    newCompClass.RaceResults = raceData;
-    newCompClass.ScoreMethod = CompClassParams.ScoreMethod;
-
     // score it!
     newCompClass.computeScores();
 
@@ -268,13 +287,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       competitionClasses: [...prevstate.competitionClasses, newCompClass]
     }));
 
-
-    // option 2: this function updates the state and calls the existing functions
-    // this seems cleaner (re-use existing code)
-    // but also more dangerous (messing with form fields gets out of sync?)
-
-    // option 3: maybe some hybrid?
-    
     return;
   }
   
@@ -448,7 +460,9 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         <hr />
         <div>
           Scoring Presets:
-          <Button id="scoring-preset-COC-WL2324" onClick={this.loadPreset}>COC: Winter 23-24</Button>
+          {/* TODO: fix this later to use a sub component: https://stackoverflow.com/a/29810951 */}
+          <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button>
+          <Button id="scoring-preset-COC-WL2324AWTtest" onClick={() => this.loadPreset('COCWL2324_JNTEST')}>AWT TEST</Button>
         </div>
         <div>
           {/* <Button size="lg" onClick={this.loadPreset}>
@@ -460,7 +474,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
               <Button size="sm">click here</Button>
               <DropdownButton id="scoring-presets-group" as={ButtonGroup} size="sm" title="">
                 {/* <Dropdown.Item>Standard: One Per Race Class</Dropdown.Item> */}
-                <Dropdown.Item id="Scoring-Preset-COC-WL-23-24" onClick={this.loadPreset}>COC: Winter 23-24</Dropdown.Item>
+                <Dropdown.Item id="Scoring-Preset-COC-WL-23-24" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Dropdown.Item>
                 {/* <Dropdown.Item>COC: Ultimate O 2024</Dropdown.Item> */}
               </DropdownButton>
             </ButtonGroup>
@@ -568,7 +582,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
                 <option value={IndividualScoreMethod.Time}>Time: No Additional Points/Scores</option>
                 {/* <option value={IndividualScoreMethod.Points1kScottish}>1000pts Ratio to Winner / Scottish</option> */}
                 <option value={IndividualScoreMethod.PointsCocWorldCup}>COC Winter League (100,95,92,90,...)</option>
-                {/* <option value={IndividualScoreMethod.PointsOusaAverageWinningTime}>OUSA Scholastic Average Winning Time points</option> */}
+                <option value={IndividualScoreMethod.PointsOusaAverageWinningTime}>OUSA Scholastic Average Winning Time points</option>
                 {/* <option value={IndividualScoreMethod.AlphaWithoutTimes}>Alpha: Remove times and status. List participants</option> */}
               </Form.Select>
             </Form.Group>
@@ -580,7 +594,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
               <Form.Select id='comp-class-select-ScoreMethod-team-collation'
                   value={this.state.compClassForm_teamCollation}
                   onChange={this.handleCompClassTeamCollationChange}>
-                <option value={TeamCollationMethod.ScoreThenCombine}>Score each race class individually, then combine into teams. (A team can have multiple people who each got 1st place in different classes.)</option>
+                <option value={TeamCollationMethod.ScoreThenCombine}>Score each race class individually, then combine into teams.</option>
                 <option value={TeamCollationMethod.CombineThenScore}>Create a new combined race class for all individuals at each race.</option>
               </Form.Select>
             </Form.Group>
@@ -600,6 +614,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
                 onChange={this.handleCompClassTeamScoreMethodChange}>
                 <option value={TeamScoreMethod.SumAllHighestWins}>Sum all, highest wins</option>
                 <option value={TeamScoreMethod.SumAllLowestWins}>Sum all, lowest wins</option>
+                <option value={TeamScoreMethod.SumMinLowestWins}>Sum minimum, lowest wins</option>
               </Form.Select>
             </Form.Group>
 
