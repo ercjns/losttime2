@@ -239,9 +239,9 @@ CocWinterLeaugeTestingJN.addClass({
     Name: "AWT TEST Elementary Teams",
     ClassCodes: ["W1M","W1F"],
     CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
-    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
-        TeamScoreMethod.SumAllHighestWins,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(3,5,
+        TeamScoreMethod.SumMinLowestWins,
         TeamCollationMethod.ScoreThenCombine
     )
 })
@@ -265,9 +265,9 @@ CocWinterLeaugeTestingJN.addClass({
     Name: "AWT TEST Middle School Teams",
     ClassCodes: ["W2M","W2F"],
     CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
-    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
-        TeamScoreMethod.SumAllHighestWins,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(3,5,
+        TeamScoreMethod.SumMinLowestWins,
         TeamCollationMethod.ScoreThenCombine
     )
 })
@@ -291,9 +291,9 @@ CocWinterLeaugeTestingJN.addClass({
     Name: "AWT TEST High School JV Rookie Teams",
     ClassCodes: ["W3M","W3F"],
     CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
-    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
-        TeamScoreMethod.SumAllHighestWins,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(3,5,
+        TeamScoreMethod.SumMinLowestWins,
         TeamCollationMethod.ScoreThenCombine
     )
 })
@@ -317,9 +317,9 @@ CocWinterLeaugeTestingJN.addClass({
     Name: "AWT TEST High School JV Teams",
     ClassCodes: ["W5M", "W4F"],
     CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
-    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
-        TeamScoreMethod.SumAllHighestWins,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(3,5,
+        TeamScoreMethod.SumMinLowestWins,
         TeamCollationMethod.ScoreThenCombine
     )
 })
@@ -343,9 +343,9 @@ CocWinterLeaugeTestingJN.addClass({
     Name: "AWT TEST High School Varsity Teams",
     ClassCodes: ["W6F", "W6M"],
     CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
-    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
-        TeamScoreMethod.SumAllHighestWins,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(3,5,
+        TeamScoreMethod.SumMinLowestWins,
         TeamCollationMethod.ScoreThenCombine
     )
 })
@@ -369,9 +369,9 @@ CocWinterLeaugeTestingJN.addClass({
     Name: "AWT TEST Collegiate Varsity Teams",
     ClassCodes: ["W8F", "W8M"],
     CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsCocWorldCup,
-    ScoreMethod_Team: new TeamScoreMethodDefinition(2,3,
-        TeamScoreMethod.SumAllHighestWins,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Team: new TeamScoreMethodDefinition(3,5,
+        TeamScoreMethod.SumMinLowestWins,
         TeamCollationMethod.ScoreThenCombine
     )
 })

@@ -1,8 +1,8 @@
 import { getClubNameString, stringify_html, timeWithStatusString} from './stylehelpers';
-import { CompetitionClass, ScoredCompetitionClassType, WorldCupTeamResult } from "../CompetitionClass";
-import { WorldCupResult } from '../scoremethods/CocWorldCup';
+import { CompetitionClass, ScoredCompetitionClassType } from "../CompetitionClass";
+import { WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
 import { CodeCheckingStatus } from '../scoremethods/IofStatusParser';
-import { OusaAvgWinTimeResult } from '../scoremethods/OusaAwt';
+import { OusaAvgWinTimeResult, OusaAvgWinTimeTeamResult } from '../scoremethods/OusaAwt';
 
 export function createOutputDoc_CascadeOc(data:CompetitionClass[]) {
     const wrap = document.createElement("div");
@@ -67,6 +67,9 @@ function createCompClassOutput_CascadeOc(x:CompetitionClass) {
             break;
         case ScoredCompetitionClassType.OusaAvgWinTime:
             wrap.appendChild(OusaAwtHtml_Indv(x));
+            break;
+        case ScoredCompetitionClassType.OusaAvgWinTimeTeams:
+            wrap.appendChild(OusaAwtHtml_Teams(x));
             break;
         default:
             break;
@@ -198,6 +201,101 @@ function OusaAwtHtml_Indv(x:CompetitionClass) {
     }
     table.appendChild(tbody);
     return table
+}
+
+function OusaAwtHtml_Teams(x:CompetitionClass) {
+    if (!x.Results_OusaAvgWinTimeTeams || x.Results_OusaAvgWinTimeTeams.length === 0) {
+        const emptydiv = document.createElement("div");
+        emptydiv.textContent ="No results for this class";
+        return emptydiv;
+    }
+
+    const table = document.createElement("table");
+    table.setAttribute("class", "table table-striped");
+    table.setAttribute("id", "ResultsTable-"+x.ID.toString())
+
+    const thead = document.createElement("thead");
+    const trhead = document.createElement("tr");
+    const pos = document.createElement("th");
+    pos.textContent = "Pos.";
+    trhead.appendChild(pos);
+    const score = document.createElement("th");
+    score.textContent = "Score";
+    trhead.appendChild(score);
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    trhead.appendChild(name);
+    const finish = document.createElement("th");
+    finish.textContent = "Finish";
+    trhead.appendChild(finish);
+    thead.appendChild(trhead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody")
+
+    for (const el of x.Results_OusaAvgWinTimeTeams) {
+        if (el === undefined) { continue; }
+        if (!(el instanceof OusaAvgWinTimeTeamResult)) {throw Error("Not OusaAvgWinTimeTeamResult")}
+        const trdata = document.createElement("tr");
+        trdata.setAttribute("class", "team-result-full");
+        const pos = document.createElement("td");
+        pos.textContent = el.Place?.toString() ?? "";
+        trdata.appendChild(pos);
+        const score = document.createElement("td");
+        score.textContent = el.Points?.toFixed(2) ?? "";
+        trdata.appendChild(score);
+        const name = document.createElement("td");
+        const teamlong = getClubNameString(el.TeamShortName)
+        name.textContent = `${teamlong} (${el.TeamShortName})`
+        trdata.appendChild(name);
+        const finish = document.createElement("td");
+        // finish.textContent = `${el.Contributors.length+el.NonContributors.length} competitors`
+        // finish.textContent = getTeamFinishesString(el);
+        trdata.appendChild(finish);
+        tbody.appendChild(trdata);
+
+        if (el.Contributors.length > 0) {
+            for (const member of el.Contributors) {
+                const trdata = document.createElement("tr");
+                trdata.setAttribute("class", "team-result-member");
+                const pos = document.createElement("td");
+    
+                trdata.appendChild(pos);
+                const score = document.createElement("td");
+                score.textContent = member.Points?.toFixed(2) ?? "";
+                trdata.appendChild(score);
+                const name = document.createElement("td");
+                name.textContent = `${member.Name} (${member.Club!})`
+                trdata.appendChild(name);
+                const finish = document.createElement("td");
+                finish.textContent = timeWithStatusString(member);
+                trdata.appendChild(finish);
+                tbody.appendChild(trdata);
+            }
+        } 
+        if (el.NonContributors.length > 0) {
+            for (const member of el.NonContributors) {
+                const trdata = document.createElement("tr");
+                trdata.setAttribute("class", "team-result-member");
+                const pos = document.createElement("td");
+    
+                trdata.appendChild(pos);
+                const score = document.createElement("td");
+                score.textContent = (member.Points?.toFixed(2) ?? "") + "*"
+                trdata.appendChild(score);
+                const name = document.createElement("td");
+                name.textContent = `${member.Name} (${member.Club!})`
+                trdata.appendChild(name);
+                const finish = document.createElement("td");
+                finish.textContent = timeWithStatusString(member);
+                trdata.appendChild(finish);
+                tbody.appendChild(trdata);
+            }
+        }
+
+    }
+    table.appendChild(tbody);
+    return table;
 }
 
 function WorldCupHtml_Indv(x:CompetitionClass) {

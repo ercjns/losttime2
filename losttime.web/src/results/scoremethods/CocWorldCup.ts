@@ -1,5 +1,5 @@
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { WorldCupResultsForClub, WorldCupTeamResult } from "../CompetitionClass";
+import { TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
 
@@ -24,6 +24,41 @@ export class WorldCupResult {
     }
 }
 
+export class WorldCupTeamResult {
+    TeamName: string;
+    TeamShortName: string;
+    Points: number;
+    Place?: number;
+    Contributors: WorldCupResult[];
+    NonContributors: WorldCupResult[];
+
+    constructor(teammates:WorldCupResult[], scoring:TeamScoreMethodDefinition) {
+        if (teammates.length === 0) {
+            throw Error("can't create a team result with no teammates");
+        }
+        this.TeamName = teammates[0].Club ?? "";
+        this.TeamShortName = teammates[0].Club ?? "";
+        if (scoring.ScoreMethod === TeamScoreMethod.SumAllHighestWins) {
+            teammates.sort(WorldCupResultComparer);
+            const maxContribThisTeam = teammates.findIndex((x) => x.Points === undefined);
+            const contributorsSlice = maxContribThisTeam === -1 ? 
+                scoring.MaximumResults : Math.min(scoring.MaximumResults, maxContribThisTeam);
+            this.Contributors = teammates.slice(0,contributorsSlice);
+            this.NonContributors = teammates.slice(contributorsSlice);
+            this.Points = this.Contributors.reduce(
+                (total, contributor) => total + (contributor.Points ?? 0),
+                0
+            )
+        } else {
+            throw Error("score method doesn't make sense for World Cup")
+        }
+    }
+}
+
+export type WorldCupResultsForClub = {
+    "club": string|undefined,
+    "raw": WorldCupResult[]
+}
 
 
 function CocWorldCupScoreByPlace(place:number):number {
@@ -172,7 +207,7 @@ export function WorldCupScoring_Indv(
     }
 }
 
-export function groupByClub(results:WorldCupResult[]):WorldCupResultsForClub[] {
+export function WorldCupScoring_groupByClub(results:WorldCupResult[]):WorldCupResultsForClub[] {
     let teams:WorldCupResultsForClub[] = [];
 
     for (let i=0; i < results.length; i++) {

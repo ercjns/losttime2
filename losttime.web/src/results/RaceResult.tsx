@@ -30,7 +30,7 @@ export class LtStaticRaceResult {
     fromSplitsRaceResult(
         splitsRaceResult: ResultList
     ) {
-        console.log(splitsRaceResult);
+        // console.log(splitsRaceResult);
         this.Event = splitsRaceResult.Event;
         this.ClassResults = splitsRaceResult.ClassResult.map(
             (el) => (new LtStaticRaceClassResult(el, this.Event)))

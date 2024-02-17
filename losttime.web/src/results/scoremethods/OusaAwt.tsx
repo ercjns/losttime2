@@ -12,6 +12,7 @@
 // their team level (Varsity, JV, Intermediate, or Primary).
 
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
+import { TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
 
@@ -36,6 +37,50 @@ export class OusaAvgWinTimeResult {
     }
 }
 
+export class OusaAvgWinTimeTeamResult {
+    TeamName: string;
+    TeamShortName: string;
+    isValid: boolean;
+    Points?: number;
+    Place?: number;
+    Contributors: OusaAvgWinTimeResult[];
+    NonContributors: OusaAvgWinTimeResult[];
+
+    constructor(teammates:OusaAvgWinTimeResult[],
+    scoring:TeamScoreMethodDefinition) {
+        if (teammates.length === 0) {
+            throw Error("can't create a team result with no teammates");
+        }
+        this.TeamName = teammates[0].Club ?? "";
+        this.TeamShortName = teammates[0].Club ?? "";
+        if (scoring.ScoreMethod === TeamScoreMethod.SumMinLowestWins) {
+            teammates.sort(OusaAvgWinTimeComparer);
+
+            if (teammates.length >= scoring.MinimumResults) {
+                this.Contributors = teammates.slice(0,scoring.MinimumResults)
+                this.NonContributors = teammates.slice(scoring.MinimumResults)
+                this.isValid = true;
+            } else {
+                this.Contributors = [];
+                this.NonContributors = teammates;
+                this.isValid = false;
+            }
+            
+            if (this.isValid) {
+                this.Points = this.Contributors.reduce(((sum:number, next) => sum + next.Points!),0)
+            }
+
+        } else {
+            throw Error("score method doesn't make sense for Avg Win Time")
+        }
+
+    }
+}
+
+export type OusaAvgWinTimeResultsForClub = {
+    "club": string|undefined,
+    "raw": OusaAvgWinTimeResult[]
+}
 
 export function OusaAvgWinTimeScoring_Indv(
     raceResults:LtStaticRaceClassResult[],
@@ -110,10 +155,65 @@ export function OusaAvgWinTimeScoring_Indv(
     return results
 }
 
-function OusaAvgWinTimeComparer(a:OusaAvgWinTimeResult, b:OusaAvgWinTimeResult): number {
-    if (a.Place && b.Place) {
-        return a.Place - b.Place;
+export function OusaAvgWinTimeScoring_GroupByClub(results:OusaAvgWinTimeResult[]):OusaAvgWinTimeResultsForClub[] {
+    let teams:OusaAvgWinTimeResultsForClub[] = [];
+
+    for (let i=0; i < results.length; i++) {
+        let item = results[i];
+
+        if (item.CompetitiveStatus === CompetitiveStatus.NC) {
+            continue;
+        }
+
+        if (i===0) {
+            teams = [{"club":item.Club, "raw":[item]}]
+            continue;
+        } 
+
+        let teamIdx = teams.findIndex((t) => t.club === item.Club);
+        if (teamIdx === -1) {
+            teams.push({"club":item.Club, "raw":[item]})
+        } else {
+            let team = teams[teamIdx];
+            team.raw.push(item);
+        }
     }
+    return teams;
+}
+
+export function OusaAvgWinTimeTeamScoring_AssignPlaces(teams:OusaAvgWinTimeTeamResult[]) {
+    teams.sort(OusaAvgWinTimeTeamComparer)
+    teams.forEach((team, index, arr) => {
+        if (index === 0) {
+            if (team.Points) {
+                team.Place = index + 1;
+            }
+        } else if (team.Points) {
+            if (team.Points === arr[index-1].Points) {
+                team.Place = arr[index-1].Place;
+            } else {
+                team.Place = index + 1;
+            }
+        }
+    });
+    return teams
+}
+
+
+function OusaAvgWinTimeTeamComparer(a:OusaAvgWinTimeTeamResult, b:OusaAvgWinTimeTeamResult): number {
+    if (a.Points && b.Points) {
+        return a.Points - b.Points
+    }
+    if (a.Points) {return -1;}
+    else if (b.Points) {return 1;}
+    else return 0;
+}
+
+
+function OusaAvgWinTimeComparer(a:OusaAvgWinTimeResult, b:OusaAvgWinTimeResult): number {
+    // if (a.Place && b.Place) {
+    //     return a.Place - b.Place;
+    // }
 
     if (a.Points && b.Points) {
         return a.Points - b.Points
@@ -149,13 +249,13 @@ function CalcAwtForClass(raceResults:OusaAvgWinTimeResult[]):number|undefined {
     const maxToConsider:number = valids.length > 3 ? 3 : valids.length
     topFinishers = valids.slice(0,maxToConsider);
 
-    for (const f of topFinishers) {
-        console.log(f.Name, f.Time)
-    }
+    // for (const f of topFinishers) {
+    //     console.log(f.Name, f.Time)
+    // }
 
     const theAvgWinTime = topFinishers.reduce((sum,val)=>sum+val.Time!, 0) / topFinishers.length;
 
-    console.log(theAvgWinTime);
+    // console.log(theAvgWinTime);
     return theAvgWinTime;
 }
 
