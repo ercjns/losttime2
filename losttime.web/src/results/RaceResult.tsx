@@ -1,19 +1,25 @@
 // model this on lt/Entry.ts
 
 // import React from 'react';
-import { Class, Course, Event, PersonResult, ResultList, ClassResult } from "../shared/orienteeringtypes/IofResultXml";
+import { Class, Course, PersonResult, ResultList, ClassResult } from "../shared/orienteeringtypes/IofResultXml";
 // import { IndividualScoreMethod } from './CompetitionClass';
 import { Guid } from 'guid-typescript';
 
 
+export type LtEvent = {
+    ID:Guid;
+    Name:string;
+    Order: number;
+}
+
 export class LtStaticRaceClassResult {
     ID:Guid;
-    Event:Event;
+    Event:LtEvent;
     Class:Class;
     Course:Course;
     PersonResults:PersonResult[];
 
-    constructor(rawClassResult: ClassResult, event:Event) {
+    constructor(rawClassResult: ClassResult, event:LtEvent) {
         this.ID = Guid.create();
         this.Event = event;
         this.Class = rawClassResult.Class;
@@ -23,15 +29,20 @@ export class LtStaticRaceClassResult {
 }
 
 
-export class LtStaticRaceResult {
-    Event!: Event;
+export class LtStaticRaceResult { //rename to LtStaticRace?
+    Event!: LtEvent;
     ClassResults!: LtStaticRaceClassResult[];
 
     fromSplitsRaceResult(
-        splitsRaceResult: ResultList
+        splitsRaceResult: ResultList,
+        raceOrder: number
     ) {
         // console.log(splitsRaceResult);
-        this.Event = splitsRaceResult.Event;
+        this.Event = {
+            ID: Guid.create(),
+            Name:splitsRaceResult.Event.Name,
+            Order:raceOrder
+        }
         this.ClassResults = splitsRaceResult.ClassResult.map(
             (el) => (new LtStaticRaceClassResult(el, this.Event)))
 
@@ -39,8 +50,8 @@ export class LtStaticRaceResult {
     }
 }
 
-export function parseRaceResult(indata:ResultList): LtStaticRaceResult {
-    return new LtStaticRaceResult().fromSplitsRaceResult(indata);
+export function parseRaceResult(indata:ResultList, uploadOrder:number): LtStaticRaceResult {
+    return new LtStaticRaceResult().fromSplitsRaceResult(indata, uploadOrder);
 }
 
 

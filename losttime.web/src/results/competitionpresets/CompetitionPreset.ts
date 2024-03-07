@@ -1,4 +1,4 @@
-import {CompetitionClassType, IndividualScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
+import {CompetitionClassType, IndividualScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethodDefinition } from "../CompetitionClass";
 
 export class CompetitionPreset {
     PresetName: string;
@@ -22,6 +22,7 @@ export type CompetitionClassPreset  = {
     CompClassType: CompetitionClassType;
     ScoreMethod: IndividualScoreMethod;
     ScoreMethod_Team?: TeamScoreMethodDefinition;
+    ScoreMethod_Multi?: MultiEventScoreMethodDefinition;
 
     // constructor(name:string,
     //             classCodes:string[],

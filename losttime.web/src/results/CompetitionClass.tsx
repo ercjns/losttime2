@@ -1,7 +1,8 @@
 import { Guid } from "guid-typescript";
-import { LtStaticRaceClassResult } from "./RaceResult";
+import { LtEvent, LtStaticRaceClassResult } from "./RaceResult";
 import { WorldCupResult, WorldCupResultComparer, WorldCupScoring_Indv, WorldCupTeamScoring_assignPlaces, WorldCupScoring_groupByClub, WorldCupTeamResult } from "./scoremethods/CocWorldCup";
-import { OusaAvgWinTimeResult, OusaAvgWinTimeScoring_GroupByClub, OusaAvgWinTimeScoring_Indv, OusaAvgWinTimeTeamResult, OusaAvgWinTimeTeamScoring_AssignPlaces } from "./scoremethods/OusaAwt";
+import { OusaAvgWinTimeMultiResultIndv, OusaAvgWinTimeResult, OusaAvgWinTimeScoring_GroupByClub, OusaAvgWinTimeScoring_Indv, OusaAvgWinTimeTeamResult, OusaAvgWinTimeTeamScoring_AssignPlaces } from "./scoremethods/OusaAwt";
+import { O_DIRECTORY } from "constants";
 
 export enum IndividualScoreMethod {
     AlphaWithoutTimes = -2,
@@ -58,6 +59,7 @@ export class CompetitionClass {
     Results_OusaAvgWinTime?: OusaAvgWinTimeResult[];
     Results_Temp_OusaAvgWinTimeTeams?: OusaAvgWinTimeResult[];
     Results_OusaAvgWinTimeTeams?: OusaAvgWinTimeTeamResult[];
+    Results_Multi_OusaAvgWinTIme?: OusaAvgWinTimeMultiResultIndv[];
 
     constructor() {
         this.ID = Guid.create();
@@ -197,11 +199,100 @@ export class CompetitionClass {
                 throw Error("Not sure how to do teams with individuals other than World Cup scoring")
             }
         }
+
+        // Multi Race, Individuals
+        if (this.IsMultiRace && !this.IsTeamClass){
+            if (this.ScoreMethod===IndividualScoreMethod.PointsOusaAverageWinningTime) {
+
+                var events:LtEvent[] = [];
+                for (const r of this.RaceResults) {
+                    if (!events.includes(r.Event)) {
+                        events.push(r.Event)
+                    }
+                }
+                events.sort((a,b) => a.Order - b.Order)
+
+                // group the RaceResults by Event
+                const RaceResultsByEvent:LtStaticRaceClassResult[][] = Array(events.length).fill([])
+                for (const [idx, e] of events.entries()) {
+                    for (const r of this.RaceResults) {
+                        if (r.Event.ID === e.ID) {
+                            RaceResultsByEvent[idx].push(r)
+                        }
+                    }
+                }
+
+                const PairedRaceResultsByEvent:LtStaticRaceClassResult[][] = Array(events.length).fill([])
+                // Must support no Paired results. I think this does.
+                // TODO test above stated case
+                for (const [idx, e] of events.entries()) {
+                    for (const r of this.PairedRaceResults) {
+                        if (r.Event.ID === e.ID) {
+                            PairedRaceResultsByEvent[idx].push(r)
+                        }
+                    }
+                }
+
+                // score each individual event
+                const ScoredResultsByEvent:OusaAvgWinTimeResult[][] = []
+                for (var idx = 0; idx < RaceResultsByEvent.length; idx++) {
+                    const scored = OusaAvgWinTimeScoring_Indv(
+                        RaceResultsByEvent[idx],
+                        PairedRaceResultsByEvent[idx]
+                    )
+                    ScoredResultsByEvent.push(scored)
+                }
+
+                // match people up across events
+                // create multi-day event objects
+
+                // there's VERY LIKELY a better way to do this
+                // like.... reduce?
+
+                const MultiEventResults:OusaAvgWinTimeMultiResultIndv[] = [];
+                for (const [idx, event] of ScoredResultsByEvent.entries()) {
+                    if (idx === 0) {
+                        // first event, always add a new record.
+                        for (const result of event) {
+                            MultiEventResults.push(new OusaAvgWinTimeMultiResultIndv(events.length, idx, result));
+                        }
+                    } else {
+                        // not the first event
+                        for (const result of event) {
+                            // look for a matching multiresult that already exists
+                            const match = MultiEventResults.findIndex( x => x.Name == result.Name && x.Club == result.Club);
+
+                            // if it exists, add the event result at correct index
+                            if (match >= 0) {
+                                MultiEventResults[match].addResultAtIndex(result,idx);
+                            } else {
+                            // if it doesn't exist, create new and push.
+                                MultiEventResults.push(new OusaAvgWinTimeMultiResultIndv(events.length, idx, result));
+                            }
+                        }
+                    }
+                }
+
+                // validate and score the multi-event objects
+                if (this.ScoreMethod_Multi instanceof MultiEventScoreMethodDefinition) {
+                    for (const result of MultiEventResults) {
+                        result.assignPoints(this.ScoreMethod_Multi)
+                    }
+                }
+                // ALMOST THERE
+                // these have points
+                // TODO - sort / assign places
+                this.Results_Multi_OusaAvgWinTIme = MultiEventResults
+            }
+            else {
+                throw Error("Score method not implemented");
+            }
+        }
         return;
     }
 }
 
-class MultiEventScoreMethodDefinition {
+export class MultiEventScoreMethodDefinition {
     ScoreMethod: MultiEventScoreMethod;
     MinimumRaces: number;
     ContributingRaces: number;
@@ -217,7 +308,7 @@ class MultiEventScoreMethodDefinition {
     }
 }
 
-enum MultiEventScoreMethod {
+export enum MultiEventScoreMethod {
     SumAll,
     SumNTiebreakAll,
     SumNTiebreakN
