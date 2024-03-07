@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 import { Guid } from 'guid-typescript';
-import { CocWinterLeaugeTestingJN } from './competitionpresets/preset_JNtesting';
+import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 
 
@@ -96,7 +96,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
       this.setState({
         races: this.state.races+1,
-        raceData: parseRaceResult(resultsObj.ResultList).ClassResults,
+        raceData: parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults,
         filesprocessed: [...this.state.filesprocessed, newfile]
       });
 
@@ -235,11 +235,11 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
   }
 
   loadPreset(presetName:string) {
-    if (presetName == 'COCWL2324') {
+    if (presetName === 'COCWL2324') {
       CocWinterLeauge.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));  
-    } else if (presetName == 'COCWL2324_JNTEST') {
-      CocWinterLeaugeTestingJN.Classes.forEach(preset =>
+    } else if (presetName === 'COCWL2324_JNTEST') {
+      JNTesting.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));
     }
     return;

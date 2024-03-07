@@ -12,7 +12,7 @@
 // their team level (Varsity, JV, Intermediate, or Primary).
 
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
+import { MultiEventScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
 
@@ -34,6 +34,57 @@ export class OusaAvgWinTimeResult {
         const statuses = iofStatusParser(this.Raw.Result.Status)
         this.CodeCheckingStatus = statuses.CodeCheckingStatus;
         this.CompetitiveStatus = statuses.CompetitiveStatus;
+    }
+}
+
+export class OusaAvgWinTimeMultiResultIndv {
+    Raw: OusaAvgWinTimeResult[];
+    TotalRaces: number;
+    RacesRecorded: number;
+    Name: string;
+    Club?: string;
+    Points?: number;
+    Place?: number;
+    isValid: boolean;
+
+    constructor(totalRaces:number, resultindex:number, result:OusaAvgWinTimeResult) {
+        this.isValid = false;
+        this.RacesRecorded = 0;
+        this.TotalRaces = totalRaces;
+        this.Raw = new Array(totalRaces)
+        this.addResultAtIndex(result, resultindex)
+        this.Name = result.Name;
+        this.Club = result.Club;
+    }
+
+    addResultAtIndex(result:OusaAvgWinTimeResult, eventIdx:number) {
+        if (this.Raw[eventIdx] != undefined) {
+            throw "Something's already here"
+        }
+        if (eventIdx > (this.TotalRaces-1)) {
+            throw "Not tracking this many races"
+        }
+        this.Raw[eventIdx] = result;
+        this.RacesRecorded += 1;
+        return;
+    }
+
+    assignPoints(method:MultiEventScoreMethodDefinition) {
+        if (method.MinimumRaces !== method.ContributingRaces) {
+            throw "Min Races should equal Contributing Races"
+        }
+        if (this.TotalRaces < method.MinimumRaces) {
+            throw "not enough races to provide a score"
+        }
+        if (this.RacesRecorded === method.MinimumRaces && 
+            this.RacesRecorded === method.ContributingRaces) {
+            this.isValid = true;
+            if (method.ScoreMethod !== MultiEventScoreMethod.SumAll) {
+                throw "Score method not implemented"
+            }
+            const score = this.Raw.reduce<number>((sum,current) => sum + (current.Points ?? 0), 0);
+            this.Points = score;
+        }
     }
 }
 
@@ -199,6 +250,10 @@ export function OusaAvgWinTimeTeamScoring_AssignPlaces(teams:OusaAvgWinTimeTeamR
     return teams
 }
 
+export function OusaAvgWinTimeSamePerson(a:OusaAvgWinTimeResult, b:OusaAvgWinTimeResult): boolean {
+    if (a.Name === b.Name && a.Club === b.Club) {return true;}
+    return false;
+}
 
 function OusaAvgWinTimeTeamComparer(a:OusaAvgWinTimeTeamResult, b:OusaAvgWinTimeTeamResult): number {
     if (a.Points && b.Points) {
