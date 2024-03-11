@@ -248,6 +248,9 @@ export class CompetitionClass {
 
                 // there's VERY LIKELY a better way to do this
                 // like.... reduce?
+                
+                // ALSO - allow matching based on BIB NUMBER.
+                // THAT'LL work for my shortest term need.
 
                 const MultiEventResults:OusaAvgWinTimeMultiResultIndv[] = [];
                 for (const [idx, event] of ScoredResultsByEvent.entries()) {

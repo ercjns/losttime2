@@ -42,6 +42,7 @@ export class OusaAvgWinTimeMultiResultIndv {
     TotalRaces: number;
     RacesRecorded: number;
     Name: string;
+    BibNumber: number;
     Club?: string;
     Points?: number;
     Place?: number;
@@ -53,6 +54,7 @@ export class OusaAvgWinTimeMultiResultIndv {
         this.TotalRaces = totalRaces;
         this.Raw = new Array(totalRaces)
         this.addResultAtIndex(result, resultindex)
+        this.BibNumber = result.Raw.Result.BibNumber;
         this.Name = result.Name;
         this.Club = result.Club;
     }
@@ -82,7 +84,9 @@ export class OusaAvgWinTimeMultiResultIndv {
             if (method.ScoreMethod !== MultiEventScoreMethod.SumAll) {
                 throw "Score method not implemented"
             }
-            const score = this.Raw.reduce<number>((sum,current) => sum + (current.Points ?? 0), 0);
+            // This ONLY works when all races contribute
+            // This will need to change when score is not ALL RACES
+            const score = this.Raw.reduce((sum:number,current) => sum + (current.Points!), 0);
             this.Points = score;
         }
     }
