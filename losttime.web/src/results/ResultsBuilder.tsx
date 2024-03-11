@@ -7,6 +7,7 @@ import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
 import { Button, ButtonGroup, Collapse, Dropdown, DropdownButton, Form, Row} from 'react-bootstrap';
 import { CompetitionClass, CompetitionClassType, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
 import { createOutputDoc_CascadeOc } from './outputstyles/style_cascadeoc';
+import { createOutputDoc_JN2024 } from './outputstyles/style_jn2024';
 // import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -20,7 +21,9 @@ import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 enum resultsOutputStyle {
   plaintext = 0,
   genericHtml,
-  cascadeocHtml
+  cascadeocHtml,
+  jn2024Html,
+  jn2024WifiHtml
 }
 
 type resultsBuilderState = {
@@ -62,7 +65,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       compClassForm_teamSizeMin: 2,
       compClassForm_teamSizeMax: 3,
       compClassForm_teamScoreMethod: TeamScoreMethod.SumAllHighestWins,
-      outputStyle: resultsOutputStyle.cascadeocHtml
+      outputStyle: resultsOutputStyle.jn2024Html
     };
 
     this.updateRaceResults = this.updateRaceResults.bind(this);
@@ -356,6 +359,10 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         doc += createOutputDoc_CascadeOc(this.state.competitionClasses);
         extension = "html"
         break;
+      case resultsOutputStyle.jn2024Html:
+        doc += createOutputDoc_JN2024(this.state.competitionClasses);
+        extension = "html"
+        break;
     }
     const date = new Date();
     const dateString = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getDate().toString().padStart(2,"0")}`;
@@ -647,6 +654,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
         <div>
           <h4>Download Results</h4>
+          {/* this isn't actually COC, it's whatever's hardcoded on the results */}
           <Button id="dl-COC-html" onClick={this.createOutputDoc}>COC HTML</Button>
           {/* <ButtonGroup className="me-2">
               <DropdownButton id="download-results-group" title="Download Results"
