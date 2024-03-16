@@ -3,7 +3,6 @@ import { CompetitionClass, ScoredCompetitionClassType } from "../CompetitionClas
 import { WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
 import { CodeCheckingStatus } from '../scoremethods/IofStatusParser';
 import { OusaAvgWinTimeResult, OusaAvgWinTimeTeamResult } from '../scoremethods/OusaAwt';
-import { toHaveAttribute } from '@testing-library/jest-dom/matchers';
 
 export function createOutputDoc_JN2024(data:CompetitionClass[]) {
     const wrap = document.createElement("div");

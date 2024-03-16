@@ -24,7 +24,10 @@ export class LtStaticRaceClassResult {
         this.Event = event;
         this.Class = rawClassResult.Class;
         this.Course = rawClassResult.Course;
-        this.PersonResults = rawClassResult.PersonResult
+        // Use [wrap].flat() to ensure there's an array.
+        // without this, if only one PersonResult, it's just an object
+        // and does not get filled because it's expecting an array.
+        this.PersonResults = [rawClassResult.PersonResult].flat()
     }
 }
 
@@ -37,7 +40,6 @@ export class LtStaticRaceResult { //rename to LtStaticRace?
         splitsRaceResult: ResultList,
         raceOrder: number
     ) {
-        // console.log(splitsRaceResult);
         this.Event = {
             ID: Guid.create(),
             Name:splitsRaceResult.Event.Name,
@@ -45,7 +47,6 @@ export class LtStaticRaceResult { //rename to LtStaticRace?
         }
         this.ClassResults = splitsRaceResult.ClassResult.map(
             (el) => (new LtStaticRaceClassResult(el, this.Event)))
-
         return this;
     }
 }

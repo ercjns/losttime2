@@ -99,7 +99,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
       this.setState({
         races: this.state.races+1,
-        raceData: parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults,
+        // raceData: parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults,
+        raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
         filesprocessed: [...this.state.filesprocessed, newfile]
       });
 
@@ -211,8 +212,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
   private getRaceClassesByClassCode(classCode:string):string[] {
     // takes a string class code like "W2F" or "1"
-    // returns an array of IDs for all race classes with that exaxtly match that class code
-    // class codes that are integers only are stored as numbers, so call toString() on
+    // returns an array of IDs for all race classes with that exaxtly match that class code.
+    // Class codes that are integers only are stored as numbers, so call toString() on
     // the shortName to find them.
     let matches = this.state.raceData.filter((x) => x.Class.ShortName?.toString() === classCode);
     return matches.map(x => x.ID.toString());
@@ -275,10 +276,13 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       case CompetitionClassType.ManyRaceIndv:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = false;
+        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi
         break;
       case CompetitionClassType.ManyRaceTeam:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = true;
+        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi
+        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team
         break;
     }
 
@@ -655,7 +659,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         <div>
           <h4>Download Results</h4>
           {/* this isn't actually COC, it's whatever's hardcoded on the results */}
-          <Button id="dl-COC-html" onClick={this.createOutputDoc}>COC HTML</Button>
+          <Button id="dl-output-doc" onClick={this.createOutputDoc}>Create Output</Button>
           {/* <ButtonGroup className="me-2">
               <DropdownButton id="download-results-group" title="Download Results"
                 variant="outline-primary">

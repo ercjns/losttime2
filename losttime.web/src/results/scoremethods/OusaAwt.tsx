@@ -14,6 +14,7 @@
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { MultiEventScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
+import { scoredCompClassComparer } from "./CocWorldCup";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
 
 export class OusaAvgWinTimeResult {
@@ -60,6 +61,9 @@ export class OusaAvgWinTimeMultiResultIndv {
     }
 
     addResultAtIndex(result:OusaAvgWinTimeResult, eventIdx:number) {
+        // console.log('Have this Multi result with ' + this.RacesRecorded + ' races recorded')
+        // console.log(this.Raw);
+        // console.log('Adding a new result at index ' + eventIdx)
         if (this.Raw[eventIdx] != undefined) {
             throw "Something's already here"
         }
@@ -79,16 +83,20 @@ export class OusaAvgWinTimeMultiResultIndv {
             throw "not enough races to provide a score"
         }
         if (this.RacesRecorded === method.MinimumRaces && 
-            this.RacesRecorded === method.ContributingRaces) {
+                this.RacesRecorded === method.ContributingRaces) {
+            // Force All races to be contributing races. needs updates to support
+            // any other methods.
             this.isValid = true;
-            if (method.ScoreMethod !== MultiEventScoreMethod.SumAll) {
+            if (method.ScoreMethod === MultiEventScoreMethod.SumAll) {
+                const score = this.Raw.reduce((sum:number,current) => sum + (current.Points!), 0);
+                this.Points = score;
+                return score;
+            }
+            else {
                 throw "Score method not implemented"
             }
-            // This ONLY works when all races contribute
-            // This will need to change when score is not ALL RACES
-            const score = this.Raw.reduce((sum:number,current) => sum + (current.Points!), 0);
-            this.Points = score;
         }
+        return;
     }
 }
 
@@ -254,6 +262,29 @@ export function OusaAvgWinTimeTeamScoring_AssignPlaces(teams:OusaAvgWinTimeTeamR
     return teams
 }
 
+export function OusaAvgWinTimeMultiIndv_AssignPlaces(MultiEventResults:OusaAvgWinTimeMultiResultIndv[]): OusaAvgWinTimeMultiResultIndv[] {
+    // assumes that everyone with points assigned is valid
+    // and can recieve a place.
+    // assignPoints() should not assign points if a place
+    // should not be assigned.
+    MultiEventResults.sort(OusaAvgWinTimeMultiIndvComparer)
+    MultiEventResults.forEach((indv, index, arr) => {
+        if (index === 0) {
+            if (indv.Points) {
+                indv.Place = index + 1;
+            }
+        } else if (indv.Points) {
+            if (indv.Points === arr[index-1].Points) {
+                indv.Place = arr[index-1].Place;
+            } else {
+                indv.Place = index + 1;
+            }
+        }
+    });
+    return MultiEventResults;
+        
+} 
+
 export function OusaAvgWinTimeSamePerson(a:OusaAvgWinTimeResult, b:OusaAvgWinTimeResult): boolean {
     if (a.Name === b.Name && a.Club === b.Club) {return true;}
     return false;
@@ -268,6 +299,14 @@ function OusaAvgWinTimeTeamComparer(a:OusaAvgWinTimeTeamResult, b:OusaAvgWinTime
     else return 0;
 }
 
+function OusaAvgWinTimeMultiIndvComparer(a:OusaAvgWinTimeMultiResultIndv, b:OusaAvgWinTimeMultiResultIndv): number {
+    if (a.Points && b.Points) {
+        return a.Points - b.Points
+    }
+    if (a.Points) {return -1;}
+    else if (b.Points) {return 1;}
+    else return 0;
+}
 
 function OusaAvgWinTimeComparer(a:OusaAvgWinTimeResult, b:OusaAvgWinTimeResult): number {
     // if (a.Place && b.Place) {

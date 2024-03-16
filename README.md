@@ -13,6 +13,10 @@ Web is a static single page application. It covers two scecnarios:
 
 There is no database, the application does not store any information between sessions.
 
+#### Development Notes:
+
+In the `losttime.web` folder, run `npm start` to run the development version.
+
 ### LostTime.Conductor
 
 Conductor is an application and tooling to support the use of Web in a more automated fashion.
