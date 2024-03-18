@@ -1,4 +1,5 @@
 import {CompetitionClassType, IndividualScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethodDefinition } from "../CompetitionClass";
+import { TeamLevel } from "./teamdefinition";
 
 export class CompetitionPreset {
     PresetName: string;
@@ -23,19 +24,5 @@ export type CompetitionClassPreset  = {
     ScoreMethod: IndividualScoreMethod;
     ScoreMethod_Team?: TeamScoreMethodDefinition;
     ScoreMethod_Multi?: MultiEventScoreMethodDefinition;
-
-    // constructor(name:string,
-    //             classCodes:string[],
-    //             compClassType:CompetitionClassType,
-    //             scoreMethod:IndividualScoreMethod,
-    //             scoreMethod_team:TeamScoreMethodDefinition|undefined=undefined) {
-    //     this.Name = name;
-    //     this.ClassCodes = classCodes;
-    //     this.CompClassType = compClassType;
-    //     this.ScoreMethod = scoreMethod;
-    //     if (scoreMethod_team !== undefined) {
-    //         this.ScoreMethod_Team = scoreMethod_team;
-    //     }
-    //     return;
-    // }
+    TeamLevel?: TeamLevel;
 }
