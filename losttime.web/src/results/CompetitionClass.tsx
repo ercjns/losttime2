@@ -1,7 +1,9 @@
 import { Guid } from "guid-typescript";
 import { LtEvent, LtStaticRaceClassResult } from "./RaceResult";
 import { WorldCupResult, WorldCupResultComparer, WorldCupScoring_Indv, WorldCupTeamScoring_assignPlaces, WorldCupScoring_groupByClub, WorldCupTeamResult } from "./scoremethods/CocWorldCup";
-import { OusaAvgWinTimeMultiIndv_AssignPlaces, OusaAvgWinTimeMultiResultIndv, OusaAvgWinTimeResult, OusaAvgWinTimeScoring_GroupByClub, OusaAvgWinTimeScoring_Indv, OusaAvgWinTimeTeamResult, OusaAvgWinTimeTeamScoring_AssignPlaces } from "./scoremethods/OusaAwt";
+import { OusaAvgWinTimeMultiIndv_AssignPlaces, OusaAvgWinTimeMultiResultIndv, OusaAvgWinTimeResult, OusaAvgWinTimeScoring_GroupByClub, OusaAvgWinTimeScoring_GroupByRaceTeam, OusaAvgWinTimeScoring_Indv, OusaAvgWinTimeTeamResult, OusaAvgWinTimeTeamScoring_AssignPlaces } from "./scoremethods/OusaAwt";
+import { TeamLevel } from "./competitionpresets/teamdefinition";
+import { JNTeams } from "./competitionpresets/preset_JNteams";
 
 export enum IndividualScoreMethod {
     AlphaWithoutTimes = -2,
@@ -36,7 +38,9 @@ export enum ScoredCompetitionClassType {
     CocWorldCup,
     CocWorldCupTeams,
     OusaAvgWinTime,
-    OusaAvgWinTimeTeams
+    OusaAvgWinTimeTeams,
+    Multi_OusaAvgWinTime,
+    Multi_OusaAvgWinTimeTeams,
 }
 
 export class CompetitionClass {
@@ -46,6 +50,7 @@ export class CompetitionClass {
     Name!: string;
     IsMultiRace!: boolean; //compute based on RaceResults?
     IsTeamClass!: boolean;
+    TeamLevel?: TeamLevel;
     ScoreMethod!: IndividualScoreMethod;
     ScoreMethod_Multi?: MultiEventScoreMethodDefinition;
     ScoreMethod_Team?: TeamScoreMethodDefinition;
@@ -113,6 +118,7 @@ export class CompetitionClass {
                 throw new Error("No Team Score Method for Team Competition Class")
             } 
 
+            // COC WORLD CUP TEAMS
             else if (this.ScoreMethod===IndividualScoreMethod.PointsCocWorldCup) {
                 // COC World Cup Teams
                 if (this.ScoreMethod_Team.Collation===TeamCollationMethod.ScoreThenCombine) {
@@ -144,6 +150,8 @@ export class CompetitionClass {
                 this.ResultsCreatedType = ScoredCompetitionClassType.CocWorldCupTeams;
                 return;
             } 
+
+            // OUSA AWT TEAMS
             else if (this.ScoreMethod === IndividualScoreMethod.PointsOusaAverageWinningTime) {
                 // AWT Teams for OUSA IS/IC Competition
                 // this.RaceResults has results from both M and F classes
@@ -179,12 +187,26 @@ export class CompetitionClass {
                     this.Results_OusaAvgWinTime.push(...OusaAvgWinTimeScoring_Indv(b, a));
                 }
                 
-                let teams = OusaAvgWinTimeScoring_GroupByClub(this.Results_OusaAvgWinTime);
+                // OLD WAY: GROUP BY CLUB -> OusaAvgWinTimeTeamResult[]
+                // let clubTeams = OusaAvgWinTimeScoring_GroupByClub(this.Results_OusaAvgWinTime);
 
+                // let res:OusaAvgWinTimeTeamResult[] = []
+                // clubTeams.forEach((x) => {
+                //     res.push(new OusaAvgWinTimeTeamResult(x.raw, this.ScoreMethod_Team!))
+                // });
+
+
+                // NEW WAY: GROUP BY PRE-DEFINED RACE TEAM -> OusaAvgWinTime*Team*Result[]
+                // TODO: This doesn't currently protect for finding a team from 
+                // the wrong level. That's ok for now, it's a team assignment issue, 
+                // not a code issue.
+                let raceTeams = OusaAvgWinTimeScoring_GroupByRaceTeam(this.Results_OusaAvgWinTime);
                 let res:OusaAvgWinTimeTeamResult[] = []
-                teams.forEach((x) => {
-                    res.push(new OusaAvgWinTimeTeamResult(x.raw, this.ScoreMethod_Team!))
-                });
+                for (const key in raceTeams) {
+                    if (key === 'undefined') {continue;}
+                    res.push(new OusaAvgWinTimeTeamResult(raceTeams[key].results, this.ScoreMethod_Team!, raceTeams[key].teamInfo));
+                };
+
     
                 let placed = OusaAvgWinTimeTeamScoring_AssignPlaces(res);
                 
@@ -309,12 +331,12 @@ export class CompetitionClass {
                         el.assignPoints(this.ScoreMethod_Multi!)
                     });
                 }
-
                 // Assign places to those with points
                 OusaAvgWinTimeMultiIndv_AssignPlaces(MultiEventResults);
-                this.Results_Multi_OusaAvgWinTime = MultiEventResults
 
-                console.log(this.Results_Multi_OusaAvgWinTime)
+                this.Results_Multi_OusaAvgWinTime = MultiEventResults
+                this.ResultsCreatedTime = new Date();
+                this.ResultsCreatedType = ScoredCompetitionClassType.Multi_OusaAvgWinTime;
             }
             else {
                 throw Error("Score method not implemented");

@@ -14,12 +14,15 @@
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { MultiEventScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
+import { JNTeams } from "../competitionpresets/preset_JNteams";
+import { RaceTeams, TeamDefinition, TeamLevel } from "../competitionpresets/teamdefinition";
 import { scoredCompClassComparer } from "./CocWorldCup";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
 
 export class OusaAvgWinTimeResult {
     Raw: PersonResult;
     Name: string;
+    BibNumber: number;
     Club?: string;
     Time?: number;
     Points?: number;
@@ -30,6 +33,7 @@ export class OusaAvgWinTimeResult {
     constructor(raceResult:PersonResult) {
         this.Raw = raceResult;
         this.Name = (raceResult.Person.Name.Given + " " + raceResult.Person.Name.Family).trim();
+        this.BibNumber = raceResult.Result.BibNumber;
         this.Club = raceResult.Organisation.ShortName;
         this.Time = raceResult.Result.Time;
         const statuses = iofStatusParser(this.Raw.Result.Status)
@@ -103,19 +107,28 @@ export class OusaAvgWinTimeMultiResultIndv {
 export class OusaAvgWinTimeTeamResult {
     TeamName: string;
     TeamShortName: string;
+    TeamInfo?: TeamDefinition;
     isValid: boolean;
     Points?: number;
     Place?: number;
     Contributors: OusaAvgWinTimeResult[];
     NonContributors: OusaAvgWinTimeResult[];
 
-    constructor(teammates:OusaAvgWinTimeResult[],
-    scoring:TeamScoreMethodDefinition) {
+    constructor(
+        teammates:OusaAvgWinTimeResult[],scoring:TeamScoreMethodDefinition,
+        teaminfo?:TeamDefinition) {
         if (teammates.length === 0) {
             throw Error("can't create a team result with no teammates");
         }
-        this.TeamName = teammates[0].Club ?? "";
-        this.TeamShortName = teammates[0].Club ?? "";
+        if (teaminfo !== undefined) {
+            this.TeamName = teaminfo.Name;
+            this.TeamShortName = "";
+            this.TeamInfo = teaminfo
+        } else {
+            this.TeamName = teammates[0].Club ?? "";
+            this.TeamShortName = teammates[0].Club ?? "";
+        }
+        
         if (scoring.ScoreMethod === TeamScoreMethod.SumMinLowestWins) {
             teammates.sort(OusaAvgWinTimeComparer);
 
@@ -243,6 +256,27 @@ export function OusaAvgWinTimeScoring_GroupByClub(results:OusaAvgWinTimeResult[]
     }
     return teams;
 }
+
+export function OusaAvgWinTimeScoring_GroupByRaceTeam(results:OusaAvgWinTimeResult[]):{[key:string]:{teamInfo?:TeamDefinition,results:OusaAvgWinTimeResult[]}} {
+    const resultsByTeam = results.reduce((groupbyteam, result) => {
+        // TODO THIS HAS NO PROTECTION FOR TEAMS FROM THE WRONG LEVEL.
+        // THAT SHOULD BE OK FOR NOW.
+        // TODO THIS IS GETTING THE TEAM DEFINITIONS DIRECTLY
+        // THOSE FOR SURE SHOULD BE PASSED IN SOMEHOW FROM THE COMP CLASS.
+        const key = JNTeams.findTeamIdStringByBibNumber(result.BibNumber);
+        const team = JNTeams.findTeamByBibNumber(result.BibNumber);
+        // double == for checking null and undefined at once.
+        if (groupbyteam[key] == undefined) {
+            groupbyteam[key] = {results:[]}
+            groupbyteam[key].teamInfo = team;
+        }
+        groupbyteam[key].results.push(result);
+        return groupbyteam;
+    }, {} as {[key:string]:{teamInfo?:TeamDefinition,results:OusaAvgWinTimeResult[]}});
+
+    return resultsByTeam;
+}
+
 
 export function OusaAvgWinTimeTeamScoring_AssignPlaces(teams:OusaAvgWinTimeTeamResult[]) {
     teams.sort(OusaAvgWinTimeTeamComparer)

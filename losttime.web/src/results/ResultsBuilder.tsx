@@ -99,7 +99,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
       this.setState({
         races: this.state.races+1,
-        // raceData: parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults,
         raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
         filesprocessed: [...this.state.filesprocessed, newfile]
       });
@@ -271,18 +270,20 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       case CompetitionClassType.OneRaceTeam:
         newCompClass.IsMultiRace = false;
         newCompClass.IsTeamClass = true;
-        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team
+        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team;
+        newCompClass.TeamLevel = CompClassParams.TeamLevel;
         break;
       case CompetitionClassType.ManyRaceIndv:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = false;
-        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi
+        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi;
         break;
       case CompetitionClassType.ManyRaceTeam:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = true;
-        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi
-        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team
+        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi;
+        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team;
+        newCompClass.TeamLevel = CompClassParams.TeamLevel;
         break;
     }
 

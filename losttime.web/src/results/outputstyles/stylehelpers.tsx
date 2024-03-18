@@ -2,6 +2,7 @@ import { html_beautify } from 'js-beautify';
 import _ClubCodes from '../competitionpresets/ClubCodes.json'
 import { CodeCheckingStatus, CompetitiveStatus } from '../scoremethods/IofStatusParser';
 import { WorldCupResult } from '../scoremethods/CocWorldCup';
+import { TeamType } from '../competitionpresets/teamdefinition';
 const ClubCodes = _ClubCodes as ClubCodeLookup[]
 
 export function stringify_html(html:HTMLDivElement) {
