@@ -3,6 +3,7 @@
 # Eric Jones 2024
 ###
 
+import posixpath
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common import NoSuchElementException, ElementNotInteractableException
@@ -15,16 +16,25 @@ from time import sleep
 import os
 from shutil import copy2
 
+import paramiko
+
 SOURCE_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_testing\\_reference\\xml\\"
 NEW_FILE_WAIT_SECONDS = 30
 
 LOSTTIME_URL='http://localhost:3000'
 LOSTTIME_SCORING_PRESET_ID='scoring-preset-COC-WL2324'
-LOSTTIME_DOWNLOAD_STYLE_ID='dl-COC-html'
+LOSTTIME_DOWNLOAD_STYLE_ID='dl-output-doc'
 LOSTTIME_OUT_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_testing\\_downloads\\"
 
 PUBLIC_DIR = os.path.join(os.path.dirname(__file__), "web-public\\")
 PUBLIC_FILENAME = "results.html"
+
+SFTP_HOST = 'ssh.nyc1.nearlyfreespeech.net'
+SFTP_USER = 'ejones_losttimeorienteering'
+SFTP_PUBLIC_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nyc1.nearlyfreespeech.net.pub'
+SFTP_PRIVATE_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nfslosttime2024'
+SFTP_DEST_DIR = '/home/public'
+SFTP_DEST_FILENAME = 'test.html'
 
 def GetLatestFileInFolder(dir):
     wd = os.getcwd()
@@ -105,13 +115,12 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
         wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_STYLE_ID)))
         clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_STYLE_ID)
 
+        sleep(2) ## this is here to make sure the the file downloads and firefox doesn't block on pending download.
+        print("Created file from LostTime")
     except:
         print("Issue with generating file in LostTime")
         return False
-
     finally:
-        print("Created file from LostTime")
-        sleep(2) ## this is here to make sure the the file downloads and firefox doesn't block on pending download.
         driver.quit()
     return True
 
@@ -133,6 +142,49 @@ def CopyOutputToPublicFolder():
         return False
     return True
 
+def CopyOutputToSftpLocation():
+    src = GetLostTimeOutputFile()
+    dest = posixpath.join(SFTP_DEST_DIR, SFTP_DEST_FILENAME)
+    print("SFTP Src: {}".format(src))
+    print("SFTP Dest: {} on {}".format(dest, SFTP_HOST))
+    try:
+        sshclient = _SftpConnect()
+    except:
+        print("issue connecting to SFTP")
+        return False
+    try: 
+        _SftpPut(sshclient, src, dest)
+    except:
+        print("issue sending file to SFTP")
+        return False
+    finally:
+        print("closing ssh")
+        sshclient.close()
+        print("closed ssh")
+    return True
+
+# second answer https://stackoverflow.com/questions/3635131/paramikos-sshclient-with-sftp
+def _SftpConnect():
+    paramiko.util.log_to_file("paramiko.log")
+
+    client = paramiko.SSHClient()
+    client.load_host_keys(SFTP_PUBLIC_KEY_FILE)
+    key = paramiko.Ed25519Key.from_private_key_file(SFTP_PRIVATE_KEY_FILE)
+    client.connect(SFTP_HOST, username=SFTP_USER, pkey=key)
+    print("connected!")
+    return client
+
+def _SftpPut(client:paramiko.SSHClient, local, remote):
+    sftp = client.open_sftp()
+    sftp.put(local, remote)
+    print("Put file")
+    sftp.close()
+    print("Closed SFTP")
+    return
+
+
+
+#### Section: MAIN
 
 def main():
     processed_file=''
@@ -163,7 +215,11 @@ def main():
 
             # get new html file
             # move html file to location to serve
-            if not CopyOutputToPublicFolder():
+            # if not CopyOutputToPublicFolder():
+            #     continue
+
+            # put file on sftp server
+            if not CopyOutputToSftpLocation():
                 continue
 
             # set this file as processed
