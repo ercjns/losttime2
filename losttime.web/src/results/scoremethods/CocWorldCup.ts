@@ -1,5 +1,5 @@
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
+import { MultiEventScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
 
@@ -21,6 +21,76 @@ export class WorldCupResult {
         const statuses = iofStatusParser(this.Raw.Result.Status)
         this.CodeCheckingStatus = statuses.CodeCheckingStatus;
         this.CompetitiveStatus = statuses.CompetitiveStatus;
+    }
+}
+
+export class WorldCupMultiResultIndv {
+    // THIS WAS BUILT FOR 2-Day Combined TIME
+    // IT NEEDS TO BE ADJUSTED FOR USE WITH WIOL POINTS
+    // THIS DESPARATELY NEEDS TO BE REFACTORED TO INHERIT FROM 
+    // A COMMON MULTI-RESULT-INDIVIDUAL CLASS
+    Raw: WorldCupResult[];
+    TotalRaces: number;
+    RacesRecorded: number;
+    Name: string;
+    BibNumber: number;
+    Club?: string;
+    Points?: number;
+    Place?: number;
+    isValid: boolean;
+
+    constructor(totalRaces:number, resultindex:number, result:WorldCupResult) {
+        this.isValid = false;
+        this.RacesRecorded = 0;
+        this.TotalRaces = totalRaces;
+        this.Raw = new Array(totalRaces)
+        this.addResultAtIndex(result, resultindex)
+        this.BibNumber = result.Raw.Result.BibNumber;
+        this.Name = result.Name;
+        this.Club = result.Club;
+    }
+
+    addResultAtIndex(result:WorldCupResult, eventIdx:number) {
+        // console.log('Have this Multi result with ' + this.RacesRecorded + ' races recorded')
+        // console.log(this.Raw);
+        // console.log('Adding a new result at index ' + eventIdx)
+        if (this.Raw[eventIdx] != undefined) {
+            throw "Something's already here"
+        }
+        if (eventIdx > (this.TotalRaces-1)) {
+            throw "Not tracking this many races"
+        }
+        this.Raw[eventIdx] = result;
+        this.RacesRecorded += 1;
+        return;
+    }
+
+    assignPoints(method:MultiEventScoreMethodDefinition) {
+        if (method.MinimumRaces !== method.ContributingRaces) {
+            throw "Min Races should equal Contributing Races"
+        }
+        if (this.TotalRaces < method.MinimumRaces) {
+            throw "not enough races to provide a score"
+        }
+        if (this.RacesRecorded === method.MinimumRaces && 
+                this.RacesRecorded === method.ContributingRaces) {
+            // Force All races to be contributing races. needs updates to support
+            // any other methods.
+            this.isValid = true;
+            this.Raw.forEach(function (x) {
+                if (x.CodeCheckingStatus !== CodeCheckingStatus.FIN) {return undefined}
+                if (x.CompetitiveStatus !== CompetitiveStatus.COMP) {return undefined}
+            })
+            if (method.ScoreMethod === MultiEventScoreMethod.SumAll) {
+                const score = this.Raw.reduce((sum:number,current) => sum + (current.Points!), 0);
+                this.Points = score;
+                return score;
+            }
+            else {
+                throw "Score method not implemented"
+            }
+        }
+        return undefined;
     }
 }
 
@@ -205,6 +275,37 @@ export function WorldCupScoring_Indv(
     } else {
         return ans;
     }
+}
+
+export function WorldCupMultiIndv_AssignPlaces(MultiEventResults:WorldCupMultiResultIndv[]): WorldCupMultiResultIndv[] {
+    // assumes that everyone with points assigned is valid
+    // and can recieve a place.
+    // WorldCupMultiResultIndv.assignPoints() should not assign points if a place
+    // should not be assigned.
+    MultiEventResults.sort(WorldCupMultiIndvComparer)
+    MultiEventResults.forEach((indv, index, arr) => {
+        if (index === 0) {
+            if (indv.Points) {
+                indv.Place = index + 1;
+            }
+        } else if (indv.Points) {
+            if (indv.Points === arr[index-1].Points) {
+                indv.Place = arr[index-1].Place;
+            } else {
+                indv.Place = index + 1;
+            }
+        }
+    });
+    return MultiEventResults;
+}
+
+function WorldCupMultiIndvComparer(a:WorldCupMultiResultIndv, b:WorldCupMultiResultIndv): number {
+    if (a.Points && b.Points) {
+        return a.Points - b.Points
+    }
+    if (a.Points) {return -1;}
+    else if (b.Points) {return 1;}
+    else return 0;
 }
 
 export function WorldCupScoring_groupByClub(results:WorldCupResult[]):WorldCupResultsForClub[] {

@@ -7,20 +7,23 @@ import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
 import { Button, ButtonGroup, Collapse, Dropdown, DropdownButton, Form, Row} from 'react-bootstrap';
 import { CompetitionClass, CompetitionClassType, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
 import { createOutputDoc_CascadeOc } from './outputstyles/style_cascadeoc';
+import { createOutputDoc_JN2024 } from './outputstyles/style_jn2024';
 // import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 import { Guid } from 'guid-typescript';
-import { CocWinterLeaugeTestingJN } from './competitionpresets/preset_JNtesting';
+import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 
 
 enum resultsOutputStyle {
   plaintext = 0,
   genericHtml,
-  cascadeocHtml
+  cascadeocHtml,
+  jn2024Html,
+  jn2024WifiHtml
 }
 
 type resultsBuilderState = {
@@ -62,7 +65,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       compClassForm_teamSizeMin: 2,
       compClassForm_teamSizeMax: 3,
       compClassForm_teamScoreMethod: TeamScoreMethod.SumAllHighestWins,
-      outputStyle: resultsOutputStyle.cascadeocHtml
+      outputStyle: resultsOutputStyle.jn2024Html
     };
 
     this.updateRaceResults = this.updateRaceResults.bind(this);
@@ -96,7 +99,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
       this.setState({
         races: this.state.races+1,
-        raceData: parseRaceResult(resultsObj.ResultList).ClassResults,
+        raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
         filesprocessed: [...this.state.filesprocessed, newfile]
       });
 
@@ -208,8 +211,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
   private getRaceClassesByClassCode(classCode:string):string[] {
     // takes a string class code like "W2F" or "1"
-    // returns an array of IDs for all race classes with that exaxtly match that class code
-    // class codes that are integers only are stored as numbers, so call toString() on
+    // returns an array of IDs for all race classes with that exaxtly match that class code.
+    // Class codes that are integers only are stored as numbers, so call toString() on
     // the shortName to find them.
     let matches = this.state.raceData.filter((x) => x.Class.ShortName?.toString() === classCode);
     return matches.map(x => x.ID.toString());
@@ -235,11 +238,11 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
   }
 
   loadPreset(presetName:string) {
-    if (presetName == 'COCWL2324') {
+    if (presetName === 'COCWL2324') {
       CocWinterLeauge.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));  
-    } else if (presetName == 'COCWL2324_JNTEST') {
-      CocWinterLeaugeTestingJN.Classes.forEach(preset =>
+    } else if (presetName === 'COCWL2324_JNTEST') {
+      JNTesting.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));
     }
     return;
@@ -267,15 +270,20 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       case CompetitionClassType.OneRaceTeam:
         newCompClass.IsMultiRace = false;
         newCompClass.IsTeamClass = true;
-        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team
+        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team;
+        newCompClass.TeamLevel = CompClassParams.TeamLevel;
         break;
       case CompetitionClassType.ManyRaceIndv:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = false;
+        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi;
         break;
       case CompetitionClassType.ManyRaceTeam:
         newCompClass.IsMultiRace = true;
         newCompClass.IsTeamClass = true;
+        newCompClass.ScoreMethod_Multi = CompClassParams.ScoreMethod_Multi;
+        newCompClass.ScoreMethod_Team = CompClassParams.ScoreMethod_Team;
+        newCompClass.TeamLevel = CompClassParams.TeamLevel;
         break;
     }
 
@@ -354,6 +362,10 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         break;
       case resultsOutputStyle.cascadeocHtml:
         doc += createOutputDoc_CascadeOc(this.state.competitionClasses);
+        extension = "html"
+        break;
+      case resultsOutputStyle.jn2024Html:
+        doc += createOutputDoc_JN2024(this.state.competitionClasses);
         extension = "html"
         break;
     }
@@ -647,7 +659,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
         <div>
           <h4>Download Results</h4>
-          <Button id="dl-COC-html" onClick={this.createOutputDoc}>COC HTML</Button>
+          {/* this isn't actually COC, it's whatever's hardcoded on the results */}
+          <Button id="dl-output-doc" onClick={this.createOutputDoc}>Create Output</Button>
           {/* <ButtonGroup className="me-2">
               <DropdownButton id="download-results-group" title="Download Results"
                 variant="outline-primary">
