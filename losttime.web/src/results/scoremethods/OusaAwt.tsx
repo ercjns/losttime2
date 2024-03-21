@@ -14,7 +14,7 @@
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { MultiEventScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
-import { JNTeams } from "../competitionpresets/preset_JNteams";
+import { JNTeams } from "../competitionpresets/JN2024_teamComposition";
 import { RaceTeams, TeamDefinition, TeamLevel } from "../competitionpresets/teamdefinition";
 import { scoredCompClassComparer } from "./CocWorldCup";
 import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./IofStatusParser";
@@ -263,6 +263,7 @@ export function OusaAvgWinTimeScoring_GroupByRaceTeam(results:OusaAvgWinTimeResu
         // THAT SHOULD BE OK FOR NOW.
         // TODO THIS IS GETTING THE TEAM DEFINITIONS DIRECTLY
         // THOSE FOR SURE SHOULD BE PASSED IN SOMEHOW FROM THE COMP CLASS.
+        // ALSO OK FOR NOW.
         const key = JNTeams.findTeamIdStringByBibNumber(result.BibNumber);
         const team = JNTeams.findTeamByBibNumber(result.BibNumber);
         // double == for checking null and undefined at once.
