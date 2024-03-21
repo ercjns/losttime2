@@ -29,32 +29,32 @@ export const JNTesting = new CompetitionPreset("JN Testing");
 //     CompClassType: CompetitionClassType.OneRaceIndv,
 //     ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime
 // })
-JNTesting.addClass({
-    Name: "AWT TEST Elementary Teams",
-    ClassCodes: ["W1M","W1F"],
-    CompClassType: CompetitionClassType.OneRaceTeam,
-    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
-    ScoreMethod_Team: OusaSingleTeamMethod,
-    TeamLevel: TeamLevel.Primary
-})
+// JNTesting.addClass({
+//     Name: "AWT TEST Elementary Teams",
+//     ClassCodes: ["W1M","W1F"],
+//     CompClassType: CompetitionClassType.OneRaceTeam,
+//     ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+//     ScoreMethod_Team: OusaSingleTeamMethod,
+//     TeamLevel: TeamLevel.Primary
+// })
 
-// // Elementary 2-day Results
-// JNTesting.addClass({
-//     Name: "AWT Test Elementary Female 2-day",
-//     ClassCodes: ["W1F"],
-//     PairedClassCodes: ["W1M"],
-//     CompClassType: CompetitionClassType.ManyRaceIndv,
-//     ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
-//     ScoreMethod_Multi: OusaMultiIndvMethod
-// })
-// JNTesting.addClass({
-//     Name: "AWT TEST Elementary Male 2-day",
-//     ClassCodes: ["W1M"],
-//     PairedClassCodes: ["W1F"],
-//     CompClassType: CompetitionClassType.ManyRaceIndv,
-//     ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
-//     ScoreMethod_Multi: OusaMultiIndvMethod
-// })
+// Elementary 2-day Results
+JNTesting.addClass({
+    Name: "AWT Test Elementary Female 2-day",
+    ClassCodes: ["W1F"],
+    PairedClassCodes: ["W1M"],
+    CompClassType: CompetitionClassType.ManyRaceIndv,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Multi: OusaMultiIndvMethod
+})
+JNTesting.addClass({
+    Name: "AWT TEST Elementary Male 2-day",
+    ClassCodes: ["W1M"],
+    PairedClassCodes: ["W1F"],
+    CompClassType: CompetitionClassType.ManyRaceIndv,
+    ScoreMethod: IndividualScoreMethod.PointsOusaAverageWinningTime,
+    ScoreMethod_Multi: OusaMultiIndvMethod
+})
 // JNTesting.addClass({
 //     Name: "AWT TEST Elementary Teams 2-day",
 //     ClassCodes: ["W1M","W1F"],
@@ -63,6 +63,23 @@ JNTesting.addClass({
 //     ScoreMethod_Team: OusaSingleTeamMethod,
 //     ScoreMethod_Multi: OusaMultiIndvMethod 
 // })
+
+JNTesting.addClass({
+    Name: "Combined Time Test Elementary Female 2-day",
+    ClassCodes: ["W1F"],
+    PairedClassCodes: ["W1M"],
+    CompClassType: CompetitionClassType.ManyRaceIndv,
+    ScoreMethod: IndividualScoreMethod.Time,
+    ScoreMethod_Multi: OusaMultiIndvMethod
+})
+JNTesting.addClass({
+    Name: "Combined Time Elementary Male 2-day",
+    ClassCodes: ["W1M"],
+    PairedClassCodes: ["W1F"],
+    CompClassType: CompetitionClassType.ManyRaceIndv,
+    ScoreMethod: IndividualScoreMethod.Time,
+    ScoreMethod_Multi: OusaMultiIndvMethod
+})
 
 
 

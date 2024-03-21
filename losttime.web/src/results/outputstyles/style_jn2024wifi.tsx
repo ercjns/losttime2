@@ -5,15 +5,21 @@ import { CodeCheckingStatus } from '../scoremethods/IofStatusParser';
 import { OusaAvgWinTimeResult, OusaAvgWinTimeTeamResult } from '../scoremethods/OusaAwt';
 
 export function createOutputDoc_JN2024Wifi(data:CompetitionClass[]) {
+    
+    // TODO site header stuff
+    
+    
+    // acutual content in these
     const wrap = document.createElement("div");
-    // wrap.setAttribute("class", "LostTimeContent");
-    // wrap.setAttribute("id", "-top");
 
     wrap.appendChild(createCompHeader_JN2024Wifi(data));
     for (const compclass of data) {
         wrap.appendChild(createCompClassOutput_JN2024Wifi(compclass))
     }
     wrap.appendChild(StatusCodeHelpText());
+
+    // TODO site footer stuff
+
 
     return stringify_html(wrap);
 }

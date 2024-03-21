@@ -1,6 +1,6 @@
-import { getClubNameString, stringify_html, timeWithStatusString} from './stylehelpers';
+import { getClubNameString, stringify_html, timeWithStatusString, toMMMSS} from './stylehelpers';
 import { CompetitionClass, ScoredCompetitionClassType } from "../CompetitionClass";
-import { WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
+import { WorldCupMultiResultIndv, WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
 import { CodeCheckingStatus } from '../scoremethods/IofStatusParser';
 import { OusaAvgWinTimeResult, OusaAvgWinTimeTeamResult, OusaAvgWinTimeMultiResultIndv} from '../scoremethods/OusaAwt';
 import { TeamType } from '../competitionpresets/teamdefinition';
@@ -76,6 +76,9 @@ function createCompClassOutput_JN2024(x:CompetitionClass) {
             break;
         case ScoredCompetitionClassType.Multi_OusaAvgWinTime:
             wrap.appendChild(OusaAwtHtml_Multi_Indv(x));
+            break;
+        case ScoredCompetitionClassType.Multi_Time:
+            wrap.appendChild(TimeHtml_Multi_Indv(x));
             break;
         default:
             break;
@@ -369,6 +372,7 @@ function OusaAwtHtml_Multi_Indv(x:CompetitionClass) {
                 continue;    
             }
             raceNscore.textContent = race.Points?.toFixed(2) ?? "";
+            // raceNscore.textContent += " " + toMMMSS(race.Time)
             if (race.Place === 1) {
                 raceNscore.setAttribute("class", "text-right race-place-1")
             }
@@ -385,6 +389,94 @@ function OusaAwtHtml_Multi_Indv(x:CompetitionClass) {
 
         const score = document.createElement("td");
         score.textContent = el.Points?.toFixed(2) ?? "";
+        score.setAttribute("class", "text-right total-score");
+        trdata.appendChild(score);
+        tbody.appendChild(trdata);
+    }
+    table.appendChild(tbody);
+    return table
+}
+
+function TimeHtml_Multi_Indv(x:CompetitionClass) {
+    if (!x.Results_Multi_Time || x.Results_Multi_Time.length === 0) {
+        const emptydiv = document.createElement("div");
+        emptydiv.textContent ="No results for this class";
+        return emptydiv;
+    }
+
+    const table = document.createElement("table");
+    table.setAttribute("class", "table is-narrow is-striped");
+    table.setAttribute("id", "ResultsTable-"+x.ID.toString())
+
+    const thead = document.createElement("thead");
+    const trhead = document.createElement("tr");
+    const pos = document.createElement("th");
+    pos.textContent = "Pos.";
+    trhead.appendChild(pos);
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    trhead.appendChild(name);
+    const club = document.createElement("th");
+    club.textContent = "Club";
+    trhead.appendChild(club);
+    
+    for (let i=1; i<=x.ScoreMethod_Multi!.ContributingRaces; i++) {
+        const raceN = document.createElement("th");
+        raceN.textContent = "Race " + i;
+        raceN.setAttribute("class", "text-right");
+        trhead.appendChild(raceN);
+    }
+
+    const total = document.createElement("th");
+    total.textContent = "Total";
+    total.setAttribute("class", "text-right");
+    trhead.appendChild(total);
+
+    thead.appendChild(trhead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody")
+
+    for (const el of x.Results_Multi_Time) {
+        if (el === undefined) { continue; }
+        if (!(el instanceof WorldCupMultiResultIndv)) {throw Error("Not OUSA Multi Result")}
+        const trdata = document.createElement("tr");
+        const pos = document.createElement("td");
+        pos.textContent = el.Place?.toString() ?? "";
+        trdata.appendChild(pos);
+        const name = document.createElement("td");
+        name.textContent = el.Name;
+        trdata.appendChild(name);
+        const club = document.createElement("td");
+        club.textContent = el.Club ?? "";
+        trdata.appendChild(club);
+
+        for (let i = 0; i< el.Raw.length; i++) {
+            const race = el.Raw[i];
+            const raceNscore = document.createElement("td");
+            if (race === undefined) {
+                trdata.appendChild(raceNscore);
+                continue;    
+            }
+            // raceNscore.textContent = timeWithStatusString(race) ?? "";
+            raceNscore.textContent = toMMMSS(race.Points);
+
+            if (race.Place === 1) {
+                raceNscore.setAttribute("class", "text-right race-place-1")
+            }
+            else if (race.Place === 2) {
+                raceNscore.setAttribute("class", "text-right race-place-2")
+            }
+            else if (race.Place === 3) {
+                raceNscore.setAttribute("class", "text-right race-place-3")
+            } else {
+                raceNscore.setAttribute("class", "text-right");
+            }
+            trdata.appendChild(raceNscore);
+        }
+
+        const score = document.createElement("td");
+        score.textContent = toMMMSS(el.Points);
         score.setAttribute("class", "text-right total-score");
         trdata.appendChild(score);
         tbody.appendChild(trdata);
