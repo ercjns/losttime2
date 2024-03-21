@@ -9,7 +9,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=PUBLIC_PATH, **kwargs)
 
 def run(server_class=ThreadingHTTPServer, handler_class=CustomHandler):
-    server_address = ('', 8000)
+    server_address = ('', 8080)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
 

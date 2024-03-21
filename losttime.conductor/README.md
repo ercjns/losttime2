@@ -41,4 +41,32 @@ Define `PUBLIC_DIR` and `PUBLIC_FILENAME`. The file is copied. An existing file 
 FUTURE: SFTP upload
 FUTURE: POST request
 
+## Network Layout
+
+For serving results on local WiFi at finish / event center:
+
+We use a normal home wifi router (Asus RT-AC66U) that is capable of running the custom Tomato USB firmware. This allows two helpful things to run directly on the router itself: DNS and an NGINX reverse proxy.
+
+### DNSmasq
+This configuration allows us to tell individuals to connect to our WiFi network, type in a normal looking url, and get the page we're serving.
+
+There is just one line of configuraiton added to TomatoUSB's dnsmasq field:
+```address=/wifi.cascadeoc.org/192.168.103.100```
+`wifi.cascadeoc.org` is the url we tell people to type in and `192.168.103.100` is the IP address of the NGINX Server on the network... which is actually the router!
+
+### NGINX
+We're currently using NGINX as a simple reverse proxy. This means only the requests we want are forwarded to the computer inside the network that's actually serving the files. That computer has a reserved IP address with the router so this doesn't need to be reconfigured each setup.
+```
+server {
+  listen 80;
+  location / {
+    proxy_pass http://192.168.103.RESERVED:PORT;
+    proxy_redirect off;
+  }
+}
+```
+
+Currently we're just using `_basicwebserver.py` to serve the html file generated. This sometimes crashes, which isn't great.
+
+
 

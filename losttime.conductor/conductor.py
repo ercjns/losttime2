@@ -19,12 +19,14 @@ from shutil import copy2
 import paramiko
 
 SOURCE_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_testing\\_reference\\xml\\"
+# SOURCE_DIR = "\\\\Latitude-i3\\ForWifi"
 NEW_FILE_WAIT_SECONDS = 30
 
 LOSTTIME_URL='http://localhost:3000'
 LOSTTIME_SCORING_PRESET_ID='scoring-preset-COC-WL2324'
 LOSTTIME_DOWNLOAD_STYLE_ID='dl-output-doc'
 LOSTTIME_OUT_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_testing\\_downloads\\"
+
 
 PUBLIC_DIR = os.path.join(os.path.dirname(__file__), "web-public\\")
 PUBLIC_FILENAME = "results.html"
@@ -227,4 +229,5 @@ def main():
         else:
             print('Already processed that file')
 
-main()
+if __name__ == "__main__":
+    main()
