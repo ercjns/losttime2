@@ -23,20 +23,20 @@ SOURCE_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_te
 NEW_FILE_WAIT_SECONDS = 30
 
 LOSTTIME_URL='http://localhost:3000'
-LOSTTIME_SCORING_PRESET_ID='scoring-preset-COC-WL2324'
+LOSTTIME_SCORING_PRESET_ID='scoring-preset-JN24-1Fri'
 LOSTTIME_DOWNLOAD_STYLE_ID='dl-output-doc'
-LOSTTIME_OUT_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_testing\\_downloads\\"
+LOSTTIME_OUT_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\JN2024\\LIVEresultshtml\\working\\1fri\\"
 
 
 PUBLIC_DIR = os.path.join(os.path.dirname(__file__), "web-public\\")
-PUBLIC_FILENAME = "results.html"
+PUBLIC_FILENAME = "test.html"
 
 SFTP_HOST = 'ssh.nyc1.nearlyfreespeech.net'
 SFTP_USER = 'ejones_losttimeorienteering'
 SFTP_PUBLIC_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nyc1.nearlyfreespeech.net.pub'
-SFTP_PRIVATE_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nfslosttime2024'
+SFTP_PRIVATE_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nfs_Scooter'
 SFTP_DEST_DIR = '/home/public'
-SFTP_DEST_FILENAME = 'test.html'
+SFTP_DEST_FILENAME = 'live-results-1fri.html'
 
 def GetLatestFileInFolder(dir):
     wd = os.getcwd()
