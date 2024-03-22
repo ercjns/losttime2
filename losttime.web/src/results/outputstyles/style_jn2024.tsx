@@ -6,6 +6,11 @@ import { OusaAvgWinTimeResult, OusaAvgWinTimeTeamResult, OusaAvgWinTimeMultiResu
 import { TeamType } from '../competitionpresets/teamdefinition';
 
 export function createOutputDoc_JN2024(data:CompetitionClass[]) {
+    const wrap = createOutputNode_JN2024(data);
+    return stringify_html(wrap);
+}
+
+export function createOutputNode_JN2024(data:CompetitionClass[]) {
     const wrap = document.createElement("div");
     wrap.setAttribute("class", "block");
 
@@ -14,8 +19,7 @@ export function createOutputDoc_JN2024(data:CompetitionClass[]) {
         wrap.appendChild(createCompClassOutput_JN2024(compclass))
     }
     wrap.appendChild(StatusCodeHelpText());
-
-    return stringify_html(wrap);
+    return wrap;
 }
 
 function createCompHeader_JN2024(x:CompetitionClass[]) {

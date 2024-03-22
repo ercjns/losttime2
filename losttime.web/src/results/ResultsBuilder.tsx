@@ -16,6 +16,11 @@ import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 import { Guid } from 'guid-typescript';
 import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
+import { JN1Friday } from './competitionpresets/JN2024_1Fri_CompClasses';
+import { JN2Saturday } from './competitionpresets/JN2024_2Sat_CompClasses';
+import { JN3Sunday } from './competitionpresets/JN2024_3Sun_CompClasses';
+import { JN4twoday } from './competitionpresets/JN2024_4twoday_CompClasses';
+import { createOutputDoc_JN2024live } from './outputstyles/style_jn2024live';
 
 
 enum resultsOutputStyle {
@@ -23,7 +28,7 @@ enum resultsOutputStyle {
   genericHtml,
   cascadeocHtml,
   jn2024Html,
-  jn2024WifiHtml
+  jn2024LiveHtml
 }
 
 type resultsBuilderState = {
@@ -65,7 +70,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       compClassForm_teamSizeMin: 2,
       compClassForm_teamSizeMax: 3,
       compClassForm_teamScoreMethod: TeamScoreMethod.SumAllHighestWins,
-      outputStyle: resultsOutputStyle.jn2024Html
+      outputStyle: resultsOutputStyle.jn2024LiveHtml
     };
 
     this.updateRaceResults = this.updateRaceResults.bind(this);
@@ -244,7 +249,20 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     } else if (presetName === 'COCWL2324_JNTEST') {
       JNTesting.Classes.forEach(preset =>
       this.addSingleCompetitionClassFromPreset(preset));
-    }
+    } else if (presetName === 'JN1Friday') {
+      JN1Friday.Classes.forEach(preset =>
+        this.addSingleCompetitionClassFromPreset(preset));
+    } else if (presetName === 'JN2Saturday') {
+      JN2Saturday.Classes.forEach(preset =>
+        this.addSingleCompetitionClassFromPreset(preset));
+    } else if (presetName === 'JN3Sunday') {
+      JN3Sunday.Classes.forEach(preset =>
+        this.addSingleCompetitionClassFromPreset(preset));
+    } else if (presetName === 'JN4twoday') {
+      JN4twoday.Classes.forEach(preset =>
+        this.addSingleCompetitionClassFromPreset(preset));
+    } 
+
     return;
   }
 
@@ -368,6 +386,10 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         doc += createOutputDoc_JN2024(this.state.competitionClasses);
         extension = "html"
         break;
+      case resultsOutputStyle.jn2024LiveHtml:
+        doc += createOutputDoc_JN2024live(this.state.competitionClasses);
+        extension = "html";
+        break;
     }
     const date = new Date();
     const dateString = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getDate().toString().padStart(2,"0")}`;
@@ -473,26 +495,31 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         <div>
           Scoring Presets:
           {/* TODO: fix this later to use a sub component: https://stackoverflow.com/a/29810951 */}
-          <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button>
-          <Button id="scoring-preset-COC-WL2324AWTtest" onClick={() => this.loadPreset('COCWL2324_JNTEST')}>AWT TEST</Button>
+          {/* <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button>
+          <Button id="scoring-preset-COC-WL2324AWTtest" onClick={() => this.loadPreset('COCWL2324_JNTEST')}>AWT TEST</Button> */}
+          <Button id="scoring-preset-JN24-1Fri" onClick={() => this.loadPreset('JN1Friday')}>JN1Friday</Button>
+          <Button id="scoring-preset-JN24-2Sat" onClick={() => this.loadPreset('JN2Saturday')}>JN2Saturday</Button>
+          <Button id="scoring-preset-JN24-3Sun" onClick={() => this.loadPreset('JN3Sunday')}>JN3Sunday</Button>
+          <Button id="scoring-preset-JN24-4multi" onClick={() => this.loadPreset('JN4twoday')}>JN MultiDay</Button>
         </div>
         <div>
           {/* <Button size="lg" onClick={this.loadPreset}>
             Load Preset Magic Button
           </Button> */}
-          <div>
+          {/* <div>
             After loading all relevant race results, most users should&nbsp;
             <ButtonGroup className="me-2" size="sm">
               <Button size="sm">click here</Button>
               <DropdownButton id="scoring-presets-group" as={ButtonGroup} size="sm" title="">
-                {/* <Dropdown.Item>Standard: One Per Race Class</Dropdown.Item> */}
+                <Dropdown.Item>Standard: One Per Race Class</Dropdown.Item>
                 <Dropdown.Item id="Scoring-Preset-COC-WL-23-24" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Dropdown.Item>
-                {/* <Dropdown.Item>COC: Ultimate O 2024</Dropdown.Item> */}
+                <Dropdown.Item>COC: Ultimate O 2024</Dropdown.Item>
               </DropdownButton>
             </ButtonGroup>
             to create one competition class for each race class, or use a pre-defined template if one has been created for your events. You'll still be able to add competition classes using the <Button size="sm" variant="link" onClick={this.myToggler2}>advanced tools</Button> or remove classes that shouldn't be included if you need to make tweaks.
-          </div>
-          <Collapse in={this.state.advancedCompetitionClassDefinitionOpen}><div>
+          </div> */}
+          <Collapse in={this.state.advancedCompetitionClassDefinitionOpen}>
+          <div>
           <p>
             <b>Need something more custom?</b> Select one or more race classes below, specify the appropriate parameters, and then click "create competition class" to make a class that considers the results of the selected race classes. Repeat for each competition class. If you're a regular user with repeat events or series needs, ask for a template to generate many competition classes at once.
           </p>
