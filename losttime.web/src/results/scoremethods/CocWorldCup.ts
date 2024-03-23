@@ -217,16 +217,20 @@ export function WorldCupScoring_assignPoints(res:WorldCupResult[]):WorldCupResul
     res.sort(WorldCupResultComparer);
     res.forEach((result, index, arr) => {
         if (index === 0) {
-            if (result.CompetitiveStatus !== CompetitiveStatus.COMP) {
-                if (result.CompetitiveStatus < CompetitiveStatus.NC) {
+            if (result.CompetitiveStatus === CompetitiveStatus.SWD ||
+                result.CompetitiveStatus === CompetitiveStatus.OVT) {
+                result.Points = 0;
+            }
+            else if (result.CompetitiveStatus === CompetitiveStatus.COMP) {
+                if (result.CodeCheckingStatus === CodeCheckingStatus.FIN) {
+                    result.Place = index + 1;
+                    result.Points = CocWorldCupScoreByPlace(result.Place);
+                }
+                else {
                     result.Points = 0;
                 }
             }
-            else {
-                result.Place = index + 1;
-                result.Points = CocWorldCupScoreByPlace(result.Place);
-            }
-        } 
+        }
         else if (result.CompetitiveStatus === CompetitiveStatus.COMP) {
             if (result.CodeCheckingStatus === CodeCheckingStatus.FIN) {
                 if (result.Time === arr[index-1].Time) {
