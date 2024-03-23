@@ -503,7 +503,7 @@ JN2Saturday.addClass({
 
 JN2Saturday.addClass({
     Name: "M-Red",
-    ClassCodes: ["M-Yellow"],
+    ClassCodes: ["M-Red"],
     CompClassType: CompetitionClassType.OneRaceIndv,
     ScoreMethod: IndividualScoreMethod.Time
 })

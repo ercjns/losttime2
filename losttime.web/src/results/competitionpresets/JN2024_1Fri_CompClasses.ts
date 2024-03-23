@@ -345,7 +345,7 @@ JN1Friday.addClass({
 
 JN1Friday.addClass({
     Name: "M-Red",
-    ClassCodes: ["M-Yellow"],
+    ClassCodes: ["M-Red"],
     CompClassType: CompetitionClassType.OneRaceIndv,
     ScoreMethod: IndividualScoreMethod.Time
 })

@@ -508,7 +508,7 @@ JN3Sunday.addClass({
 
 JN3Sunday.addClass({
     Name: "M-Red",
-    ClassCodes: ["M-Yellow"],
+    ClassCodes: ["M-Red"],
     CompClassType: CompetitionClassType.OneRaceIndv,
     ScoreMethod: IndividualScoreMethod.Time
 })
