@@ -70,7 +70,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       compClassForm_teamSizeMin: 2,
       compClassForm_teamSizeMax: 3,
       compClassForm_teamScoreMethod: TeamScoreMethod.SumAllHighestWins,
-      outputStyle: resultsOutputStyle.jn2024LiveHtml
+      outputStyle: resultsOutputStyle.jn2024LiveHtml  // EDIT THIS FOR FLIPPING STYLE
     };
 
     this.updateRaceResults = this.updateRaceResults.bind(this);
