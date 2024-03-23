@@ -560,7 +560,7 @@ JNTeams.addTeam(new TeamDefinition(
     TeamLevel.CollegeVarsity,
     TeamType.Club,
     [
-        397, // Irene Miller
+        // 397, // Irene Miller // cancel
         395, // Annika Mihata
         506, // Zoe Sibthorp
         480, // Kevin Rogers
@@ -623,7 +623,7 @@ JNTeams.addTeam(new TeamDefinition(
     [
         453, // Henry Porter
         340, // Reid Kidd
-        536, // Collin Thompson
+        354, // Benjamin Lahann
         341, // Gregory Kies
         118, // Hugh Baldwin
     ]
@@ -636,7 +636,7 @@ JNTeams.addTeam(new TeamDefinition(
     [
         153, // Paul Bruce
         383, // Shawn Mather
-        354, // Benjamin Lahann
+        536, // Collin Thompson
         499, // Siddharth Shah
         568, // Tyler Wilson
     ]
