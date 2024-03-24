@@ -296,7 +296,10 @@ function OusaAwtHtml_Teams(x:CompetitionClass) {
     
                 trdata.appendChild(pos);
                 const score = document.createElement("td");
-                score.textContent = (member.Points?.toFixed(2) ?? "") + "*"
+                const strike = document.createElement("s");
+                strike.textContent = (member.Points?.toFixed(2) ?? "");
+                // score.textContent = (member.Points?.toFixed(2) ?? "") + "*"
+                score.appendChild(strike);
                 trdata.appendChild(score);
                 const name = document.createElement("td");
                 name.textContent = `${member.Name} (${member.Club!})`
