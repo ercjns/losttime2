@@ -12,7 +12,7 @@ export function createOutputDoc_JN2024live(data:CompetitionClass[]) {
     const div = document.createElement('div')
 
     const h2 = document.createElement('h2');
-    h2.innerText = "Live Results - Friday Frenchman Coulee";
+    h2.innerText = "Live Results - Sunday Bishop's Land";
     div.appendChild(h2);
 
     const pagecretedstamp = new Date();
