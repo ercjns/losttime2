@@ -70,7 +70,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       compClassForm_teamSizeMin: 2,
       compClassForm_teamSizeMax: 3,
       compClassForm_teamScoreMethod: TeamScoreMethod.SumAllHighestWins,
-      outputStyle: resultsOutputStyle.jn2024LiveHtml  // EDIT THIS FOR FLIPPING STYLE
+      outputStyle: resultsOutputStyle.jn2024Html  // EDIT THIS FOR FLIPPING STYLE
     };
 
     this.updateRaceResults = this.updateRaceResults.bind(this);
@@ -268,7 +268,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
   addSingleCompetitionClassFromPreset(CompClassParams:CompetitionClassPreset) {
     let newCompClass = new CompetitionClass();
-    newCompClass.Name = CompClassParams.Name
+    newCompClass.Name = CompClassParams.Name;
+    // console.log(newCompClass.Name);
 
     // get the race data
     newCompClass.RaceResults = this.getRaceClassResultsFromClassCodes(CompClassParams.ClassCodes)
