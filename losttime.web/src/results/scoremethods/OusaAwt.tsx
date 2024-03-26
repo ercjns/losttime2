@@ -81,10 +81,12 @@ export class OusaAvgWinTimeMultiResultIndv {
 
     assignPoints(method:MultiEventScoreMethodDefinition) {
         if (method.MinimumRaces !== method.ContributingRaces) {
-            throw "Min Races should equal Contributing Races"
+            // throw "Min Races should equal Contributing Races"
+            return
         }
         if (this.TotalRaces < method.MinimumRaces) {
-            throw "not enough races to provide a score"
+            // throw "not enough races to provide a score"
+            return
         }
         if (this.RacesRecorded === method.MinimumRaces && 
                 this.RacesRecorded === method.ContributingRaces) {
