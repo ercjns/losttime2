@@ -486,7 +486,7 @@ JN4twoday.addClass({
 
 JN4twoday.addClass({
     Name: "M-Red",
-    ClassCodes: ["M-Yellow"],
+    ClassCodes: ["M-Red"],
     CompClassType: CompetitionClassType.ManyRaceIndv,
     ScoreMethod: IndividualScoreMethod.Time,
     ScoreMethod_Multi: OusaMultiRaceIndvScoreMethod
