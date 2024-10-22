@@ -262,7 +262,9 @@ function buildRegPdfRow(entry: LtEntry): any[] {
         entry.GroupLeader === true ? { text: entry.ClassId, fontSize: 11 } : "",
         // epunch number
         entry.EpunchRented === true ? 
+            // Group Member Rental Punch
             entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
+            // Group Leader or Solo Rental Punch
             {
                 table: {
                     widths: [100],
@@ -306,54 +308,11 @@ function buildRegPdfRow(entry: LtEntry): any[] {
                     }
                 }
             } :
+            // Group Member Owned Punch
             entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
+            // Group Leader or Solo Owned Punch
                 { text: entry.Epunch, fontSize: 11, alignment: 'right' },
 
-        // entry.Epunch.length === 0 ? entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
-        //     {
-        //         table: {
-        //             widths: [100],
-        //             heights: [25],
-        //             body: [[{
-        //                 columns: [
-        //                     {
-        //                         width: '*',
-        //                         text: ' '
-        //                     },
-        //                     {
-        //                         width: 'auto',
-        //                         text: '     ',
-        //                         lineHeight: 1.45,
-        //                         background: '#CCCCCC'
-        //                     }
-        //                 ],
-        //             }]]
-        //         },
-        //         layout: {
-        //             hLineWidth() {
-        //                 return 1.5;
-        //             },
-        //             vLineWidth() {
-        //                 return 1.5;
-        //             },
-        //             hLineColor() {
-        //                 return 'black';
-        //             },
-        //             vLineColor() {
-        //                 return 'black';
-        //             },
-        //             paddingTop() {
-        //                 return 2;
-        //             },
-        //             paddingBottom() {
-        //                 return -2;
-        //             },
-        //             paddingRight() {
-        //                 return 2;
-        //             }
-        //         }
-        //     } :
-        //     { text: entry.Epunch, fontSize: 11, alignment: 'right' },
         // Club
         { text: entry.Club, fontSize: 11 },
         // Phone
