@@ -19,8 +19,8 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
 
     const GroupLeaders = entries.filter(entry => entry.GroupLeader === true);
 
-    const ownedepunchentries = GroupLeaders.filter(entry => entry.Epunch.length > 0)
-    const rentalepunchentries = GroupLeaders.filter(entry => entry.Epunch.length === 0)
+    const ownedepunchentries = GroupLeaders.filter(entry => entry.Epunch.length > 0 && entry.EpunchRented === false)
+    const rentalepunchentries = GroupLeaders.filter(entry => entry.Epunch.length === 0 || entry.EpunchRented === true)
 
     ownedepunchentries.sort(function (a: LtEntry, b: LtEntry) { return a.LastName.localeCompare(b.LastName) })
     rentalepunchentries.sort(function (a: LtEntry, b: LtEntry) { return a.LastName.localeCompare(b.LastName) })
@@ -82,7 +82,7 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
 
     let instructionsRegRent: any = () => {
         return ({
-            text: [{ text: 'Registration Volunteers: ', italics: true, bold: true }, 'Check off each participant in the first column when they arrive. Write the rental epunch number in the large box but do not check the shaded box. Please verify course assignment, contact, and vehicle information. Collect any money owed and cross out in the owed column when paid.'],
+            text: [{ text: 'Registration Volunteers: ', italics: true, bold: true }, 'Check off each participant in the first column when they arrive. If a number is printed in the box, find that epunch and rent it to the participant. If no number is printed, find any epunch that is not pre-assigned and write the rental number in the large box. Do not check the shaded box. Please verify course assignment, contact, and vehicle information. Collect any money owed and cross out in the owed column when paid.'],
             margin: [0, 0, 0, 10] // bottom only
         })
     };
@@ -261,7 +261,10 @@ function buildRegPdfRow(entry: LtEntry): any[] {
         // class/course
         entry.GroupLeader === true ? { text: entry.ClassId, fontSize: 11 } : "",
         // epunch number
-        entry.Epunch.length === 0 ? entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
+        entry.EpunchRented === true ? 
+            // Group Member Rental Punch
+            entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
+            // Group Leader or Solo Rental Punch
             {
                 table: {
                     widths: [100],
@@ -270,7 +273,7 @@ function buildRegPdfRow(entry: LtEntry): any[] {
                         columns: [
                             {
                                 width: '*',
-                                text: ' '
+                                text: entry.Epunch ? entry.Epunch : ' '
                             },
                             {
                                 width: 'auto',
@@ -305,7 +308,11 @@ function buildRegPdfRow(entry: LtEntry): any[] {
                     }
                 }
             } :
-            { text: entry.Epunch, fontSize: 11, alignment: 'right' },
+            // Group Member Owned Punch
+            entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
+            // Group Leader or Solo Owned Punch
+                { text: entry.Epunch, fontSize: 11, alignment: 'right' },
+
         // Club
         { text: entry.Club, fontSize: 11 },
         // Phone
