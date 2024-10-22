@@ -466,7 +466,12 @@ function TimeHtml_Multi_Indv(x:CompetitionClass) {
                 continue;    
             }
             // raceNscore.textContent = timeWithStatusString(race) ?? "";
-            raceNscore.textContent = toMMMSS(race.Points);
+            if (race.Points) {
+                raceNscore.textContent = toMMMSS(race.Points);
+            } else {
+                raceNscore.textContent = timeWithStatusString(race);
+            }
+
 
             if (race.Place === 1) {
                 raceNscore.setAttribute("class", "text-right race-place-1")
