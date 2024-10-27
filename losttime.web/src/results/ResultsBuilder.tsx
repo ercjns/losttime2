@@ -16,6 +16,7 @@ import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 // import { Guid } from 'guid-typescript';
 import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
+import { CascadeWinter2024 } from './competitionpresets/cascade_winter_2024';
 import { JN1Friday } from './competitionpresets/JN2024_1Fri_CompClasses';
 import { JN2Saturday } from './competitionpresets/JN2024_2Sat_CompClasses';
 import { JN3Sunday } from './competitionpresets/JN2024_3Sun_CompClasses';
@@ -261,7 +262,10 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     } else if (presetName === 'JN4twoday') {
       JN4twoday.Classes.forEach(preset =>
         this.addSingleCompetitionClassFromPreset(preset));
-    } 
+    } else if (presetName === 'CascadeWinter2024') {
+      CascadeWinter2024.Classes.forEach(preset =>
+        this.addSingleCompetitionClassFromPreset(preset));
+    }
 
     return;
   }
@@ -436,8 +440,27 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       )
 
       const configuredCompetitionClasses = this.state.competitionClasses.map((compclass) =>
-      <li key={compclass.ID.toString()}>
-        {/* <Button
+      <tr key={compclass.ID.toString()}>
+        <td>
+          {compclass.Name}
+        </td>
+        <td>
+          {IndividualScoreMethod[compclass.ScoreMethod]} 
+        </td>
+        <td>
+          {compclass.IsMultiRace ? "Multi-race " : "Single Race "}{compclass.IsTeamClass ? "Teams" : "Individuals"} 
+        </td>
+        <td>
+          <Button
+            onClick={(e) => this.handleRemoveCompClass(e)}
+            id={"remove-" + compclass.ID.toString()}
+            variant="outline-danger"
+            size="sm"
+          >
+            <FontAwesomeIcon icon={faTrashCan} />
+          </Button>
+        </td>
+          {/* <Button
           // onClick={(e) => this.handleRemoveCompClass(e)}
           id={"up-" + compclass.ID.toString()}
           variant="outline-secondary"
@@ -455,19 +478,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         >
           <FontAwesomeIcon icon={faArrowDown} />
         </Button> */}
-        &nbsp;<Button
-          onClick={(e) => this.handleRemoveCompClass(e)}
-          id={"remove-" + compclass.ID.toString()}
-          variant="outline-danger"
-          size="sm"
-        >
-          <FontAwesomeIcon icon={faTrashCan} />
-        </Button>
-        &nbsp;<b>Name:</b> {compclass.Name} 
-        &nbsp;<b>Scoring:</b> {compclass.IsTeamClass ? "TEAMS // " : ""} {IndividualScoreMethod[compclass.ScoreMethod]} 
-        &nbsp;
-
-      </li>
+      </tr>
     )
 
 
@@ -496,12 +507,13 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         <div>
           Scoring Presets:
           {/* TODO: fix this later to use a sub component: https://stackoverflow.com/a/29810951 */}
-          {/* <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button>
-          <Button id="scoring-preset-COC-WL2324AWTtest" onClick={() => this.loadPreset('COCWL2324_JNTEST')}>AWT TEST</Button> */}
-          <Button id="scoring-preset-JN24-1Fri" onClick={() => this.loadPreset('JN1Friday')}>JN1Friday</Button>
+          <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button>
+          {/* <Button id="scoring-preset-COC-WL2324AWTtest" onClick={() => this.loadPreset('COCWL2324_JNTEST')}>AWT TEST</Button> */}
+          {/* <Button id="scoring-preset-JN24-1Fri" onClick={() => this.loadPreset('JN1Friday')}>JN1Friday</Button>
           <Button id="scoring-preset-JN24-2Sat" onClick={() => this.loadPreset('JN2Saturday')}>JN2Saturday</Button>
           <Button id="scoring-preset-JN24-3Sun" onClick={() => this.loadPreset('JN3Sunday')}>JN3Sunday</Button>
-          <Button id="scoring-preset-JN24-4multi" onClick={() => this.loadPreset('JN4twoday')}>JN MultiDay</Button>
+          <Button id="scoring-preset-JN24-4multi" onClick={() => this.loadPreset('JN4twoday')}>JN MultiDay</Button> */}
+          <Button id="scoring-preset-cascade-winter-2024-single" onClick={() => this.loadPreset('CascadeWinter2024')}>Cascade Winter 24</Button>
         </div>
         <div>
           {/* <Button size="lg" onClick={this.loadPreset}>
@@ -707,9 +719,19 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
             These competition classes have been defined and will be included in output.
           </p>
           <div>
-            <ul>
-            {configuredCompetitionClasses}
-            </ul>
+            <table>
+              <thead>
+                <tr>
+                  <th>Class Name</th>
+                  <th>Scoring Method</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {configuredCompetitionClasses}
+              </tbody>
+            </table>
           </div>
         </Row>
       </div>
