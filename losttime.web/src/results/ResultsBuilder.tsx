@@ -1,7 +1,7 @@
 import React, { FormEvent } from 'react';
 import { PageTitle } from '../shared/PageTitle';
 import { BasicDz } from '../shared/dz';
-import { X2jOptionsOptional, XMLParser } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import { RaceFileListItem, RaceFileListItemProps } from './RaceFileListItem';
 import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
 import { Button, ButtonGroup, Collapse, Dropdown, DropdownButton, Form, Row} from 'react-bootstrap';
@@ -90,7 +90,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
   }
 
   async updateRaceResults(file: File) {
-    const parserOptions: X2jOptionsOptional = {
+    const parserOptions: any = {
       ignoreAttributes: false,
     }
     const parser = new XMLParser(parserOptions);
