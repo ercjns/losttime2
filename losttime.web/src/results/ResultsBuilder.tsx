@@ -13,7 +13,7 @@ import { createOutputDoc_JN2024 } from './outputstyles/style_jn2024';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
-import { Guid } from 'guid-typescript';
+// import { Guid } from 'guid-typescript';
 import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 import { JN1Friday } from './competitionpresets/JN2024_1Fri_CompClasses';

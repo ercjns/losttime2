@@ -322,7 +322,7 @@ export class CompetitionClass {
                         for (const result of singleEventResults) {
                             // look for a matching multiresult that already exists
                             // TODO: switch this to BIB matching rather than name+club
-                            const match = MultiEventResults.findIndex( x => x.Name == result.Name && x.Club == result.Club);
+                            const match = MultiEventResults.findIndex( x => x.Name === result.Name && x.Club === result.Club);
 
                             // if it exists, add the event result at correct index
                             if (match >= 0) {
@@ -435,7 +435,7 @@ export class CompetitionClass {
                             // look for a matching multiresult that already exists
                             // TODO: switch this to BIB matching rather than name+club
                             // World cup does not have bib piped through.
-                            const match = MultiEventResults.findIndex( x => x.Name == result.Name && x.Club == result.Club);
+                            const match = MultiEventResults.findIndex( x => x.Name === result.Name && x.Club === result.Club);
 
                             // if it exists, add the event result at correct index
                             if (match >= 0) {
