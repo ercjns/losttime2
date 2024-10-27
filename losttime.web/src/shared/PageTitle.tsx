@@ -5,11 +5,11 @@ export class PageTitle extends React.Component<{title: string}, {}, {}> {
   render () {
   return (
     <div>
-    <h2 style={{
+    <h1 style={{
 
     }}>
         {this.props.title}
-    </h2>
+    </h1>
     <div style={{
         width: '100%',
         height: '2px',

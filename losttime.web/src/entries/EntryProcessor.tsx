@@ -9,6 +9,7 @@ import {EntriesTableRow} from './components/EntriesTableRow';
 import {EntryFilesListItem, entryFileMeta} from './components/EntryFilesListItem';
 import { EntriesByClassItem } from './components/EntriesByClassItem';
 import { buildCheckInPdf } from './RegistrationCheckinPdf';
+import { SectionTitle } from '../shared/SectionTitle';
 
 type myformstate = {
     filesprocessed: entryFileMeta[],
@@ -121,7 +122,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
         />) :
         <tr>
           <td colSpan={6} style={{textAlign:'center'}}>
-            No Registrations to Show
+            No entries
           </td>
         </tr>
       ;
@@ -159,26 +160,34 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       return (
         <div>
           <PageTitle 
-            title="Pre-Process Registration Files" 
+            title="Manage Entries" 
           />
           <p>
-            Save event registration information in .csv format. Upload multiple files to combine registration information from multiple sources. (Todo: click to expand for supported csv formats)
+            Save event registration information in .csv format. Current supported formats are the Cascade OC and WIOL registration system outputs. Upload multiple files to combine registration information from multiple sources.
           </p>
           <p>
-            This tool creates outputs ready for import into SportSoftware (OE) and PDF files to print and use at check-in.
+            This tool can create both a csv file ready for import into SportSoftware (OE) and PDF files to print and use at check-in.
           </p>
-          <h4>Files</h4>
+          <SectionTitle title="Files" line={false}/>
           <p>
             <BasicDz parser={this.updateEntries} helpText="Drop csv file(s) here or click to open file browser."/>
           </p>
+          <p>Files Uploaded: {this.state.filesprocessed.length} &nbsp; {this.state.filesprocessed.length > 0 ? 
+          <Button 
+            variant="outline-secondary" 
+            onClick={this.handleClearEntries}>
+            Reset - Clear Files
+          </Button> : <div></div>}</p>
+          <ul>{files}</ul>
           <Row>
             <Col xs={12} md={6}>
+            <SectionTitle title={"Summary: "+this.state.entries.filter(entry => entry.GroupLeader === true).length.toString()+" starts"} line={true} />
               <Row>
-                <p>Files Uploaded: {this.state.filesprocessed.length}</p>
-                <p><ul>{files}</ul></p>
-                <p>Registrations by Class (Total: {this.state.entries.filter(entry => entry.GroupLeader === true).length}) <i>This total does not include group members</i>.</p>
+
+                <p><i>Solo participants and group leaders are counted; additional group members do not count towards total starts.</i></p>
                 <p>
                 <Row>
+                  <p>Starts by Class:</p>
                   {counts}
                 </Row>
                 </p>
@@ -214,17 +223,11 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
                     </Dropdown.Menu>
                   </Dropdown>
                   </ButtonGroup>
-                  <ButtonGroup>
-                    <Button 
-                      variant="outline-secondary" 
-                      onClick={this.handleClearEntries}>
-                      Clear Registrations
-                    </Button>
-                  </ButtonGroup>
                 </ButtonToolbar>
               </Row>
             </Col>
             <Col xs={6} md={6}>
+            <SectionTitle title={"All Entries: "+this.state.entries.length.toString()+" participants"} line={true}/>
   
               <table style={{textAlign: 'left'}}>
                 <thead>
