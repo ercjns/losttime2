@@ -64,7 +64,7 @@ export class LtEntry {
     ) {
         this.StartNo = null;
         this.Epunch = entry.EPunch
-        this.EpunchRented= (entry.Rental === 'X' && entry.Group !== '*') ? true:(entry.EPunch === '' && entry.Group !== '*') ? true:false;
+        this.EpunchRented= (entry.Rental.toUpperCase() === 'TRUE' || entry.Rental.toUpperCase() === 'X') ? true:false;
         this.FirstName= entry.FirstName
         this.LastName= entry.LastName
         this.Club= entry.Club
@@ -75,13 +75,13 @@ export class LtEntry {
         this.Phone= entry.Phone
         this.EmergencyPhone= entry.EmergencyPhone;
         this.CarLicense= entry.CarLicense
-        this.Newcomer= (entry.Newcomer === 'True') ? true:false;
+        this.Newcomer= (entry.Newcomer.toUpperCase() === 'TRUE') ? true:false;
         this.Group= (entry.Group) ? (entry.Group === '*' ? 0 : entry.Group): 1;
         this.GroupLeader= (entry.Group === '*') ? false : true;
         this.GroupId= nextGroupId;
-        this.Paid= (entry.Paid === 'True') ? true:false;
+        this.Paid= (entry.Paid.toUpperCase() === 'TRUE') ? true:false;
         this.Owed= (entry.Owed) ? entry.Owed: 0;
-        this.SignedWaiver= (entry.Waiver === 'True') ? true:false;
+        this.SignedWaiver= (entry.Waiver.toUpperCase() === 'TRUE') ? true:false;
 
         return this;
     }
