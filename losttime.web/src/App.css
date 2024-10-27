@@ -44,3 +44,14 @@
 th {
   padding-right: 4px;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@400');
+
+
+.orange-small-caps {
+  color:#FF3000;
+  font-family: "Alegreya Sans SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  text-shadow: 1px 1px #FFFFFF, 1px 1px 2px #AAAAAA;
+}

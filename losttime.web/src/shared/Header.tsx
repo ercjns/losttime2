@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import wordmark from  '../assets/LostTimeWordmark.svg';
 import mapblur from '../assets/mapmontageblur.jpg';
@@ -23,11 +23,8 @@ export class Header extends React.Component<{}, {}, {}> {
       <Navbar.Toggle aria-controls="basic-navbar-nav" style={{marginRight: '2rem'}}/>
       <Navbar.Collapse id="basic-navbar-nav" >
         <Nav>
-          {/* <Nav.Link href="#events" style={{marginLeft: '1rem'}}>Events</Nav.Link> */}
-          <NavDropdown title="Admin" id="basic-nav-dropdown" style={{marginLeft: '1rem'}}>
-            <NavDropdown.Item as={Link} to="/registrations">Process Registrations</NavDropdown.Item>
-            {/* <NavDropdown.Item as={Link} to="/results">Add Results</NavDropdown.Item> */}
-          </NavDropdown>
+          <Nav.Link href="/entries" style={{marginLeft: '1rem', fontWeight:'bold'}}>Manage Entries</Nav.Link>
+          <Nav.Link href="/results" style={{marginLeft: '1rem', fontWeight:'bold'}}>Create Results</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

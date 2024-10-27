@@ -1,9 +1,11 @@
 import './App.css';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { Col, Container} from 'react-bootstrap';
 import { Header } from './shared/Header';
 import { EntryProcessor } from './entries/EntryProcessor';
 import { ResultsBuilder } from './results/ResultsBuilder';
+import { Landing } from './info/Landing';
+import { Footer } from './shared/Footer';
 
 
 function App() {
@@ -19,16 +21,17 @@ function App() {
           <Col xs={{span:10, offset:1}}>
             <Switch>
               <Route exact path="/">
-                {/* <EntryProcessor /> */}
-                <ResultsBuilder />
+                <Landing />
               </Route>
-              <Route path="/registrations">
+              <Route path="/entries">
                 <EntryProcessor />
               </Route>
+              <Redirect from="/registrations" to="/entries" />
               <Route path="/results">
                 <ResultsBuilder />
               </Route>
             </Switch>
+            <Footer />
           </Col>
       </Container>
     </div>
