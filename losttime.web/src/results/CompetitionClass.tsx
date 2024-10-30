@@ -80,6 +80,25 @@ export class CompetitionClass {
         return true;
     }
 
+    totalParticipants() : Number {
+        if (this.RaceResults == null || this.RaceResults.length === 0) {
+            return 0;
+        }
+        const initial = 0;
+        const particpants = this.RaceResults.reduce(
+            (prev,current) => prev + current.PersonResults.length,
+            initial,
+        )
+        if (this.PairedRaceResults == null || this.PairedRaceResults.length === 0) {
+            return particpants;
+        }
+        const pairedparticipants = this.PairedRaceResults.reduce(
+            (prev,current) => prev + current.PersonResults.length,
+            particpants,
+        )
+        return pairedparticipants;
+    }
+
     computeScores() {
         if (!this.readyToScore()) {
             throw new Error("Not Ready to Score");

@@ -4,24 +4,25 @@ import { BasicDz } from '../shared/dz';
 import { XMLParser } from 'fast-xml-parser';
 import { RaceFileListItem, RaceFileListItemProps } from './RaceFileListItem';
 import { LtStaticRaceClassResult, parseRaceResult} from './RaceResult';
-import { Button, ButtonGroup, Collapse, Dropdown, DropdownButton, Form, Row} from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Collapse, Dropdown, DropdownButton, Form, Row, Table} from 'react-bootstrap';
 import { CompetitionClass, CompetitionClassType, IndividualScoreMethod, TeamCollationMethod, TeamScoreMethod, TeamScoreMethodDefinition } from './CompetitionClass';
 import { createOutputDoc_CascadeOc } from './outputstyles/style_cascadeoc';
 import { createOutputDoc_JN2024 } from './outputstyles/style_jn2024';
 // import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashCan, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faTrashCan, faArrowUp, faArrowDown, faFileArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 // import { Guid } from 'guid-typescript';
 import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
-import { CascadeWinter2024 } from './competitionpresets/cascade_winter_2024';
+import { CascadeWinter2024Single } from './competitionpresets/cascade_winter_2024_single';
 import { JN1Friday } from './competitionpresets/JN2024_1Fri_CompClasses';
 import { JN2Saturday } from './competitionpresets/JN2024_2Sat_CompClasses';
 import { JN3Sunday } from './competitionpresets/JN2024_3Sun_CompClasses';
 import { JN4twoday } from './competitionpresets/JN2024_4twoday_CompClasses';
 import { createOutputDoc_JN2024live } from './outputstyles/style_jn2024live';
+import { SectionTitle } from '../shared/SectionTitle';
 
 
 enum resultsOutputStyle {
@@ -262,8 +263,8 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     } else if (presetName === 'JN4twoday') {
       JN4twoday.Classes.forEach(preset =>
         this.addSingleCompetitionClassFromPreset(preset));
-    } else if (presetName === 'CascadeWinter2024') {
-      CascadeWinter2024.Classes.forEach(preset =>
+    } else if (presetName === 'CascadeWinter2024Single') {
+      CascadeWinter2024Single.Classes.forEach(preset =>
         this.addSingleCompetitionClassFromPreset(preset));
     }
 
@@ -441,16 +442,16 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
 
       const configuredCompetitionClasses = this.state.competitionClasses.map((compclass) =>
       <tr key={compclass.ID.toString()}>
-        <td>
-          {compclass.Name}
+        <td className='align-middle'>
+          {compclass.Name} ({compclass.totalParticipants()})
         </td>
-        <td>
+        <td className='align-middle'>
           {IndividualScoreMethod[compclass.ScoreMethod]} 
         </td>
-        <td>
+        <td className='align-middle'>
           {compclass.IsMultiRace ? "Multi-race " : "Single Race "}{compclass.IsTeamClass ? "Teams" : "Individuals"} 
         </td>
-        <td>
+        <td className='align-middle'>
           <Button
             onClick={(e) => this.handleRemoveCompClass(e)}
             id={"remove-" + compclass.ID.toString()}
@@ -487,34 +488,62 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         <PageTitle
           title="Create Competition Results"
         />
-        <p>
-          LostTime no longer saves any of your work, such as previous results to combine into a series. This greatly simplifies our ability to provide updates to the service. What this means is that you're always working on only ONE <b>competition</b> at a given time. A competition could be a single race, a multi-race event, or a series. LostTime still handles all these scenarios, but for multi-race competitions, you'll need to keep track of historic race files on our own, and re-load them each time you need to update with new results.
-        </p>
-        <ol>
-          <li>Add race(s) by uploading race results</li>
-          <li>Define Competition Classes using Race Classes and available Score Methods</li>
-          <li>Select the desired outputs</li>
-        </ol>
+        <Row>
+          <Col>
+          <p>
+            LostTime no longer saves any of your work, such as previous results to combine into a series. This greatly simplifies our ability to provide updates to the service. What this means is that you're always working on only ONE <b>competition</b> at a given time. A competition could be a single race, a multi-race event, or a series. LostTime still handles all these scenarios, but for multi-race competitions, you'll need to keep track of historic race files on our own, and re-load them each time you need to update with new results.
+          </p>
+          <ol>
+            <li>Add race(s) by uploading race results</li>
+            <li>Define Competition Classes using Race Classes and available Score Methods</li>
+            <li>Select the desired outputs</li>
+          </ol>
+          </Col>
+        </Row>
+
         <div>
-          <h4>Add Race Results</h4>
+          <SectionTitle title="Race Results File(s)" line={false} />
           <BasicDz parser={this.updateRaceResults} helpText="Drop xml file here or click to open file browser." />
         </div>
 
         <div>
+          <p>Files Uploaded: {fileInfo.length}</p>
+          <ul>
           {fileInfo}
+          </ul>
         </div>
-        <hr />
+
         <div>
-          Scoring Presets:
+          <SectionTitle title="Define Classes" line={true} />
+          <Row>
+            <Col>
+            <p>Preset Class Definitions:</p>
+            <p>
           {/* TODO: fix this later to use a sub component: https://stackoverflow.com/a/29810951 */}
-          <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button>
+          {/* <Button id="scoring-preset-COC-WL2324" onClick={() => this.loadPreset('COCWL2324')}>COC: Winter 23-24</Button> */}
           {/* <Button id="scoring-preset-COC-WL2324AWTtest" onClick={() => this.loadPreset('COCWL2324_JNTEST')}>AWT TEST</Button> */}
           {/* <Button id="scoring-preset-JN24-1Fri" onClick={() => this.loadPreset('JN1Friday')}>JN1Friday</Button>
           <Button id="scoring-preset-JN24-2Sat" onClick={() => this.loadPreset('JN2Saturday')}>JN2Saturday</Button>
           <Button id="scoring-preset-JN24-3Sun" onClick={() => this.loadPreset('JN3Sunday')}>JN3Sunday</Button>
           <Button id="scoring-preset-JN24-4multi" onClick={() => this.loadPreset('JN4twoday')}>JN MultiDay</Button> */}
-          <Button id="scoring-preset-cascade-winter-2024-single" onClick={() => this.loadPreset('CascadeWinter2024')}>Cascade Winter 24</Button>
+          <Button 
+            id="scoring-preset-cascade-winter-2024-single" 
+            onClick={() => this.loadPreset('CascadeWinter2024Single')}>
+              Cascade Winter 24-25 Single Race
+          </Button>
+          &nbsp;
+          <Button 
+            id="scoring-preset-cascade-winter-2024-series" 
+            onClick={() => this.loadPreset('CascadeWinter2024Series')}
+            disabled>
+              Cascade Winter 24-25 Series (in development)
+          </Button>
+            </p>
+            <p><i>Manual/custom class definition coming in the future.</i></p>
+            </Col>
+          </Row>
         </div>
+
         <div>
           {/* <Button size="lg" onClick={this.loadPreset}>
             Load Preset Magic Button
@@ -698,9 +727,14 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         </div>
 
         <div>
-          <h4>Download Results</h4>
-          {/* this isn't actually COC, it's whatever's hardcoded on the results */}
-          <Button id="dl-output-doc" onClick={this.createOutputDoc}>Create Output</Button>
+        <SectionTitle title="Download Results" line={true} />
+        <Row>
+          <Col>
+          <p>
+        {/* this isn't actually COC, it's whatever's hardcoded on the results */}
+        <Button id="dl-output-doc" onClick={this.createOutputDoc}>
+          <FontAwesomeIcon icon={faFileArrowDown} /> Download
+        </Button>
           {/* <ButtonGroup className="me-2">
               <DropdownButton id="download-results-group" title="Download Results"
                 variant="outline-primary">
@@ -709,20 +743,21 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
                 <Dropdown.Item id="Download-Results-Coc-Html" onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
               </DropdownButton>
             </ButtonGroup> */}
+        </p>
+          </Col>
+        </Row>
         </div>
 
-        <hr />
-
         <Row>
-          <h4>Review Competition Classes</h4>
+          <SectionTitle title="Review Competition Classes" line={true} />
           <p>
-            These competition classes have been defined and will be included in output.
+            All classes listed here are included in output, even if no results are found.
           </p>
           <div>
-            <table>
+            <Table striped size="sm">
               <thead>
                 <tr>
-                  <th>Class Name</th>
+                  <th>Class Name (Results Count)</th>
                   <th>Scoring Method</th>
                   <th>Type</th>
                   <th>Actions</th>
@@ -731,7 +766,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
               <tbody>
                 {configuredCompetitionClasses}
               </tbody>
-            </table>
+            </Table>
           </div>
         </Row>
       </div>
