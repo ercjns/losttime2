@@ -49,7 +49,6 @@ type resultsBuilderState = {
   compClassForm_teamSizeMin: number,
   compClassForm_teamSizeMax: number,
   compClassForm_teamScoreMethod: TeamScoreMethod,
-  outputStyle: resultsOutputStyle
 }
 
 export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}> {
@@ -72,7 +71,6 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
       compClassForm_teamSizeMin: 2,
       compClassForm_teamSizeMax: 3,
       compClassForm_teamScoreMethod: TeamScoreMethod.SumAllHighestWins,
-      outputStyle: resultsOutputStyle.jn2024Html  // EDIT THIS FOR FLIPPING STYLE
     };
 
     this.updateRaceResults = this.updateRaceResults.bind(this);
@@ -372,12 +370,12 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     return;
   }
 
-  createOutputDoc() {
+  createOutputDoc(style:resultsOutputStyle) {
     let extension = "txt"
     let doc = ""
 
     // add things to the doc based on the style requested
-    switch (this.state.outputStyle) {
+    switch (style) {
       case resultsOutputStyle.plaintext:
         // doc += createOutputDoc_plaintext(this.state.competitionClasses);
         break;
@@ -731,18 +729,23 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         <Row>
           <Col>
           <p>
-        {/* this isn't actually COC, it's whatever's hardcoded on the results */}
-        <Button id="dl-output-doc" onClick={this.createOutputDoc}>
-          <FontAwesomeIcon icon={faFileArrowDown} /> Download
-        </Button>
-          {/* <ButtonGroup className="me-2">
-              <DropdownButton id="download-results-group" title="Download Results"
-                variant="outline-primary">
-                <Dropdown.Item>Plaintext</Dropdown.Item>
-                <Dropdown.Item>Generic HTML</Dropdown.Item>
-                <Dropdown.Item id="Download-Results-Coc-Html" onClick={this.createOutputDoc}>COC HTML</Dropdown.Item>
-              </DropdownButton>
-            </ButtonGroup> */}
+          
+        <ButtonGroup className="me-2">
+      {/* May have to revert back to a direct button (not a dropdown/group) 
+      to get the automation to work, but this is the desired design for now. */}
+            <DropdownButton id="download-results-group" title="Download Results"
+              variant="primary">
+              {/* <Dropdown.Item id="Download-Results-Plaintext" 
+                onClick={()=>this.createOutputDoc(resultsOutputStyle.plaintext)}
+                >Plaintext</Dropdown.Item>
+              <Dropdown.Item id="Download-Results-Html" 
+                onClick={()=>this.createOutputDoc(resultsOutputStyle.genericHtml)}
+                >Generic HTML</Dropdown.Item> */}
+              <Dropdown.Item id="Download-Results-Coc-Html" 
+                onClick={()=>this.createOutputDoc(resultsOutputStyle.cascadeocHtml)}
+                >COC HTML</Dropdown.Item>
+            </DropdownButton>
+          </ButtonGroup>
         </p>
           </Col>
         </Row>
