@@ -6,6 +6,7 @@ import { EntryProcessor } from './entries/EntryProcessor';
 import { ResultsBuilder } from './results/ResultsBuilder';
 import { Landing } from './info/Landing';
 import { Footer } from './shared/Footer';
+import { Documentation } from './info/Documentation';
 
 
 function App() {
@@ -30,6 +31,10 @@ function App() {
               <Route path="/results">
                 <ResultsBuilder />
               </Route>
+              <Route path="/docs">
+                <Documentation />
+              </Route>
+              <Redirect from="/documentation" to="/docs" />
             </Switch>
             <Footer />
           </Col>

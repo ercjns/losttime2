@@ -11,7 +11,7 @@ import { createOutputDoc_JN2024 } from './outputstyles/style_jn2024';
 // import { createCompClassDocument_plaintext } from './outputstyles/style_plaintext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashCan, faArrowUp, faArrowDown, faFileArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faTrashCan, faArrowUp, faArrowDown, faFileArrowDown, faPersonDigging } from '@fortawesome/free-solid-svg-icons'
 import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 // import { Guid } from 'guid-typescript';
 import { JNTesting } from './competitionpresets/preset_JNtesting';
@@ -488,6 +488,9 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         />
         <Row>
           <Col>
+          <p>
+          <FontAwesomeIcon icon={faPersonDigging} style={{"color":'orangered'}}/> <b>Results functionality is under construction. Please verify output before posting as final!</b> <FontAwesomeIcon icon={faPersonDigging} style={{"color":'orangered'}}/>
+          </p>
           <p>
             LostTime no longer saves any of your work, such as previous results to combine into a series. This greatly simplifies our ability to provide updates to the service. What this means is that you're always working on only ONE <b>competition</b> at a given time. A competition could be a single race, a multi-race event, or a series. LostTime still handles all these scenarios, but for multi-race competitions, you'll need to keep track of historic race files on our own, and re-load them each time you need to update with new results.
           </p>

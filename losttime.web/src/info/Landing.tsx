@@ -49,7 +49,7 @@ export class Landing extends React.Component<{}, {}, {}> {
             <SectionTitle title="Customization and Contributing" line={true}/>
             <Row>
             <Col>
-            <p>If you'd like to use Lost Time for your club, there are generic templates available, but the tool is most powerful with customized formatting and scoring functions specific to your club. Send me an email to get started, or check out the source on <a href="https://github.com/ercjns/losttime2">github</a>. Pull requests are welcome!</p>
+            <p>If you'd like to use Lost Time for your events there are generic templates available, but the tool is most powerful with customized formatting and scoring functions that work exactly the way you want. Send me an email to get started, or check out the source on <a href="https://github.com/ercjns/losttime2">github</a>. Pull requests are welcome!</p>
             </Col>
             </Row>
             </div>
