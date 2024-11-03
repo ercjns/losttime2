@@ -34,6 +34,7 @@ function App() {
               <Route path="/docs">
                 <Documentation />
               </Route>
+              <Redirect from="/documentation" to="/docs" />
             </Switch>
             <Footer />
           </Col>
