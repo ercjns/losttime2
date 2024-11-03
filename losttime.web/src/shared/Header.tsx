@@ -25,6 +25,7 @@ export class Header extends React.Component<{}, {}, {}> {
         <Nav>
           <Nav.Link href="/entries" style={{marginLeft: '1rem', fontWeight:'bold'}}>Manage Entries</Nav.Link>
           <Nav.Link href="/results" style={{marginLeft: '1rem', fontWeight:'bold'}}>Create Results</Nav.Link>
+          <Nav.Link href="/docs" style={{marginLeft: '1rem', fontWeight:'bold'}}>Docs</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
