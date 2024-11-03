@@ -163,11 +163,16 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
             title="Manage Entries" 
           />
           <p>
-            Save event registration information in .csv format. Current supported formats are the Cascade OC and WIOL registration system outputs. Upload multiple files to combine registration information from multiple sources.
-          </p>
+            This tool can create outputs for two different event functions:
+          </p> 
+          <ul>
+            <li>People responsible for results can create files for easy import of entries into SportSoftware (OE). </li>
+            <li>People managing on-site check-in can create PDF files ready to print and use.</li>
+          </ul>
           <p>
-            This tool can create both a csv file ready for import into SportSoftware (OE) and PDF files to print and use at check-in.
+            Start by uploading a file with event entry information. It is possible to add multiple files, including those from different systems, to combine entry information from multiple sources into one output. Verify the summaries, then select the desired output. Supported file formats are outlined in the <a href="/docs#entries">docs</a>.
           </p>
+          
           <SectionTitle title="Files" line={false}/>
           <p>
             <BasicDz parser={this.updateEntries} helpText="Drop csv file(s) here or click to open file browser."/>
