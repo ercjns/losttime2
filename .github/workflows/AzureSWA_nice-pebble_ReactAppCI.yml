@@ -1,13 +1,16 @@
-name: Azure Static Web Apps CI/CD
+name: Azure Static Web Apps Nice Pebble React App CI
 
 on:
   push:
     branches:
       - entries-liveprod-azure-static
+      - liveprod-nice-pebble
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - entries-liveprod-azure-static
+      - liveprod-nice-pebble
+      - main
 
 jobs:
   build_and_deploy_job:
