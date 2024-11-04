@@ -4,31 +4,27 @@ Lost Time is a suite of software to help orienteering event organizers make up l
 
 This is version 2, a full re-write mainly to address supportaibility and provide a better platform for expansion.
 
-## For Event Oraganizers
+### LostTime.Web
 
-(Documentation is coming soon!)
+Web is a static single page application. It covers two scecnarios:
 
-Currently, Lost Time 2 supports creating SportSoftware entry files from registration csv files. Other functionality from version 1 is in the process of being implemented in version 2.
+1. Pre-Event: given registration information, create files ready for import into OE
+1. Post-Event: given race results, create files ready for online display
 
-## For Developers
+There is no database, the application does not store any information between sessions.
 
-This repository contians two projects: a webapp and an api.
+#### Development Notes:
 
-This project is primarily developed using Ubuntu 20.04 on WSL, and Visual Studio Code.
+In the `losttime.web` folder, run `npm start` to run the development version.
 
-### Webapp
+### LostTime.Conductor
 
-The LostTime Webapp is written in TypeScript and uses React.
+Conductor is an application and tooling to support the use of Web in a more automated fashion.
 
-Quickstart: navigate to the `src/webapp` directory and run `npm install` then `npm start`
+For example, the conductor can be used to support live results in the following workflow:
+1. Conductor ensures a local version of LostTime.Web is available.
+1. Conductor monitors a folder for a new race XML file.
+1. Conductor uses automation to create a competition result html file, leveraging LostTime.Web.
+1. Conductor moves the html file to a location where it can be served.
 
-In order to create minified files ready for production, run `npm run build`, which creates files in a `build` folder. These files can be served by the api.
-
-### API
-
-Quickstart: navigate to the `src/api` directory, run `pipenv install` to install the dependencies, then `pipenv shell` to enter the environment, then `uvicorn main:losttime --reload` to start the server.
-
-Note that output from the `webapp/build` folder is manually copied to the `api/frontend` folder to be served.
-
-At this point in development, there isn't actually an "API" per se, it's sole purpose is to act as a server for the webapp.
 
