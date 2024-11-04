@@ -24,14 +24,14 @@ function App() {
               <Route exact path="/">
                 <Landing />
               </Route>
-              <Route path="./entries">
+              <Route path="/entries">
                 <EntryProcessor />
               </Route>
               <Redirect from="/registrations" to="/entries" />
-              <Route path="./results">
+              <Route path="/results">
                 <ResultsBuilder />
               </Route>
-              <Route path="./docs">
+              <Route path="/docs">
                 <Documentation />
               </Route>
               <Redirect from="/documentation" to="/docs" />
