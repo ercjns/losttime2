@@ -22,20 +22,25 @@ WIOL,ARL,Arlington
 WIOL,ART,Artondale Elementary
 WIOL,BBL,Bishop Blanchet
 WIOL,BCC,Bellevue College
+WIOL,BCE,Briarcrest Elementary
+WIOL,BDE,Black Diamond Elementary
 WIOL,BED,Burlington-Edison
 WIOL,BEL,Bellevue
 WIOL,BEN,Ben Rush Elementary
 WIOL,BES,Brier Elementary
 WIOL,BET,Bethel
-WIOL,BMS,Bethel Middle School
+WIOL,BMS,Bethel Middle
 WIOL,BPS,Big Picture School
 WIOL,BRE,Bremerton
-WIOL,BRT,Brier Terrace Middle School
+WIOL,BRT,Brier Terrace Middle
+WIOL,BTE,Bryant Elementary
 WIOL,BUS,The Bush School
 WIOL,BVM,Bellevue Montessori
 WIOL,BWW,Brightwater Waldorf
 WIOL,CAS,Cascadia Elementary
 WIOL,CBE,Clara Barton Elementary
+WIOL,CDH,Cascade District Homelink
+WIOL,CDM,Cedar Heights Middle
 WIOL,CDR,Cedar River Elementary
 WIOL,CHE,Clyde Hill Elementary
 WIOL,CHM,Chehalis Middle
@@ -44,44 +49,48 @@ WIOL,CLK,Chloe Clark Elementary
 WIOL,CLV,Cleveland
 WIOL,CME,Crista McAuliffe Elementary
 WIOL,CMP,Camas Prairie Elementary
-WIOL,CMT,Cougar Mountain Middle School
+WIOL,CMT,Cougar Mountain Middle
 WIOL,COL,Columbia Elementary
+WIOL,CSE,Carl Sandburg Elementary
 WIOL,CSI,Chief Sealth
 WIOL,CSM,Colorado School of Mines
 WIOL,CTR,The Center School
 WIOL,CUR,Curtis
 WIOL,CWU,Central Washington University
 WIOL,DCS,Discovery Community School
-WIOL,DEN,Denny Middle School
+WIOL,DEN,Denny Middle
 WIOL,DKS,Emily Dickinson Elementary
 WIOL,DSS,Downton School - Seattle
 WIOL,EAS,Environmental & Adventure School
-WIOL,ECK,Eckstein Middle School
+WIOL,ECC,Everett Community College
+WIOL,ECK,Eckstein Middle
+WIOL,ECS,Eastside Christian School
 WIOL,EDC,Edmonds College
 WIOL,EGM,Evergreen Middle
 WIOL,EHS,Edmonds Heights K12
-WIOL,EIN,Einstein Middle School
+WIOL,EIN,Einstein Middle
 WIOL,ELK,Eastlake
 WIOL,ELP,Elk Plain K-8
-WIOL,EMS,Eisenhower Middle School
+WIOL,EMS,Eisenhower Middle
 WIOL,ENE,Enatai Elementary
-WIOL,ESM,Eagle Staff Middle School
+WIOL,ESM,Eagle Staff Middle
 WIOL,ESP,Eastside Prepatory
 WIOL,EUW,Early Entrance UW
 WIOL,EVT,Everett
 WIOL,EXC,Explorer Community School
-WIOL,EXM,Explorer Middle School
-WIOL,FIN,Finn Hill Middle School
+WIOL,EXM,Explorer Middle
+WIOL,FIN,Finn Hill Middle
 WIOL,FRS,Forest Ridge School
 WIOL,GAR,Garfield
-WIOL,GAT,Gateway Middle school
+WIOL,GAT,Gateway Middle
 WIOL,GIG,Gig Harbor
 WIOL,GLP,Glacier Peak
 WIOL,GPK,Glacier Park Elementary
 WIOL,GRC,Green River College
 WIOL,HAZ,Hazen
 WIOL,HLT,Highland Terrace Elementary
-WIOL,HMS,Hamilton International MS
+WIOL,HME,Horace Mann Elementary
+WIOL,HMS,Hamilton International Middle
 WIOL,HOM,Home School
 WIOL,HZW,Hazel Wolf K-8
 WIOL,ICS,International Community School
@@ -93,14 +102,15 @@ WIOL,ISS,Issaquah
 WIOL,JAC,Jackson
 WIOL,JAM,Jane Addams Middle
 WIOL,JEF,Thomas Jefferson
+WIOL,JME,Jing Mei Elementary
 WIOL,JSI,John Stanford International
 WIOL,JTA,Juanita Elementary
 WIOL,JUA,Juanita
 WIOL,KAM,Kamiak
-WIOL,KIR,Kirkland Middle School
-WIOL,KKM,Kamiakin Middle School
+WIOL,KIR,Kirkland Middle
+WIOL,KKM,Kamiakin Middle
 WIOL,KOE,Kokanee Elementary
-WIOL,KOP,Kopachuck Middle School
+WIOL,KOP,Kopachuck Middle
 WIOL,KSE,Karshner Elementary
 WIOL,LAK,Lakeside
 WIOL,LAW,Lawton Elementary
@@ -108,76 +118,97 @@ WIOL,LEM,Leota Middle
 WIOL,LIB,Liberty
 WIOL,LIN,Lincoln
 WIOL,LKW,Lake Wilderness Elementary
-WIOL,LMS,Lakeside Middle School
+WIOL,LMS,Lakeside Middle
 WIOL,LVW,Lakeview Elementary
 WIOL,LWA,Lake Washington
 WIOL,LYE,Lake Youngs Elementary
 WIOL,MAD,Madrona Elementary (Edmonds)
 WIOL,MAR,Mariner
-WIOL,MAY,Maywood Middle School
-WIOL,MCM,McMurray Middle School
+WIOL,MAY,Maywood Middle
+WIOL,MCM,McMurray Middle
 WIOL,MDP,Meridian Park Elementary
 WIOL,MLE,Moorlands Elementary
+WIOL,MNM,Meany Middle
 WIOL,MON,Montlake Elementary
+WIOL,MSU,Montana State University
 WIOL,MSV,Marysville
-WIOL,MVM,Maple View Middle School
+WIOL,MVM,Maple View Middle
+WIOL,MVM,Mountain View Middle
 WIOL,NCA,Northshore Christian Academy
+WIOL,NDM,Northwood Middle
 WIOL,NEW,Newport
 WIOL,NKT,North Kitsap
+WIOL,NSM,Northshore Middle
 WIOL,NST,Northstar
-WIOL,NWM,Northwest  Montessori
+WIOL,NWM,Northwest Montessori
 WIOL,OAK,Oak Harbor
+WIOL,OLC,Olympic College
 WIOL,OVL,Overlake
 WIOL,OWS,Open Window School
 WIOL,PCM,Pacific Crest Montessori
+WIOL,PDS,Puesta del Sol
 WIOL,PEN,Peninsula
 WIOL,PLE,Phantom Lake Elementary
 WIOL,PRV,Peace River Homeschool
 WIOL,RAV,Raisbeck Aviation
 WIOL,RCK,Rock Creek Elementary
 WIOL,RDE,Redmond Elementary
+WIOL,REC,Reed College
 WIOL,RED,Redmond
+WIOL,RFE,Robert Frost Elementary
 WIOL,RHE,Rose Hill Elementary
-WIOL,RHL,Rose Hill Middle School
+WIOL,RHL,Rose Hill Middle
 WIOL,ROO,Roosevelt
+WIOL,SAM,Sammamish
 WIOL,SBG,Sandburg Elementary
 WIOL,SCD,Seattle Country Day School
 WIOL,SCU,Santa Clara University
 WIOL,SHA,Shadow Lake Elementary
 WIOL,SHW,Shorewood
 WIOL,SKT,South Kitsap
+WIOL,SLE,Sunnyslope Elementary
 WIOL,SMA,St. Mary's Academy
 WIOL,SMI,Science & Math Institute
 WIOL,SPA,Spanaway
 WIOL,SSE,Sunset Elementary
 WIOL,SSS,Summit Sierra School
+WIOL,STE,Stevens Elementary
 WIOL,STL,St. Lukes
-WIOL,STM,Summit Trails Middle School
+WIOL,STM,Summit Trails Middle
 WIOL,STT,St. Thomas
 WIOL,SVC,Sky Valley Education Center
 WIOL,SVS,Soundview School
+WIOL,SWE,Swift Water Elementary
+WIOL,SWH,South Whidbey
+WIOL,SWM,South Whidbey Middle
 WIOL,SWS,Seattle Waldorf School
 WIOL,TAH,Tahoma
 WIOL,TCE,Thornton Creek Elementary
+WIOL,TCM,Timbercrest Middle
 WIOL,TCO,Tahoma Co-Op
 WIOL,TEL,Tahoma Elementary
-WIOL,TES,Tesla STEM school
+WIOL,TES,Tesla STEM
 WIOL,TGM,Thurgood Marshall Elementary
+WIOL,THE,Thoreau Elementary
 WIOL,TIM,Tillicum Middle
 WIOL,TJH,Tahoma Junior High
-WIOL,TMS,Tahoma Middle School
-WIOL,TYE,Tyee Middle School
+WIOL,TMS,Tahoma Middle
+WIOL,TYE,Tyee Middle
+WIOL,UBC,University of British Columbia
 WIOL,UCD,University Child Development School
+WIOL,UMI,University of Michigan
 WIOL,UNP,University Prep
-WIOL,UWS,University of Washington
+WIOL,UWS,University of Washington - Seattle
 WIOL,VIN,Vinland Elementary
-WIOL,VVW,Valley View Middle School
-WIOL,WAM,Washington Middle School
-WIOL,WDE,Woodridge elementary
+WIOL,VVW,Valley View Middle
+WIOL,WAM,Washington Middle
+WIOL,WDE,Woodridge Elementary
 WIOL,WGE,Westgate Elementary
+WIOL,WHC,Whitman College
 WIOL,WHE,Whittier Elementary
+WIOL,WHM,Whitman Middle
 WIOL,WIW,Whidbey Island Waldorf
 WIOL,WMS,Woodinville-Montessori
 WIOL,WOT,World Orienteering Tour
-WIOL,WPS,willow Preparatory School
+WIOL,WPS,Willow Preparatory School
 WIOL,WVA,Washington Virtual Academy

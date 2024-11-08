@@ -196,13 +196,13 @@ CascadeWinter2024Single.addClass({
 // College
 CascadeWinter2024Single.addClass({
     Name: "Collegiate JV Female",
-    ClassCodes: ["W6F"],
+    ClassCodes: ["WICJVF"],
     CompClassType: CompetitionClassType.OneRaceIndv,
     ScoreMethod: IndividualScoreMethod.PointsCocWorldCup
 })
 CascadeWinter2024Single.addClass({
     Name: "Collegiate JV Male",
-    ClassCodes: ["W6M"],
+    ClassCodes: ["WICJVM"],
     CompClassType: CompetitionClassType.OneRaceIndv,
     ScoreMethod: IndividualScoreMethod.PointsCocWorldCup
 })
