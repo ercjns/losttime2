@@ -97,7 +97,6 @@ export class EntriesDocs extends React.Component<{}, {}, {}> {
                         <Accordion.Item eventKey="0">
                         <Accordion.Header>Sport Software Entries csv</Accordion.Header>
                         <Accordion.Body>
-                        <p></p>
                         <code>
                         OE0001;Stno;XStno;Chipno;Database Id;Surname;First name;YB;S;Block;nc;Start;Finish;Time;Classifier;Credit -;Penalty +;Comment;Club no.;Cl.name;City;Nat;Location;Region;Cl. no.;Short;Long;Entry cl. No;Entry class (short);Entry class (long);Rank;Ranking points;Num1;Num2;Num3;Text1;Text2;Text3;Addr. surname;Addr. first name;Street;Line2;Zip;Addr. city;Phone;Mobile;Fax;EMail;Rented;Start fee;Paid;Team;Course no.;Course;km;m;Course controls
                         </code>
@@ -107,7 +106,6 @@ export class EntriesDocs extends React.Component<{}, {}, {}> {
                         <Accordion.Item eventKey="1">
                         <Accordion.Header>Sport Software Score-O Entries csv</Accordion.Header>
                         <Accordion.Body>
-                        <p>This file is ready for import to the Sport Software OEScore module for Score-O events. It is a csv file but uses <code>;</code> as the field separator.</p>
                         <code>
                         OESco0001;Stno;XStno;Chipno;Database Id;Surname;First name;YB;S;Block;nc;Start;Finish;Time;Classifier;Credit -;Penalty +;Comment;Club no.;Cl.name;City;Nat;Location;Region;Cl. no.;Short;Long;Entry cl. No;Entry class (short);Entry class (long);Rank;Ranking points;Num1;Num2;Num3;Text1;Text2;Text3;Addr. surname;Addr. first name;Street;Line2;Zip;Addr. city;Phone;Mobile;Fax;EMail;Rented;Start fee;Paid;Team;Course no.;Course;km;m;Course controls
                         </code>
