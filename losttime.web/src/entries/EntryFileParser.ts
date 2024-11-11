@@ -52,6 +52,7 @@ export class LtEntry {
         this.Newcomer= "unknown";
         this.Group= 1;
         this.GroupLeader= true;
+        this.GroupId= null;
         this.Paid= "unknown";
         this.Owed= 0;
         this.SignedWaiver= true;
@@ -100,7 +101,7 @@ export function parseEnties(indata:any[], nextbib?:number): ParseResult {
             newentries.push(e);
             continue;
         } else if (isCascadeRegistrationCsv(row) === "group") {
-            if (row.Group !== '*') {nextgroupid += 1;} 
+            if (row.Group !== '*') {nextgroupid += 1;}
             const e = new LtEntry().fromCascadeRegistrationCsv(row,nextgroupid);
             newentries.push(e);
             continue;
