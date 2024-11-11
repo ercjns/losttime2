@@ -10,6 +10,7 @@ export class Documentation extends React.Component<{}, {}, {}> {
             <div>
             <PageTitle title="Documentation" />
             <EntriesDocs />
+            <p></p>
             <ResultsDocs />
             </div>
         )
