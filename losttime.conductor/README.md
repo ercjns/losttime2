@@ -7,6 +7,20 @@ This application is responsible for conducting the workflow of files that begins
 This application runs on a windows computer.
 This application must be able to access an instance of `LostTime.Web`
 
+## Quickstart
+
+from the `losttime.conductor` folder...
+
+create a virtual environment: `py -m virtualenv venv-conductor`
+
+activate the virtual environment: `.\venv-conductor\Scripts\activate`
+
+(install dependencies as needed): `pip install -r requirements.txt`
+
+update values in `config.py`
+
+run the conductor: `py .\conductor.py`
+
 ## Workflow
 
 ### Monitoring
