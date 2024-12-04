@@ -666,13 +666,13 @@
     },
     {
       "Namespace": "WIOL",
-      "Code": "MVM",
-      "Name": "Maple View Middle"
+      "Code": "MTM",
+      "Name": "Mountain View Middle"
     },
     {
       "Namespace": "WIOL",
       "Code": "MVM",
-      "Name": "Mountain View Middle"
+      "Name": "Maple View Middle"
     },
     {
       "Namespace": "WIOL",
