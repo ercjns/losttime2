@@ -18,25 +18,9 @@ from shutil import copy2
 
 import paramiko
 
-SOURCE_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\epunchCoord\\losttime2_testing\\_reference\\xml\\"
-# SOURCE_DIR = "\\\\Latitude-i3\\ForWifi"
-NEW_FILE_WAIT_SECONDS = 30
-
-LOSTTIME_URL='http://localhost:3000'
-LOSTTIME_SCORING_PRESET_ID='scoring-preset-JN24-1Fri'
-LOSTTIME_DOWNLOAD_STYLE_ID='dl-output-doc'
-LOSTTIME_OUT_DIR = "C:\\Users\\eric\\OneDrive\\Orienteering\\JN2024\\LIVEresultshtml\\working\\1fri\\"
+from config import *
 
 
-PUBLIC_DIR = os.path.join(os.path.dirname(__file__), "web-public\\")
-PUBLIC_FILENAME = "test.html"
-
-SFTP_HOST = 'ssh.nyc1.nearlyfreespeech.net'
-SFTP_USER = 'ejones_losttimeorienteering'
-SFTP_PUBLIC_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nyc1.nearlyfreespeech.net.pub'
-SFTP_PRIVATE_KEY_FILE = 'C:\\Users\\eric\\.ssh\\nfs_Scooter'
-SFTP_DEST_DIR = '/home/public'
-SFTP_DEST_FILENAME = 'live-results-1fri.html'
 
 def GetLatestFileInFolder(dir):
     wd = os.getcwd()
@@ -93,6 +77,7 @@ def clickViaJS(driver, selector):
 
 def CreateNewHtmlFromSplits(xmlresults_fn):
     options = Options()
+    options.add_argument("--headless")
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.dhowWhenStarting", False)
     options.set_preference("browser.download.dir", LOSTTIME_OUT_DIR )
@@ -114,6 +99,8 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
 
         errors = [NoSuchElementException, ElementNotInteractableException]
         wait = WebDriverWait(driver, timeout=5, poll_frequency=.5, ignored_exceptions=errors)
+        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_RESULTS_GROUP_ID)))
+        clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_RESULTS_GROUP_ID)
         wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_STYLE_ID)))
         clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_STYLE_ID)
 
@@ -135,7 +122,7 @@ def GetLostTimeOutputFile(dir=LOSTTIME_OUT_DIR):
 def CopyOutputToPublicFolder():
     try:
         src = GetLostTimeOutputFile()
-        dest = os.path.join(PUBLIC_DIR, PUBLIC_FILENAME)
+        dest = os.path.join(DEST_DIR, DEST_FILENAME)
         print("from here: " + src)
         print("to here: " + dest)
         copy2(src, dest)
@@ -148,7 +135,7 @@ def CopyOutputToSftpLocation():
     src = GetLostTimeOutputFile()
     dest = posixpath.join(SFTP_DEST_DIR, SFTP_DEST_FILENAME)
     print("SFTP Src: {}".format(src))
-    print("SFTP Dest: {} on {}".format(dest, SFTP_HOST))
+    print("SFTP Dest: {} on {}".format(dest, SFTP_HOST_URL))
     try:
         sshclient = _SftpConnect()
     except:
@@ -172,7 +159,7 @@ def _SftpConnect():
     client = paramiko.SSHClient()
     client.load_host_keys(SFTP_PUBLIC_KEY_FILE)
     key = paramiko.Ed25519Key.from_private_key_file(SFTP_PRIVATE_KEY_FILE)
-    client.connect(SFTP_HOST, username=SFTP_USER, pkey=key)
+    client.connect(SFTP_HOST_URL, username=SFTP_USER, pkey=key)
     print("connected!")
     return client
 
@@ -216,13 +203,14 @@ def main():
                 continue
 
             # get new html file
-            # move html file to location to serve
-            # if not CopyOutputToPublicFolder():
-            #     continue
+            if COPY_TO_FOLDER:
+                if not CopyOutputToPublicFolder():
+                    continue
 
             # put file on sftp server
-            if not CopyOutputToSftpLocation():
-                continue
+            if COPY_TO_SFTP:
+                if not CopyOutputToSftpLocation():
+                    continue
 
             # set this file as processed
             processed_file = XmlResults_fn
