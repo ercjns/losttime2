@@ -1,4 +1,4 @@
-import { getClubNameString, stringify_html, timeWithStatusString} from './stylehelpers';
+import { getClubNameString, getTotalIndividualsCount, stringify_html, timeWithStatusString} from './stylehelpers';
 import { CompetitionClass, ScoredCompetitionClassType } from "../CompetitionClass";
 import { WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
 import { CodeCheckingStatus } from '../scoremethods/IofStatusParser';
@@ -25,6 +25,10 @@ function createCompHeader_CascadeOc(x:CompetitionClass[]) {
     const h2 = document.createElement("h2");
     h2.textContent = "Competition Classes";
     head.appendChild(h2);
+
+    const p = document.createElement("p");
+    p.textContent = "Total Finishers Today: " + getTotalIndividualsCount(x).toString();
+    head.appendChild(p);
 
     let h4s = x.map(x => {
         const h4 = document.createElement("h4");

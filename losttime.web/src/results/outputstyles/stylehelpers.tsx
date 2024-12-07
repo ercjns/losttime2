@@ -3,6 +3,7 @@ import _ClubCodes from '../competitionpresets/ClubCodes.json'
 import { CodeCheckingStatus, CompetitiveStatus } from '../scoremethods/IofStatusParser';
 import { WorldCupResult } from '../scoremethods/CocWorldCup';
 import { TeamType } from '../competitionpresets/teamdefinition';
+import { CompetitionClass } from '../CompetitionClass';
 const ClubCodes = _ClubCodes as ClubCodeLookup[]
 
 export function stringify_html(html:HTMLDivElement) {
@@ -53,4 +54,14 @@ export function getClubNameString(clubcode:string, checkAllNamespaces:boolean=tr
     if (res !== undefined) {return res.Name}
     res = clubs2.find(x => x.Code === clubcode)
     return res ? res.Name : clubcode
+}
+
+export function getTotalIndividualsCount(data:CompetitionClass[]):number {
+    // TODO: there are cases where this doesn't quite work as it's more contextual
+    // based on the exact scoring setup for any given event / suite of classes.
+    const total = 0;
+    const sumFinishers = data.reduce(
+        (acc, cur) => acc + (cur.IsTeamClass ? 0 : cur.totalParticipants(false)),
+        total)
+    return sumFinishers
 }
