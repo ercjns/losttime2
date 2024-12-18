@@ -22,13 +22,25 @@ function createCompHeader_CascadeOc(x:CompetitionClass[]) {
     const head = document.createElement("div");
     head.setAttribute("class", "lg-mrg-bottom");
     head.setAttribute("id", "lt-menu")
+
+    const title = document.createElement("h2");
+    title.textContent = "WL #3 Pierce College / Ft. Steilacoom Park";
+    head.appendChild(title);
+
+    const p = document.createElement("p");
+    p.textContent = "Total Finishers Today: " + getTotalIndividualsCount(x).toString();
+    const now = new Date();
+    const hh = now.getHours().toString().padStart(2, '0');
+    const mm = now.getMinutes().toString().padStart(2, '0');
+    const ss = now.getSeconds().toString().padStart(2, '0');
+    p.textContent += " Updated at: " + hh + ":" + mm + ":" + ss;
+    head.appendChild(p);
+
     const h2 = document.createElement("h2");
     h2.textContent = "Competition Classes";
     head.appendChild(h2);
 
-    const p = document.createElement("p");
-    p.textContent = "Total Finishers Today: " + getTotalIndividualsCount(x).toString();
-    head.appendChild(p);
+    
 
     let h4s = x.map(x => {
         const h4 = document.createElement("h4");
