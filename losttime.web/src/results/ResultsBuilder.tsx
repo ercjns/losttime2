@@ -96,20 +96,26 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     const parser = new XMLParser(parserOptions);
     const resultsObj = parser.parse(await file.text());
 
-    try {
-      const newfile: RaceFileListItemProps = {
-        name: file.name,
-        raceClasses: resultsObj.ResultList.ClassResult.length,
-      };
-
-      this.setState({
-        races: this.state.races+1,
-        raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
-        filesprocessed: [...this.state.filesprocessed, newfile]
-      });
-
-    } catch (error) {
+    if (!('ResultList' in resultsObj)) {
       alert("Couldn't parse that file. This should be an Orienteering XML <ResultList>.");
+    } else if ('ClassResult' in resultsObj.ResultList) {
+      try {
+        const newfile: RaceFileListItemProps = {
+          name: file.name,
+          raceClasses: resultsObj.ResultList.ClassResult.length,
+        };
+  
+        this.setState({
+          races: this.state.races+1,
+          raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
+          filesprocessed: [...this.state.filesprocessed, newfile]
+        });
+  
+      } catch (error) {
+        alert("Couldn't parse that file. Something's wrong with the <ClassResult> items.");
+      } 
+    } else {
+      // alert("That <ResultList> is empty.");
     }
   }
 
