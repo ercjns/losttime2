@@ -43,6 +43,7 @@ export enum ScoredCompetitionClassType {
     Multi_Time,
     Multi_OusaAvgWinTime,
     Multi_OusaAvgWinTimeTeams,
+    Multi_WorldCup,
 }
 
 export class CompetitionClass {
@@ -67,6 +68,7 @@ export class CompetitionClass {
     Results_OusaAvgWinTimeTeams?: OusaAvgWinTimeTeamResult[];
     Results_Multi_OusaAvgWinTime?: OusaAvgWinTimeMultiResultIndv[];
     Results_Multi_Time?: WorldCupMultiResultIndv[];
+    Results_Multi_WorldCup?: WorldCupMultiResultIndv[];
 
     constructor() {
         this.ID = Guid.create();
@@ -370,6 +372,8 @@ export class CompetitionClass {
                 this.ResultsCreatedType = ScoredCompetitionClassType.Multi_OusaAvgWinTime;
             }
             else if (this.ScoreMethod===IndividualScoreMethod.Time) {
+                throw "THIS DOESN'T WORK ANYMORE - it was a hack";
+                
                 // TWO DAY COMBINED TIME
 
                 // -- BEGIN COPY FROM ABOVE --
@@ -475,15 +479,107 @@ export class CompetitionClass {
                 // validate and score the multi-event objects
                 if (this.ScoreMethod_Multi instanceof MultiEventScoreMethodDefinition) {
                     MultiEventResults.forEach(el => {
+                        if (this.ScoreMethod_Multi!.MinimumRaces !== this.ScoreMethod_Multi!.ContributingRaces) {
+                            throw "Min Races should equal Contributing Races"
+                        }
                         el.assignPoints(this.ScoreMethod_Multi!)
                     });
                 }
                 // Assign places to those with points
-                WorldCupMultiIndv_AssignPlaces(MultiEventResults);
 
-                this.Results_Multi_Time = MultiEventResults;
+                // THIS NO LONGER SUPPORTS "POINTS" AS TIME
+                // MUST BE IMPLEMENTED NEW - WAS PREVIOUSLY A HACK.
+                // WorldCupMultiIndv_AssignPlaces(MultiEventResults);
+
+                // this.Results_Multi_Time = MultiEventResults;
+                // this.ResultsCreatedTime = new Date();
+                // this.ResultsCreatedType = ScoredCompetitionClassType.Multi_Time;
+
+            }
+            else if (this.ScoreMethod===IndividualScoreMethod.PointsCocWorldCup) {
+                // Series scores for Cascade Winter League
+
+                // -- BEGIN COPY FROM ABOVE --
+                var events:LtEvent[] = [];
+                for (const r of this.RaceResults) {
+                    if (!events.includes(r.Event)) {
+                        events.push(r.Event)
+                    }
+                }
+                events.sort((a,b) => a.Order - b.Order)
+
+                // console.log('Events')
+                // console.log(events)
+
+                // group the RaceResults by Event
+                const RaceResultsByEvent:LtStaticRaceClassResult[][] = Array(events.length).fill([])
+                for (const [idx, e] of events.entries()) {
+                    for (const r of this.RaceResults) {
+                        if (r.Event.ID === e.ID) {
+                            const existing = RaceResultsByEvent.splice(idx,1);
+                            const updated = existing.flat().concat(r);
+                            RaceResultsByEvent[idx] = updated;
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+
+                // console.log('RaceResultsByEvent')
+                // console.log(RaceResultsByEvent);
+
+
+                // score each individual event
+                const ScoredResultsByEvent:WorldCupResult[][] = []
+                for (var idx = 0; idx < RaceResultsByEvent.length; idx++) {
+                    const scored = WorldCupScoring_Indv(
+                        RaceResultsByEvent[idx]
+                    )
+                    ScoredResultsByEvent.push(scored)
+                }
+
+                // console.log('ScoredResultsByEvent')
+                // console.log(ScoredResultsByEvent);
+
+
+                const MultiEventResults:WorldCupMultiResultIndv[] = [];
+                for (const [idx, singleEventResults] of ScoredResultsByEvent.entries()) {
+                    if (idx === 0) {
+                        // first event, always add a new record.
+                        for (const result of singleEventResults) {
+                            MultiEventResults.push(new WorldCupMultiResultIndv(events.length, idx, result));
+                        }
+                    } else {
+                        // not the first event
+                        for (const result of singleEventResults) {
+                            // look for a matching multiresult that already exists
+                            // TODO: switch this to BIB matching rather than name+club
+                            // World cup does not have bib piped through.
+                            const match = MultiEventResults.findIndex( x => x.Name === result.Name && x.Club === result.Club);
+
+                            // if it exists, add the event result at correct index
+                            if (match >= 0) {
+                                MultiEventResults[match].addResultAtIndex(result,idx);
+                            } else {
+                            // if it doesn't exist, create new and push.
+                                MultiEventResults.push(new WorldCupMultiResultIndv(events.length, idx, result));
+                            }
+                        }
+                    }
+                }
+
+                // validate and score the multi-event objects
+                if (this.ScoreMethod_Multi instanceof MultiEventScoreMethodDefinition) {
+                    MultiEventResults.forEach(el => {
+                        el.assignPoints(this.ScoreMethod_Multi!)
+                    });
+                }
+                // Assign places to those with points
+                WorldCupMultiIndv_AssignPlaces(MultiEventResults, this.ScoreMethod_Multi!);
+
+                this.Results_Multi_WorldCup = MultiEventResults;
                 this.ResultsCreatedTime = new Date();
-                this.ResultsCreatedType = ScoredCompetitionClassType.Multi_Time;
+                this.ResultsCreatedType = ScoredCompetitionClassType.Multi_WorldCup;
 
             }
             else {

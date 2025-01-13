@@ -1,3 +1,4 @@
+import { faMinimize } from "@fortawesome/free-solid-svg-icons";
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { MultiEventScoreMethod, MultiEventScoreMethodDefinition, TeamScoreMethod, TeamScoreMethodDefinition } from "../CompetitionClass";
 import { LtStaticRaceClassResult } from "../RaceResult";
@@ -66,31 +67,39 @@ export class WorldCupMultiResultIndv {
     }
 
     assignPoints(method:MultiEventScoreMethodDefinition) {
-        if (method.MinimumRaces !== method.ContributingRaces) {
-            // throw "Min Races should equal Contributing Races"
-            return
-        }
-        if (this.TotalRaces < method.MinimumRaces) {
+        if (this.RacesRecorded < method.MinimumRaces) {
             // throw "not enough races to provide a score"
+            console.log("Not enough races for", this.Name)
             return
         }
-        if (this.RacesRecorded === method.MinimumRaces && 
-                this.RacesRecorded === method.ContributingRaces) {
-            // Force All races to be contributing races. needs updates to support
-            // any other methods.
-            this.isValid = true;
-            this.Raw.forEach(function (x) {
-                if (x.CodeCheckingStatus !== CodeCheckingStatus.FIN) {return undefined}
-                if (x.CompetitiveStatus !== CompetitiveStatus.COMP) {return undefined}
-            })
-            if (method.ScoreMethod === MultiEventScoreMethod.SumAll) {
-                const score = this.Raw.reduce((sum:number,current) => sum + (current.Points!), 0);
-                this.Points = score;
-                return score;
-            }
-            else {
-                throw "Score method not implemented"
-            }
+        // // verify each result is competitive.
+        // // THIS IS QUESTIONABLE
+        // // Ex: ELEMENARY MIGHT HAVE MIX OF COMP AND NC
+        // // Path: those NC results should not have gotten here?
+
+        // REMOVED THIS
+        // this.Raw.forEach(function (x) {
+        //     if (x.CodeCheckingStatus !== CodeCheckingStatus.FIN) {return undefined}
+        //     if (x.CompetitiveStatus !== CompetitiveStatus.COMP) {return undefined}
+        // })
+
+        this.isValid = true;
+        if (method.ScoreMethod === MultiEventScoreMethod.SumAll) {
+            const score = this.Raw
+                .reduce((sum:number,current) => sum + (current.Points!), 0);
+            this.Points = score;
+            return score;
+        }
+        else if (method.ScoreMethod === MultiEventScoreMethod.SumNTiebreakAll) {
+            const score = [...this.Raw]
+                .sort(WorldCupResultsComparer_ResultsForIndvInSeason)
+                .slice(0, Math.min(this.RacesRecorded, method.ContributingRaces))
+                .reduce((sum:number,current) => sum + (current.Points ?? 0), 0);
+            this.Points = score;
+            return score;
+        }
+        else {
+            throw "Score method not implemented"
         }
         return undefined;
     }
@@ -283,32 +292,71 @@ export function WorldCupScoring_Indv(
     }
 }
 
-export function WorldCupMultiIndv_AssignPlaces(MultiEventResults:WorldCupMultiResultIndv[]): WorldCupMultiResultIndv[] {
+export function WorldCupMultiIndv_AssignPlaces(MultiEventResults:WorldCupMultiResultIndv[], method:MultiEventScoreMethodDefinition): WorldCupMultiResultIndv[] {
     // assumes that everyone with points assigned is valid
     // and can recieve a place.
     // WorldCupMultiResultIndv.assignPoints() should not assign points if a place
-    // should not be assigned.
-    MultiEventResults.sort(WorldCupMultiIndvComparer)
-    MultiEventResults.forEach((indv, index, arr) => {
-        if (index === 0) {
-            if (indv.Points) {
-                indv.Place = index + 1;
+    // should not be assigned.)
+    if (method.ScoreMethod === MultiEventScoreMethod.SumNTiebreakAll) {
+        MultiEventResults.sort(WorldCupMultiIndvComparer_TieBreakAll)
+        MultiEventResults.forEach((indv, index, arr) => {
+            if (index === 0) {
+                if (indv.Points) {
+                    indv.Place = index + 1;
+                }
+            } else if (indv.Points) {
+                if (indv.Points === arr[index-1].Points) {
+                    if (WorldCupMultiIndvComparer_TieBreakAll(indv, arr[index-1]) === 0) {
+                        // This is tied with the previous result
+                        indv.Place = arr[index-1].Place;
+                    } else {
+                        // Points are same but this one lost the tiebreak to previous
+                        indv.Place = index + 1;
+                    }
+                } else {
+                    indv.Place = index + 1;
+                }
             }
-        } else if (indv.Points) {
-            if (indv.Points === arr[index-1].Points) {
-                indv.Place = arr[index-1].Place;
-            } else {
-                indv.Place = index + 1;
-            }
-        }
-    });
-    return MultiEventResults;
+        });
+        return MultiEventResults;
+    } else {
+        throw "Score method not valid"
+    }
+
 }
 
-function WorldCupMultiIndvComparer(a:WorldCupMultiResultIndv, b:WorldCupMultiResultIndv): number {
-    if (a.Points && b.Points) {
-        return a.Points - b.Points
+function WorldCupMultiIndvComparer_TieBreakAll(a:WorldCupMultiResultIndv, b:WorldCupMultiResultIndv): number {
+    if ((a.Points !== undefined) && (b.Points !== undefined)) {
+        if (a.Points !== b.Points) {
+            return b.Points - a.Points
+        }
+        
+        else {
+            const a_results = a.Raw.flat()
+            .sort(WorldCupResultsComparer_ResultsForIndvInSeason);
+            const b_results = b.Raw.flat()
+            .sort(WorldCupResultsComparer_ResultsForIndvInSeason);
+
+            const max_results = Math.max(a_results.length, b_results.length)
+
+            for (let i=0; i<max_results; i++) {
+                let a_score = a_results[i]?.Points ?? undefined;
+                let b_score = b_results[i]?.Points ?? undefined;
+
+                if ((a_score !== undefined) && (b_score !== undefined)) {
+                    if (a_score !== b_score) {
+                        return b_score - a_score;
+                    }
+                } else {
+                    if (a_score !== undefined) {return -1}
+                    else if (b_score !== undefined) {return 1}
+                }
+            }
+            return 0;
+        }
     }
+
+    // generally expect to always have points, but doing this in case.
     if (a.Points) {return -1;}
     else if (b.Points) {return 1;}
     else return 0;
@@ -333,4 +381,15 @@ export function WorldCupScoring_groupByClub(results:WorldCupResult[]):WorldCupRe
         }
     }
     return teams;
+}
+
+export function WorldCupResultsComparer_ResultsForIndvInSeason(a:WorldCupResult, b:WorldCupResult):number {
+    // Use when ordering results for a specific individual
+    // Orders the best results first and the worst results last
+    if (a.Points && b.Points) {
+        return b.Points - a.Points // flipped so highest points first
+    } 
+    else if (a.Points) {return -1}
+    else if (b.Points) {return 1}
+    else {return 0}
 }

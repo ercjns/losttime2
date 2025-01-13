@@ -17,12 +17,14 @@ import { CompetitionClassPreset } from './competitionpresets/CompetitionPreset';
 import { JNTesting } from './competitionpresets/preset_JNtesting';
 import { CocWinterLeauge } from './competitionpresets/preset_cascadeoc';
 import { CascadeWinter2024Single } from './competitionpresets/cascade_winter_2024_single';
+import { CascadeWinter2024Series } from './competitionpresets/cascade_winter_2024_series';
 import { JN1Friday } from './competitionpresets/JN2024_1Fri_CompClasses';
 import { JN2Saturday } from './competitionpresets/JN2024_2Sat_CompClasses';
 import { JN3Sunday } from './competitionpresets/JN2024_3Sun_CompClasses';
 import { JN4twoday } from './competitionpresets/JN2024_4twoday_CompClasses';
 import { createOutputDoc_JN2024live } from './outputstyles/style_jn2024live';
 import { SectionTitle } from '../shared/SectionTitle';
+
 
 
 enum resultsOutputStyle {
@@ -263,6 +265,9 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
         this.addSingleCompetitionClassFromPreset(preset));
     } else if (presetName === 'CascadeWinter2024Single') {
       CascadeWinter2024Single.Classes.forEach(preset =>
+        this.addSingleCompetitionClassFromPreset(preset));
+    } else if (presetName === 'CascadeWinter2024Series') {
+      CascadeWinter2024Series.Classes.forEach(preset =>
         this.addSingleCompetitionClassFromPreset(preset));
     }
 
@@ -535,8 +540,7 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
           &nbsp;
           <Button 
             id="scoring-preset-cascade-winter-2024-series" 
-            onClick={() => this.loadPreset('CascadeWinter2024Series')}
-            disabled>
+            onClick={() => this.loadPreset('CascadeWinter2024Series')}>
               Cascade Winter 24-25 Series (in development)
           </Button>
             </p>

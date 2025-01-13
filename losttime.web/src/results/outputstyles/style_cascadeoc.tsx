@@ -1,6 +1,6 @@
 import { getClubNameString, getTotalIndividualsCount, stringify_html, timeWithStatusString} from './stylehelpers';
 import { CompetitionClass, ScoredCompetitionClassType } from "../CompetitionClass";
-import { WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
+import { WorldCupMultiResultIndv, WorldCupResult, WorldCupTeamResult } from '../scoremethods/CocWorldCup';
 import { CodeCheckingStatus } from '../scoremethods/IofStatusParser';
 import { OusaAvgWinTimeResult, OusaAvgWinTimeTeamResult } from '../scoremethods/OusaAwt';
 
@@ -74,6 +74,9 @@ function createCompClassOutput_CascadeOc(x:CompetitionClass) {
             break;
         case ScoredCompetitionClassType.OusaAvgWinTimeTeams:
             wrap.appendChild(OusaAwtHtml_Teams(x));
+            break;
+        case ScoredCompetitionClassType.Multi_WorldCup:
+            wrap.appendChild(WorldCup_Multi_Indv(x));
             break;
         default:
             break;
@@ -436,6 +439,106 @@ function WorldCupHtml_Teams(x:CompetitionClass) {
     table.appendChild(tbody);
     return table;
 }
+
+// SERIES RESULTS
+function WorldCup_Multi_Indv(x:CompetitionClass) {
+    if (!x.Results_Multi_WorldCup || x.Results_Multi_WorldCup.length === 0) {
+        const emptydiv = document.createElement("div");
+        emptydiv.textContent ="No results for this class";
+        return emptydiv;
+    }
+
+    const table = document.createElement("table");
+    table.setAttribute("class", "table is-striped");
+    table.setAttribute("id", "ResultsTable-"+x.ID.toString())
+
+    const thead = document.createElement("thead");
+    const trhead = document.createElement("tr");
+    const pos = document.createElement("th");
+    pos.textContent = "Pos.";
+    trhead.appendChild(pos);
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    trhead.appendChild(name);
+    const club = document.createElement("th");
+    club.textContent = "Club";
+    trhead.appendChild(club);
+    
+    for (let i=1; i<=x.Results_Multi_WorldCup[0].TotalRaces; i++) {
+        const raceN = document.createElement("th");
+        raceN.textContent = "Race " + i;
+        raceN.setAttribute("class", "text-right");
+        trhead.appendChild(raceN);
+    }
+
+    const total = document.createElement("th");
+    total.textContent = "Total";
+    total.setAttribute("class", "text-right");
+    trhead.appendChild(total);
+
+    thead.appendChild(trhead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody")
+
+    for (const el of x.Results_Multi_WorldCup) {
+        if (el === undefined) { continue; }
+        if (!(el instanceof WorldCupMultiResultIndv)) {throw Error("Not World Cup Multi Result")}
+        const trdata = document.createElement("tr");
+        const pos = document.createElement("td");
+        pos.textContent = el.Place?.toString() ?? "";
+        trdata.appendChild(pos);
+        const name = document.createElement("td");
+        name.textContent = el.Name;
+        trdata.appendChild(name);
+        const club = document.createElement("td");
+        club.textContent = el.Club ?? "";
+        trdata.appendChild(club);
+
+        for (let i = 0; i< el.Raw.length; i++) {
+            const race = el.Raw[i];
+            const raceNscore = document.createElement("td");
+            if (race === undefined) {
+                trdata.appendChild(raceNscore);
+                continue;
+            }
+
+            if (race.Points && race.Points > 0) {
+                raceNscore.textContent = race.Points.toString();
+                
+            } else if (race.Points === 0) {
+                raceNscore.textContent = "0"
+            } else {
+                trdata.appendChild(raceNscore);
+                continue;
+            }
+
+
+            if (race.Place === 1) {
+                raceNscore.setAttribute("class", "text-right race-place-1")
+            }
+            else if (race.Place === 2) {
+                raceNscore.setAttribute("class", "text-right race-place-2")
+            }
+            else if (race.Place === 3) {
+                raceNscore.setAttribute("class", "text-right race-place-3")
+            } else {
+                raceNscore.setAttribute("class", "text-right");
+            }
+            trdata.appendChild(raceNscore);
+        }
+
+        const score = document.createElement("td");
+        score.textContent = el.Points?.toString() ?? "";
+        score.setAttribute("class", "text-right total-score");
+        trdata.appendChild(score);
+        tbody.appendChild(trdata);
+    }
+    table.appendChild(tbody);
+    return table
+}
+
+
 
 function StatusCodeHelpText() {
     const codeHelpDiv = document.createElement("div")
