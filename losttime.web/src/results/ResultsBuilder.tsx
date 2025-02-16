@@ -99,16 +99,32 @@ export class ResultsBuilder extends React.Component<{}, resultsBuilderState, {}>
     const resultsObj = parser.parse(await file.text());
 
     try {
-      const newfile: RaceFileListItemProps = {
-        name: file.name,
-        raceClasses: resultsObj.ResultList.ClassResult.length,
-      };
 
-      this.setState({
-        races: this.state.races+1,
-        raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
-        filesprocessed: [...this.state.filesprocessed, newfile]
-      });
+      if (resultsObj.ResultList.ClassResult.length === 0) {
+        // handle an empty file - useful for series results event skip
+        const newfile: RaceFileListItemProps = {
+          name: file.name,
+          raceClasses: 0
+        }
+        this.setState({
+          races: this.state.races+1,
+          // no race data to add
+          filesprocessed: [...this.state.filesprocessed, newfile]
+        })
+      } else {
+        const newfile: RaceFileListItemProps = {
+          name: file.name,
+          raceClasses: resultsObj.ResultList.ClassResult.length,
+        };
+  
+        this.setState({
+          races: this.state.races+1,
+          raceData: [...this.state.raceData, parseRaceResult(resultsObj.ResultList, this.state.races+1).ClassResults].flat(),
+          filesprocessed: [...this.state.filesprocessed, newfile]
+        });
+      }
+
+
 
     } catch (error) {
       alert("Couldn't parse that file. This should be an Orienteering XML <ResultList>.");
