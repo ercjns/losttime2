@@ -7,6 +7,7 @@ import { ResultsBuilder } from './results/ResultsBuilder';
 import { Landing } from './info/Landing';
 import { Footer } from './shared/Footer';
 import { Documentation } from './info/Documentation';
+import { BetterResults } from './results2/Components/BetterResults';
 
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
               <Redirect from="/registrations" to="/entries" />
               <Route path="/results">
                 <ResultsBuilder />
+              </Route>
+              <Route path="/compute">
+                <BetterResults />
               </Route>
               <Route path="/docs">
                 <Documentation />
