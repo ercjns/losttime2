@@ -1,89 +1,108 @@
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 
+type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
+
+type raceInfo = {
+    id:Guid,
+    name:string
+}
+
+function getUniqueClassLabels(raceClassesByRace:raceClassesByRace) {
+    let classLabels:Map<string, string> = new Map();
+    [...raceClassesByRace].map(([raceid,raceClasses]) =>
+        [...raceClasses].map(([shortName,raceClass]) =>
+            classLabels.set(raceClass.xmlClass.ShortName, raceClass.xmlClass.Name)
+        )
+    );
+    const sorted = [...classLabels.keys()].sort();
+    return sorted.map((code) => {
+        return {short:code, long:classLabels.get(code)}
+    })
+}
+
+function getRaces(raceClassesByRace:raceClassesByRace) {
+    let raceNames:raceInfo[] = [];
+    raceClassesByRace.forEach((race) => {
+        const anyRaceClass = race.values().next().value
+        if (anyRaceClass === undefined) {new Error("Race has no raceclasses?")}
+        else {
+            raceNames.push({
+                id: anyRaceClass.race_id,
+                name: anyRaceClass.race_name
+            });
+        }
+    });
+    return raceNames;
+}
+
+function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
+    const rows = getUniqueClassLabels(raceClassesByRace);
+    const cols = getRaces(raceClassesByRace);
+
+    let outData: Map<string,Array<StandardRaceClassData|undefined>> = new Map();
+    rows.forEach((raceClass) => {
+        let matchingRaces: Array<StandardRaceClassData|undefined> = [];
+        cols.forEach((race) => {
+            matchingRaces.push(raceClassesByRace.get(race.id)?.get(raceClass.short))
+        })
+        outData.set(raceClass.short,matchingRaces);
+    });
+    return outData;
+}
+
+function makeTableDataForClass(racesInClass:Array<StandardRaceClassData|undefined>) {
+    return racesInClass.map((raceClass) => {
+        if (raceClass === undefined) {
+            return <td>(no results)</td>
+        } else {
+            return <td key={raceClass.id.toString()}>
+                {raceClass.xmlClass.ShortName} - {raceClass.xmlPersonResults.length}
+                </td>
+        }
+    });
+}
+
+
 interface CompetitionClassComposerProps {
-    raceClassesByRace:Map<Guid,Map<string,StandardRaceClassData>>;
+    raceClassesByRace:raceClassesByRace;
 }
 
 export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
-    
-    // goal: create a table with a column for each race and a row for each class
-    // raceClasses is totally flat right now.
-    // get the list of unique races
-    // (sort them?)
-    // this is my column headers
-    // get the list of unique classes
-    // (sort them?)
-    // this is my row labels
-    // find the record that exists at this intersection, there might not be one.
-    // present this data
-    // expect to end up with a component with props that is the StandardRaceClassData
 
+    const columnHeaders = getRaces(props.raceClassesByRace).map((el) =>
+        <th key={el.id.toString()}>{el.name}</th>
+    );
 
-    const allRaceClasses = 
-        [...props.raceClassesByRace].map(([raceid,raceClasses]) =>
-            [...raceClasses].map(([shortName,raceClass]) =>
-                // be SURE that everything in the JSX element is string
-                // if it's not, you'll get an error about invalid JSX array
-                // without keys or something. That's not the issue.
-                <li key={raceClass.id.toString()}> {raceid.toString()} {shortName} {raceClass.xmlPersonResults.length.toString()} </li>
-            )
-        ).flat();
-
-    // let races:{raceid:Guid,name:string}[] = [];
-    // props.raceClassesByRace.forEach((el) => 
-    //     races.push({
-    //         raceid: el.values().next().value!.race_id,
-    //         name: el.values().next().value!.race_name
-    //     })
-    // );
-
-    // const columnHeaders = races.map((el) =>
-    //     <th key={el.raceid.toString()}>{el.name}</th>
-    // )
-
+    const rows = [...pivotByRaceToByClass(props.raceClassesByRace).entries()]
+        .map(([code, raceClass]) =>
+            <tr>
+                <td key={code}>{code}</td>
+                {makeTableDataForClass(raceClass)}
+            </tr>
+    );
 
     return (
         <div>
         This is the Competition Class Composer.
-        This is responsible for:
-        <ul>
-            <li>Displaying available RaceClasses for user to build into a competition class</li>
-            <li>(or allowing a user to use a pre-set to define competition classes)</li>
-            <li>Allowing the user to specify the kind of output they desire</li>
-            <li>Computing results for each defined competition class and delivering the output</li>
-        </ul>
-        If this is too much for one component, it can and should be split up!
-        <ol>
-            {allRaceClasses}
-        </ol>
-
         <table>
             <thead>
             <tr>
-                <th>Classes</th>
-                {/* {columnHeaders} */}
+                <th>Class</th>
+                {columnHeaders}
             </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                {rows}
             </tbody>
             
         </table>
+        This is responsible for allowing the user to compose competition classes
+        User can compose by selecting from available races and available score methods given their race selection
+        There should be some shortcuts / presets
+        (It's not done yet)
+
+        A different component is responsible for taking the collection compeition classes and creating output for the user.
         </div>
     )
 }

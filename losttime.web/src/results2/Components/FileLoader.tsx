@@ -1,16 +1,11 @@
 import { XMLParser } from "fast-xml-parser";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { useParams } from "react-router-dom";
-
-// Props: the flavor of FileLoader this is
-// State: what makes this instance of this FileLoader unique
 
 interface FileLoaderProps {
-    // raceClassesByRace: Map<Guid,Map<string,StandardRaceClassData>>;
     setRaceClasses: Function;
 }
 
@@ -61,8 +56,8 @@ export function FileLoader(props: FileLoaderProps) {
                 props.setRaceClasses((existing: Map<Guid,Map<string,StandardRaceClassData>>) => {
                     // https://expertbeacon.com/re-render-react-component-when-its-props-changes-a-comprehensive-guide/
                     // if an array prop is passed from parent -> child and mutated in place, the child will not re-render
-                    // so I can't just "set" on the existing map, have to build a new Map.
-                    // this forces the next component (which gets passed this state as a prop) to re-render.
+                    // so to add to the map, I can't just Map.set(key,value) - have to build a new Map.
+                    // this forces the component that gets passed this state as a prop to re-render.
                     var updated = new Map()
                     existing.forEach((value, key) =>
                         updated.set(key, value)
@@ -81,7 +76,7 @@ export function FileLoader(props: FileLoaderProps) {
     return (
         <div>
             This is the File Loader.
-            This is responsible for taking input files from the user and delivering RaceClasses(?) to the CompetitionClassComposer.
+            This is responsible for taking input files from the user and delivering RaceClasses to the CompetitionClassComposer.
             <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
                 <input id="dz-file-input" {...getInputProps()} />
                 {
