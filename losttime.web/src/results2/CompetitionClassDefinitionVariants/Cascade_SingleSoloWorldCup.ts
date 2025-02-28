@@ -1,14 +1,15 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { LtStaticRaceClassResult } from "../../results/RaceResult";
+import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Computed_Cascade_SingleSoloWorldCup } from "../ComputedCompetitionClassVariants/Computed_Cascade_SingleSoloWorldCup";
 import { compareSingleSoloByTime } from "../ResultTypes/SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
 
-class Cascade_SingleSoloWorldCup extends CompetitionClass {
+
+export class Cascade_SingleSoloWorldCup extends CompetitionClass {
     constructor(
         name: string,
-        contributingResults: LtStaticRaceClassResult[]
+        contributingResults: StandardRaceClassData[]
     ) {
         super(name, contributingResults)
     }

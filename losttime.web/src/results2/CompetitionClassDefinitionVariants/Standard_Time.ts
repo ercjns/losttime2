@@ -1,13 +1,14 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { LtStaticRaceClassResult } from "../../results/RaceResult";
+import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Computed_Standard_Time } from "../ComputedCompetitionClassVariants/Computed_Standard_Time";
 import { compareSingleSoloByTime, SingleRaceSoloResult } from "../ResultTypes/SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
 
-class Standard_Time extends CompetitionClass {
+
+export class Standard_Time extends CompetitionClass {
     constructor(
         name: string,
-        contributingResults: LtStaticRaceClassResult[]
+        contributingResults: StandardRaceClassData[]
     ) {
         super(name, contributingResults)
     }

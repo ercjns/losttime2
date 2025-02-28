@@ -1,16 +1,16 @@
 import { Guid } from "guid-typescript";
-import { LtStaticRaceClassResult } from "../results/RaceResult";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
 import { PersonResult } from "../shared/orienteeringtypes/IofResultXml";
+import { StandardRaceClassData } from "./StandardRaceClassData";
 
 export abstract class CompetitionClass {
     id: Guid;
     name: string;
-    contributingResults: LtStaticRaceClassResult[];
+    contributingResults: StandardRaceClassData[];
 
     constructor(
         name: string,
-        contributingResults: LtStaticRaceClassResult[]
+        contributingResults: StandardRaceClassData[]
     ) {
         this.id = Guid.create();
         this.name = name;
@@ -25,8 +25,8 @@ export abstract class CompetitionClass {
     contributingResultsFlat(): PersonResult[] {
         let results: PersonResult[] = []
         for (const race of this.contributingResults) {
-            if (race.PersonResults.length === undefined) {continue;}
-            results.push(...race.PersonResults);
+            if (race.xmlPersonResults.length === undefined) {continue;}
+            results.push(...race.xmlPersonResults);
         }
         return results
     }

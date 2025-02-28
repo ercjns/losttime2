@@ -1,17 +1,18 @@
-import { LtStaticRaceClassResult } from "../../results/RaceResult";
+import { CompetitionClass } from "../CompetitionClass";
+import { StandardRaceClassData } from "../StandardRaceClassData";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { Computed_Ousa_SingleSoloAvgWinTime } from "../ComputedCompetitionClassVariants/Computed_Ousa_SingleSoloAvgWinTime";
 import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
-import { CompetitionClass } from "../CompetitionClass";
 
-class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
-    consideredResults: LtStaticRaceClassResult[];
+
+export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
+    consideredResults: StandardRaceClassData[];
 
     constructor(
         name: string,
-        contributingResults: LtStaticRaceClassResult[],
-        consideredResults: LtStaticRaceClassResult[]
+        contributingResults: StandardRaceClassData[],
+        consideredResults: StandardRaceClassData[]
     ) {
         super(name, contributingResults)
         this.consideredResults = consideredResults;
@@ -21,8 +22,8 @@ class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
         // like super.contributingResultsFlat
         let results: PersonResult[] = []
         for (const race of this.consideredResults) {
-            if (race.PersonResults.length === undefined) {continue;}
-            results.push(...race.PersonResults);
+            if (race.xmlPersonResults.length === undefined) {continue;}
+            results.push(...race.xmlPersonResults);
         }
         return results
     }
