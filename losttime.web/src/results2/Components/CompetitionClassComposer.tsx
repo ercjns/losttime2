@@ -1,5 +1,9 @@
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
+import { SelectableRaceClass } from "./SelectableRaceClass";
+import React, { useState } from "react";
+import { Table } from "react-bootstrap";
+import { SectionTitle } from "../../shared/SectionTitle";
 
 type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
@@ -51,32 +55,51 @@ function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
     return outData;
 }
 
-function makeTableDataForClass(racesInClass:Array<StandardRaceClassData|undefined>) {
-    return racesInClass.map((raceClass) => {
-        if (raceClass === undefined) {
-            return <td>(no results)</td>
-        } else {
-            return <td key={raceClass.id.toString()}>
-                {raceClass.xmlClass.ShortName} - {raceClass.xmlPersonResults.length}
-                </td>
-        }
-    });
-}
-
-
 interface CompetitionClassComposerProps {
     raceClassesByRace:raceClassesByRace;
 }
 
 export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
+    const [checked, setChecked] = useState(Array())
+
     const columnHeaders = getRaces(props.raceClassesByRace).map((el) =>
         <th key={el.id.toString()}>{el.name}</th>
     );
 
+    function handleRaceClassClick(e:React.ChangeEvent<HTMLInputElement>) {
+        const updated:string[] = checked.slice();
+        if (e.target.checked) {
+            updated.push(e.target.value)
+        } else {
+            const indx = updated.indexOf(e.target.value);
+            if (indx > -1) {
+                updated.splice(indx,1)
+            }
+        }
+        setChecked(updated);
+    }
+
+    function makeTableDataForClass(
+        racesInClass:Array<StandardRaceClassData|undefined>) {
+        return racesInClass.map((raceClass) => {
+            if (raceClass === undefined) {
+                return <td>(no results)</td>
+            } else {
+                return <td key={raceClass.id.toString().concat("-td")}>
+                    <SelectableRaceClass 
+                        raceClass={raceClass} 
+                        checked={checked.includes(raceClass.id.toString())}
+                        onChange={handleRaceClassClick}
+                        />
+                    </td>
+            }
+        });
+    }
+
     const rows = [...pivotByRaceToByClass(props.raceClassesByRace).entries()]
         .map(([code, raceClass]) =>
-            <tr>
+            <tr key={code.toString().concat("-tr")}>
                 <td key={code}>{code}</td>
                 {makeTableDataForClass(raceClass)}
             </tr>
@@ -84,8 +107,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
     return (
         <div>
-        This is the Competition Class Composer.
-        <table>
+        <SectionTitle title="2. Define Classes" line={true} />
+        <Table striped hover size="sm">
             <thead>
             <tr>
                 <th>Class</th>
@@ -96,13 +119,13 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 {rows}
             </tbody>
             
-        </table>
+        </Table>
         This is responsible for allowing the user to compose competition classes
         User can compose by selecting from available races and available score methods given their race selection
         There should be some shortcuts / presets
         (It's not done yet)
 
-        A different component is responsible for taking the collection compeition classes and creating output for the user.
+        A different component is responsible for taking the collection competition classes and creating output for the user.
         </div>
     )
 }

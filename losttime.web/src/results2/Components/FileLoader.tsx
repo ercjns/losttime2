@@ -4,6 +4,7 @@ import { useDropzone } from "react-dropzone";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult } from "../../shared/orienteeringtypes/IofResultXml";
+import { SectionTitle } from "../../shared/SectionTitle";
 
 interface FileLoaderProps {
     setRaceClasses: Function;
@@ -75,8 +76,7 @@ export function FileLoader(props: FileLoaderProps) {
 
     return (
         <div>
-            This is the File Loader.
-            This is responsible for taking input files from the user and delivering RaceClasses to the CompetitionClassComposer.
+            <SectionTitle title="1. Load Results File(s)" line={false} />
             <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
                 <input id="dz-file-input" {...getInputProps()} />
                 {
@@ -85,6 +85,7 @@ export function FileLoader(props: FileLoaderProps) {
                         <p>Drag and drop files here, or click to select files</p>
                 }
             </div>
+            <p></p>
         </div>
     )
 }
