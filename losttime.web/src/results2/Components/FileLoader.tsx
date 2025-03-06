@@ -1,10 +1,11 @@
 import { XMLParser } from "fast-xml-parser";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { SectionTitle } from "../../shared/SectionTitle";
+import { Col, Row } from "react-bootstrap";
 
 interface FileLoaderProps {
     setRaceClasses: Function;
@@ -13,7 +14,7 @@ interface FileLoaderProps {
 const baseStyle = {
     flex: 1,
     display: 'flex',
-    // flexDirection: 'column',
+    flexDirection: 'column' as 'column', // hack fix https://github.com/cssinjs/jss/issues/1344
     alignItems: 'center',
     padding: '20px',
     borderWidth: 2,
@@ -27,8 +28,14 @@ const baseStyle = {
     transition: 'border .24s ease-in-out'
 };
 
+interface loadedFile {
+    filename: string;
+    data: StandardRaceClassData[]
+}
 
 export function FileLoader(props: FileLoaderProps) {
+
+    const [files, setFiles] = useState<loadedFile[]>([])
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         acceptedFiles.forEach((file) => {
@@ -50,6 +57,10 @@ export function FileLoader(props: FileLoaderProps) {
                 const raceClasses: StandardRaceClassData[] = resultsObj.ResultList.ClassResult.map((el: ClassResult) =>
                     new StandardRaceClassData({ id: race_id, name: race_name }, el)
                 )
+
+                setFiles((existing) => 
+                    [...existing, {filename:file.name, data:raceClasses}])
+
                 let raceClassesMap = new Map()
                 raceClasses.forEach((el) =>
                     raceClassesMap.set(el.xmlClass.ShortName ?? el.xmlClass.Name, el))
@@ -66,7 +77,6 @@ export function FileLoader(props: FileLoaderProps) {
                     updated.set(race_id, raceClassesMap);
                     return updated;
                 })
-
             }
             reader.readAsText(file);
         })
@@ -74,9 +84,23 @@ export function FileLoader(props: FileLoaderProps) {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
+    const fileItems = files.map((x) => {
+        let classes = "";
+        x.data.forEach((c) =>
+            classes += `${c.xmlClass.ShortName}, `
+        )
+        classes = classes.slice(0,-2);
+        return <li><strong>{x.filename}</strong> with <strong>{x.data.length.toString()}</strong> classes: {classes}</li>
+    }
+        
+    )
+
     return (
-        <div>
-            <SectionTitle title="1. Load Results File(s)" line={false} />
+        <Row className="mb-4">
+            <SectionTitle title="1. Load Results File(s)" line={true} />
+            
+            <Col md={12} lg={5}>
+            <p>Add Orienteering Results or Splits files in the IOF XML v3 format.</p>
             <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
                 <input id="dz-file-input" {...getInputProps()} />
                 {
@@ -85,7 +109,14 @@ export function FileLoader(props: FileLoaderProps) {
                         <p>Drag and drop files here, or click to select files</p>
                 }
             </div>
-            <p></p>
-        </div>
+            </Col>
+
+            <Col md={12} lg={7}>
+            <p><strong>{fileItems.length.toString()}</strong> Loaded file{`${fileItems.length === 1 ? "" : "s"}`}:</p>
+            <ul>
+                {fileItems}
+            </ul>
+            </Col>
+        </Row>
     )
 }
