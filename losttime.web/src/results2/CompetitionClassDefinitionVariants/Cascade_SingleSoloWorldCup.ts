@@ -14,6 +14,10 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         super(name, contributingResults)
     }
 
+    scoreMethodFriendly(): string {
+        return 'Solo - Points - CascadeOC World Cup'
+    }
+
     compute():Computed_Cascade_SingleSoloWorldCup {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>

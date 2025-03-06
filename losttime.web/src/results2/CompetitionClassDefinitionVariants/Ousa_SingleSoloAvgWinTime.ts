@@ -28,6 +28,10 @@ export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
         return results
     }
 
+    scoreMethodFriendly(): string {
+        return 'Solo - Points - OUSA Average Winning Time'
+    }
+
     compute(): Computed_Ousa_SingleSoloAvgWinTime {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>

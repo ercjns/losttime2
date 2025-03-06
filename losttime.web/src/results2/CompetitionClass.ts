@@ -17,6 +17,7 @@ export abstract class CompetitionClass {
         this.contributingResults = contributingResults;
     }
 
+    abstract scoreMethodFriendly(): string
     abstract compute(): ComputedCompetitionClass
 
     // helpers for process actions go here
@@ -30,6 +31,15 @@ export abstract class CompetitionClass {
         }
         return results
     }
+
+    contributingNames(): {race:string, class:string}[] {
+        let names:{race:string, class:string}[] = []
+        this.contributingResults.forEach(raceClass => {
+            names.push({race:raceClass.race_name, class:raceClass.xmlClass.Name})
+        });
+        return names;
+    }
+
 
     //contributingresultsbyrace()
     //

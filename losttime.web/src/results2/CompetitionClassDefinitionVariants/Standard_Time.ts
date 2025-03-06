@@ -13,6 +13,10 @@ export class Standard_Time extends CompetitionClass {
         super(name, contributingResults)
     }
 
+    scoreMethodFriendly(): string {
+        return 'Solo - Time'
+    }
+
     compute():Computed_Standard_Time {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>
