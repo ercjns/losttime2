@@ -22,10 +22,13 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
     }
 
     render_txt():string {
-        if (this.totalFinishers() === 0) {
-            return "";
-        }
         let doc = "";
+        doc += `${this.name}`
+        doc += "\r\n";
+        
+        if (this.totalFinishers() === 0) {
+            return doc;
+        }
         for (const el of this.results as SingleRaceSoloResult[]) {
             doc += `Place: ${el.place} `;
             doc += `Name: ${el.name} (${el.club}) `;

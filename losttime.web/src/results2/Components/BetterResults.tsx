@@ -4,11 +4,13 @@ import { FileLoader } from "./FileLoader";
 import { CompetitionClassComposer } from "./CompetitionClassComposer";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
+import { CompetitionClass } from "../CompetitionClass";
+import { OutputBuilder } from "./OutputBuilder";
 
 export function BetterResults() {
 
     const [raceClasses, setRaceClasses] = useState<Map<Guid,Map<string,StandardRaceClassData>>>(new Map());
-    // const [competitionClasses, setCompetitionClasses] = useState<CompetitionClass[]>([])
+    const [competitionClasses, setCompetitionClasses] = useState<CompetitionClass[]>([])
 
     return (
         <div>
@@ -18,6 +20,10 @@ export function BetterResults() {
         />
         <CompetitionClassComposer 
             raceClassesByRace={raceClasses}
+            setCompetitionClasses={setCompetitionClasses}
+        />
+        <OutputBuilder
+            competitionClasses={competitionClasses}
         />
         </div>
     )

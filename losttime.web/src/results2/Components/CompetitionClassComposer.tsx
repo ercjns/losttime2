@@ -2,10 +2,18 @@ import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { SelectableRaceClass } from "./SelectableRaceClass";
 import React, { useState } from "react";
-import { Table } from "react-bootstrap";
+import { Button, Col, Collapse, Row, Table } from "react-bootstrap";
 import { SectionTitle } from "../../shared/SectionTitle";
+import { CompetitionClassPresetsCustom } from "./CompetitionClassPresetsCustom";
+import { CompetitionClassScoringParameters } from "./CompetitionClassScoringParameters";
+import { IndividualScoreMethod } from "../../results/CompetitionClass";
+import { ScoringParameters } from "../ScoringParameters";
+import { Standard_Time } from "../CompetitionClassDefinitionVariants/Standard_Time";
+import { CompetitionClass } from "../CompetitionClass";
+import { Cascade_SingleSoloWorldCup } from "../CompetitionClassDefinitionVariants/Cascade_SingleSoloWorldCup";
+import { CompetitionClassPresetsStandard } from "./CompetitionClassPresetsStandard";
 
-type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
+export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
 type raceInfo = {
     id:Guid,
@@ -57,18 +65,22 @@ function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
 
 interface CompetitionClassComposerProps {
     raceClassesByRace:raceClassesByRace;
+    setCompetitionClasses:Function;
 }
+
 
 export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
-    const [checked, setChecked] = useState(Array())
+    const [selectedRaceClasses, setSelectedRaceClasses] = useState(Array<string>())
+    const [scoringParams, setScoringParams] = useState(new ScoringParameters())
+    const [advancedOpen, setAdvancedOpen] = useState(false)
 
     const columnHeaders = getRaces(props.raceClassesByRace).map((el) =>
         <th key={el.id.toString()}>{el.name}</th>
     );
 
     function handleRaceClassClick(e:React.ChangeEvent<HTMLInputElement>) {
-        const updated:string[] = checked.slice();
+        const updated:string[] = selectedRaceClasses.slice();
         if (e.target.checked) {
             updated.push(e.target.value)
         } else {
@@ -77,7 +89,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 updated.splice(indx,1)
             }
         }
-        setChecked(updated);
+        setSelectedRaceClasses(updated);
     }
 
     function makeTableDataForClass(
@@ -89,7 +101,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 return <td key={raceClass.id.toString().concat("-td")}>
                     <SelectableRaceClass 
                         raceClass={raceClass} 
-                        checked={checked.includes(raceClass.id.toString())}
+                        checked={selectedRaceClasses.includes(raceClass.id.toString())}
                         onChange={handleRaceClassClick}
                         />
                     </td>
@@ -105,27 +117,103 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             </tr>
     );
 
-    return (
-        <div>
-        <SectionTitle title="2. Define Classes" line={true} />
-        <Table striped hover size="sm">
-            <thead>
-            <tr>
-                <th>Class</th>
-                {columnHeaders}
-            </tr>
-            </thead>
-            <tbody>
-                {rows}
-            </tbody>
-            
-        </Table>
-        This is responsible for allowing the user to compose competition classes
-        User can compose by selecting from available races and available score methods given their race selection
-        There should be some shortcuts / presets
-        (It's not done yet)
+    function handleIndividualScoreMethodChange(e:React.ChangeEvent<HTMLInputElement>) {
+        setScoringParams({
+            ...scoringParams, 
+            individual:Number(e.target.value)
+        });
+    }
 
-        A different component is responsible for taking the collection competition classes and creating output for the user.
-        </div>
+    function getRaceClassDataForSelected() {
+        let res:StandardRaceClassData[] = [];
+        [...props.raceClassesByRace].map(([raceid,raceClasses]) =>
+        [...raceClasses].map(([shortName,raceClass]) => {
+            if (selectedRaceClasses.includes(raceClass.id.toString())) {
+                res.push(raceClass)
+            }
+        }));
+        if (res.length === 0) {
+            throw Error("No raceclasses selected")
+        }
+        return res;
+    }
+
+    function createCompetitionClass() {
+        switch (scoringParams.individual) {
+            case IndividualScoreMethod.Time :
+                console.log("creating Time competition class!")
+                props.setCompetitionClasses((current:CompetitionClass[]) => 
+                    [...current, new Standard_Time(
+                    "placeholder title", 
+                    getRaceClassDataForSelected()
+                    )]
+                );
+                break;
+            case IndividualScoreMethod.PointsCocWorldCup :
+                console.log("creating COC World Cup competition class!")
+                props.setCompetitionClasses((current:CompetitionClass[]) => 
+                    [...current, new Cascade_SingleSoloWorldCup(
+                        "placeholder title",
+                        getRaceClassDataForSelected()
+                    )]
+                );
+                break;
+            default :
+                new Error("not implemented")
+        };
+    }
+
+    return (
+        <Row>
+        <SectionTitle title="2. Define Classes" line={true} />
+
+        <p><strong>Standard:</strong> replicate the classes from your results software file. Only supported for single events.
+        </p>
+        <CompetitionClassPresetsStandard
+            raceClassesByRace={props.raceClassesByRace}
+            raceClassesByClass={pivotByRaceToByClass(props.raceClassesByRace)}
+            setCompetitionClasses={props.setCompetitionClasses}
+        />
+        
+        <p><strong>Custom Templates:</strong> pre-defined class scoring setups for your events and series (requests are welcome!)
+        </p>
+        <CompetitionClassPresetsCustom 
+            raceClassesByRace={props.raceClassesByRace}
+            raceClassesByClass={pivotByRaceToByClass(props.raceClassesByRace)}
+            setCompetitionClasses={props.setCompetitionClasses}
+        />
+
+        <p><strong>Advanced:</strong> manually define competition classes by selecting which race classes to consider and scoring methods to apply
+        </p>
+        <Row className="mb-4">
+            <Col sm={6} md={4}>
+            <Button 
+            onClick={() => setAdvancedOpen(!advancedOpen)}
+            variant="outline-secondary"
+            aria-controls="advanced-definition" 
+            aria-expanded={advancedOpen}>{advancedOpen ? "Hide advanced settings" : "Show advanced settings"}</Button>
+            </Col>
+        
+            <Collapse in={advancedOpen}>
+            <div id="advanced-definition">
+                <Table striped hover size="sm">
+                    <thead>
+                    <tr>
+                        <th>Class</th>
+                        {columnHeaders}
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                    
+                </Table>
+                <CompetitionClassScoringParameters 
+                    handleScoringParamsChange={handleIndividualScoreMethodChange}/>
+                <Button onClick={()=>createCompetitionClass()}>Add Competition Class</Button>
+            </div>
+            </Collapse>
+        </Row>
+        </Row>
     )
 }
