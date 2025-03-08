@@ -1,4 +1,4 @@
-import { Button, Table } from "react-bootstrap";
+import { Button, Row, Table } from "react-bootstrap";
 import { SectionTitle } from "../../shared/SectionTitle";
 import { CompetitionClass } from "../CompetitionClass";
 import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
@@ -57,7 +57,7 @@ export function OutputBuilder(props:outputBuilderProps) {
         downloadFile(doc, filename);
     }
 
-    return <div>
+    return <Row>
         <SectionTitle title="3. Build Output" line={true} />
         <h4>Competition Classes</h4>
         <Table striped size="sm">
@@ -76,9 +76,10 @@ export function OutputBuilder(props:outputBuilderProps) {
             </tbody>
         </Table>
 
+        <p>(select output format)</p>
+
         <Button
             onClick={()=>computeAndDownloadClick()}
         >Compute and Download</Button>
-    </div>
-
+    </Row>
 }
