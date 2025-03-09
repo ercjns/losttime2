@@ -29,8 +29,9 @@ const baseStyle = {
 };
 
 interface loadedFile {
-    filename: string;
+    filename: string
     data: StandardRaceClassData[]
+    race_id: Guid
 }
 
 export function FileLoader(props: FileLoaderProps) {
@@ -59,7 +60,7 @@ export function FileLoader(props: FileLoaderProps) {
                 )
 
                 setFiles((existing) => 
-                    [...existing, {filename:file.name, data:raceClasses}])
+                    [...existing, {filename:file.name, data:raceClasses, race_id: race_id}])
 
                 let raceClassesMap = new Map()
                 raceClasses.forEach((el) =>
@@ -90,7 +91,7 @@ export function FileLoader(props: FileLoaderProps) {
             classes += `${c.xmlClass.ShortName}, `
         )
         classes = classes.slice(0,-2);
-        return <li><strong>{x.filename}</strong> with <strong>{x.data.length.toString()}</strong> classes: {classes}</li>
+        return <li key={x.race_id.toString()}><strong>{x.filename}</strong> with <strong>{x.data.length.toString()}</strong> classes: {classes}</li>
     }
         
     )

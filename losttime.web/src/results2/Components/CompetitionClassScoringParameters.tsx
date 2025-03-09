@@ -10,7 +10,7 @@ export function CompetitionClassScoringParameters(props:CompetitionClassScoringP
     const scoreMethodOptions = Object.keys(IndividualScoreMethod)
         .filter((v) => isNaN(Number(v)))
         .map((name) =>
-            <option value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
+            <option key={`${name}-score-method-option`} value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
     );
 
     return <div>

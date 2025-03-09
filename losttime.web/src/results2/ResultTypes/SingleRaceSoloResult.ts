@@ -37,6 +37,7 @@ export class SingleRaceSoloResult {
 
 }
 
+// This feels ok because it *should* be generic enough, but be careful!
 export function compareSingleSoloByTime(a:SingleRaceSoloResult, b:SingleRaceSoloResult):number {
     if (a.competitive !== b.competitive) {
         return a.competitive - b.competitive;

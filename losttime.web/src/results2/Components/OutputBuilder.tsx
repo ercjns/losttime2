@@ -32,7 +32,7 @@ export function OutputBuilder(props:outputBuilderProps) {
         )
         namesConcat = namesConcat.slice(0,-2);
 
-        return <tr>
+        return <tr key={x.id.toString()}>
             <td>{x.name} (edit)</td>
             <td>{x.contributingResultsFlat().length.toString()}</td>
             <td>Winner???</td>
