@@ -24,6 +24,7 @@ export function BetterResults() {
         />
         <OutputBuilder
             competitionClasses={competitionClasses}
+            setCompetitionClasses={setCompetitionClasses}
         />
         </div>
     )

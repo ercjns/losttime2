@@ -2,9 +2,12 @@ import { Button, Row, Table } from "react-bootstrap";
 import { SectionTitle } from "../../shared/SectionTitle";
 import { CompetitionClass } from "../CompetitionClass";
 import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
+import { Guid } from "guid-typescript";
+import { EditableTableData } from "./EditableTableData";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
+    setCompetitionClasses:Function
 }
 
 function downloadFile(data:any, name = "file.txt") {
@@ -24,6 +27,18 @@ function downloadFile(data:any, name = "file.txt") {
 
 export function OutputBuilder(props:outputBuilderProps) {
 
+    function handleCompetitionClassDelete(id:Guid) {
+        props.setCompetitionClasses([...props.competitionClasses.filter((x) => x.id !== id)])
+    }
+
+    function handleCompetitionClassRename(id:Guid, name:string) {
+        const idx = props.competitionClasses.findIndex((x) => x.id === id)
+        if (idx > -1) {
+            props.competitionClasses.at(idx)!.name = name;
+            props.setCompetitionClasses([...props.competitionClasses])
+        }
+    }
+    
     const rows = props.competitionClasses.map((x) => {
         const names = x.contributingNames();
         let namesConcat = "";
@@ -33,14 +48,16 @@ export function OutputBuilder(props:outputBuilderProps) {
         namesConcat = namesConcat.slice(0,-2);
 
         return <tr key={x.id.toString()}>
-            <td>{x.name} (edit)</td>
+            <EditableTableData data={x.name} onSave={(value:string) => handleCompetitionClassRename(x.id, value)}/>
             <td>{x.contributingResultsFlat().length.toString()}</td>
             <td>Winner???</td>
             <td>{x.scoreMethodFriendly()} (edit)</td>
             <td>{namesConcat}</td>
-            <td>(up)(down)(trash)</td>
+            <td>(up)(down)<Button variant='outline-danger' size='sm' onClick={()=>handleCompetitionClassDelete(x.id)}>Remove</Button></td>
         </tr>
     })
+
+
 
     function computeAndDownloadClick() {
         const computed:ComputedCompetitionClass[] = []
@@ -48,11 +65,11 @@ export function OutputBuilder(props:outputBuilderProps) {
             computed.push(c.compute()));
         let doc = "";
         computed.forEach((c) =>
-            doc += c.render_html());
+            doc += c.render_txt());
         const date = new Date();
         const dateString = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getDate().toString().padStart(2,"0")}`;
         const timeString = `${date.getHours().toString().padStart(2,"0")}${date.getMinutes().toString().padStart(2,"0")}`;
-        const filename = `${dateString}_${timeString}_results.html`
+        const filename = `${dateString}_${timeString}_results.txt`
 
         downloadFile(doc, filename);
     }

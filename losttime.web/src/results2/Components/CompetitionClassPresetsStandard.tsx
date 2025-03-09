@@ -18,7 +18,7 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
         props.raceClassesByClass.forEach((data, name) => {
             if (data.length === 1 && data[0] !== undefined) {
                 props.setCompetitionClasses((current:CompetitionClass[]) =>
-                    [...current, new Standard_Time(name,[data[0]!])]
+                    [...current, new Standard_Time(data[0]!.xmlClass.Name,[data[0]!])]
                 )
             }
         })
