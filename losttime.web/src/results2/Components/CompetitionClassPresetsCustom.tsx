@@ -2,6 +2,8 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { raceClassesByRace } from "./CompetitionClassComposer";
 import { useState } from "react";
+import { presets } from "./CompetitionClassPresets_Cascade";
+import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
@@ -11,30 +13,21 @@ interface CompetitionClassPresetsProps {
     setCompetitionClasses: Function
 }
 
-const buttons = [
-    {
-        org: "COC",
-        id: "cascade-ultimate2025-single",
-        label: "2025 Ultimate: Single Event"
-    },
-    {
-        org: "COC",
-        id: "cascade-ultimate2025-series",
-        label: "2025 Ultimate: Series"
-    }
-]
+let buttons:CompetitionClassPresetButton[] = []
+buttons.push(...presets)
 
 export function CompetitionClassPresetsCustom(props:CompetitionClassPresetsProps) {
 
-    const [host, setHost] = useState("COC")
+    const [org, setOrg] = useState("COC")
 
     const liveButtons = buttons.map((x) => {
-        if (x.org === host) {
+        if (x.org === org) {
             return <Col sm={12} md={6} lg={4} key={`${x.id}-container`}>
                 <Button
                     key={x.id}
                     id={x.id}
                     variant="outline-primary"
+                    onClick={()=>x.onClick(props)}
                     >{x.label}</Button>
                 </Col>
         } else {
@@ -44,7 +37,7 @@ export function CompetitionClassPresetsCustom(props:CompetitionClassPresetsProps
 
     return <Row className="mb-2">
         <p>
-        <Form.Select aria-label="Select Organization" onChange={(e)=>setHost(e.target.value)}>
+        <Form.Select aria-label="Select Organization" onChange={(e)=>setOrg(e.target.value)}>
             {/* <option value="">select organization...</option> */}
             <option value="COC">Cascade Orienteering Club</option>
         </Form.Select>

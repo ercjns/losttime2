@@ -3,6 +3,7 @@ import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
 import { SingleRaceSoloResult } from "../ResultTypes/SingleRaceSoloResult";
 import { RenderStyle } from "../RenderStyles";
 import { PlaintextColumn } from "../PlaintextColumn";
+import { PlaintextTable } from "../PlaintextTable";
 
 
 export class Computed_Standard_Time extends ComputedCompetitionClass {
@@ -50,56 +51,7 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
             this.results,
             "start")
         
-        const cols = [A,B,C];
-
-        // inspired by (but DIY and demonstrably worse than) https://github.com/ozh/ascii-tables
-        // TODO: move this into a helper class that all plaintext renderers can use
-        // otherwise code below will get copied between all plaintext renderers.
-
-        const topchar = "-";
-        const colSep = "|";
-        const bodySep = "=";
-        const junction = "+";
-        const bottomchar = "-";
-        
-        let topLine = "";
-        let headerLine = "";
-        let splitLine = "";
-        let bottomLine = ""
-
-        cols.forEach((col:PlaintextColumn) => {
-            topLine += junction + "".padStart(col.width, topchar)
-            headerLine += colSep
-            const whitespace = col.width - col.header.length;
-            const left = Math.floor(whitespace/2);
-            headerLine += col.header.padStart(left+col.header.length, " ").padEnd(col.width, " ");
-            splitLine += junction + "".padStart(col.width, bodySep)
-            bottomLine += junction + "".padStart(col.width, bottomchar)
-        }
-        )
-        topLine += junction + "\r\n";
-        headerLine += colSep + "\r\n";
-        splitLine += junction + "\r\n";
-        bottomLine += junction + "\r\n\r\n";
-
-        doc += topLine ;
-        doc += headerLine;
-        doc += splitLine;
-
-        for (const el of this.results as SingleRaceSoloResult[]) {
-            cols.forEach((col:PlaintextColumn) => {
-                doc += colSep;
-                (col.pad === "start") ?
-                    doc += col.renderer(el).padStart(col.width, " ") :
-                    doc += col.renderer(el).padEnd(col.width, " ")
-            });
-            doc += colSep;
-            doc += "\r\n";
-        }
-
-        doc += bottomLine;
-
-        return doc;
+        return doc += new PlaintextTable([A,B,C], this.results).tableString;
     }
 
     render_html():string {

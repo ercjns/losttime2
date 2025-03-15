@@ -62,9 +62,11 @@ export function FileLoader(props: FileLoaderProps) {
                 setFiles((existing) => 
                     [...existing, {filename:file.name, data:raceClasses, race_id: race_id}])
 
-                let raceClassesMap = new Map()
+                let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
                 raceClasses.forEach((el) =>
-                    raceClassesMap.set(el.xmlClass.ShortName ?? el.xmlClass.Name, el))
+                    // without toString() here, a ShortName of 1 ends up as an
+                    // integer type key in the map, causing things to break later.
+                    raceClassesMap.set(el.xmlClass.ShortName.toString(), el))
 
                 props.setRaceClasses((existing: Map<Guid,Map<string,StandardRaceClassData>>) => {
                     // https://expertbeacon.com/re-render-react-component-when-its-props-changes-a-comprehensive-guide/

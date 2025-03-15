@@ -56,9 +56,9 @@ function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
     rows.forEach((raceClass) => {
         let matchingRaces: Array<StandardRaceClassData|undefined> = [];
         cols.forEach((race) => {
-            matchingRaces.push(raceClassesByRace.get(race.id)?.get(raceClass.short))
+            matchingRaces.push(raceClassesByRace.get(race.id)?.get(raceClass.short.toString()))
         })
-        outData.set(raceClass.short,matchingRaces);
+        outData.set(raceClass.short.toString(),matchingRaces);
     });
     return outData;
 }

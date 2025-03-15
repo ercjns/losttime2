@@ -2,6 +2,8 @@ import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
 import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
 import { RenderStyle } from "../RenderStyles";
+import { PlaintextColumn } from "../PlaintextColumn";
+import { PlaintextTable } from "../PlaintextTable";
 
 export class Computed_Cascade_SingleSoloWorldCup extends ComputedCompetitionClass {
     constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {
@@ -22,18 +24,39 @@ export class Computed_Cascade_SingleSoloWorldCup extends ComputedCompetitionClas
     }
 
     render_txt():string {
-        if (this.totalFinishers() === 0) {
-            return "";
-        }
         let doc = "";
-        for (const el of this.results as SingleRaceSoloPointedResult[]) {
-            doc += `Place: ${el.place} `;
-            doc += `Name: ${el.name} (${el.club}) `;
-            doc += `Time: ${this.timeWithStatusString(el)} `;
-            doc += `Points: ${el.points}`;
-            doc += "\r\n";
+        doc += `${this.name}`
+        doc += "\r\n";
+
+        if (this.totalFinishers() === 0) {
+            doc += `(No participants for this class)\r\n\r\n`
+            return doc;
         }
-        return doc;
+
+        const PL = new PlaintextColumn(
+            "Pl",
+            (r:SingleRaceSoloPointedResult):string => `${r.place ?? ""}`,
+            this.results,
+            "start")
+
+        const NAME = new PlaintextColumn(
+            "Name",
+            (r:SingleRaceSoloPointedResult):string => `${r.name} (${r.club})`,
+            this.results)
+        
+        const TIME = new PlaintextColumn(
+            "Time",
+            (r:SingleRaceSoloPointedResult):string => `${this.timeWithStatusString(r)}`,
+            this.results,
+            "start")
+
+        const PTS = new PlaintextColumn(
+            "Pts",
+            (r:SingleRaceSoloPointedResult):string => `${r.points ?? ""}`,
+            this.results,
+            "start")
+
+        return doc += new PlaintextTable([PL,NAME,TIME,PTS], this.results).tableString
     }
 
     render_html():string {
