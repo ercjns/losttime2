@@ -69,7 +69,17 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
 
     assignPoints(item:SingleRaceSoloPointedResult): void {
         if (item.place === undefined || item.place === null) {
-            item.points = null;
+            switch (item.competitive) {
+                case CompetitiveStatus.NC:
+                case CompetitiveStatus.DSQ:
+                    item.points = null;
+                    break;
+                case CompetitiveStatus.COMP:
+                case CompetitiveStatus.OVT:
+                case CompetitiveStatus.SWD:
+                    item.points = 0;
+                    break;
+            }
         } else {
             item.points = CascadeWorldCupScoreByPlace(item.place);
         }
