@@ -1,10 +1,10 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { StandardRaceClassData } from "../StandardRaceClassData";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
-import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { Computed_Ousa_SingleSoloAvgWinTime } from "../ComputedCompetitionClassVariants/Computed_Ousa_SingleSoloAvgWinTime";
-import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
-import { IndividualScoreMethod } from "../../results/CompetitionClass";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { PersonResult } from "../../../shared/orienteeringtypes/IofResultXml";
+import { Computed_Ousa_SingleSoloAvgWinTime } from "../../ComputedCompetitionClass/Computed_Ousa_SingleSoloAvgWinTime";
+import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
+import { IndividualScoreMethod } from "../../../results/CompetitionClass";
 
 
 export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {

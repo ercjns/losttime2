@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap";
-import { StandardRaceClassData } from "../StandardRaceClassData";
-import { CompetitionClass } from "../CompetitionClass";
-import { Standard_Time } from "../CompetitionClassDefinitionVariants/Standard_Time";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
+import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
+import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
 import { raceClassesByRace } from "./CompetitionClassComposer";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>

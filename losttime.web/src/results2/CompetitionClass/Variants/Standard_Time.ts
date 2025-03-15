@@ -1,9 +1,9 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { StandardRaceClassData } from "../StandardRaceClassData";
-import { Computed_Standard_Time } from "../ComputedCompetitionClassVariants/Computed_Standard_Time";
-import { compareSingleSoloByTime, SingleRaceSoloResult } from "../ResultTypes/SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
-import { IndividualScoreMethod } from "../../results/CompetitionClass";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
+import { Computed_Standard_Time } from "../../ComputedCompetitionClass/Computed_Standard_Time";
+import { compareSingleSoloByTime, SingleRaceSoloResult } from "../SingleRaceSoloResult";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { IndividualScoreMethod } from "../../../results/CompetitionClass";
 
 
 export class Standard_Time extends CompetitionClass {

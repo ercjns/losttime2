@@ -1,5 +1,5 @@
 import { Form } from "react-bootstrap";
-import { IndividualScoreMethod } from "../../results/CompetitionClass"
+import { IndividualScoreMethod } from "../../../results/CompetitionClass"
 
 interface CompetitionClassScoringParametersProps {
     handleScoringParamsChange: Function

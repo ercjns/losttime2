@@ -1,16 +1,16 @@
-import { StandardRaceClassData } from "../StandardRaceClassData";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { SelectableRaceClass } from "./SelectableRaceClass";
 import React, { useState } from "react";
 import { Button, Col, Collapse, Row, Table } from "react-bootstrap";
-import { SectionTitle } from "../../shared/SectionTitle";
+import { SectionTitle } from "../../../shared/SectionTitle";
 import { CompetitionClassPresetsCustom } from "./CompetitionClassPresetsCustom";
 import { CompetitionClassScoringParameters } from "./CompetitionClassScoringParameters";
-import { IndividualScoreMethod } from "../../results/CompetitionClass";
-import { ScoringParameters } from "../ScoringParameters";
-import { Standard_Time } from "../CompetitionClassDefinitionVariants/Standard_Time";
-import { CompetitionClass } from "../CompetitionClass";
-import { Cascade_SingleSoloWorldCup } from "../CompetitionClassDefinitionVariants/Cascade_SingleSoloWorldCup";
+import { IndividualScoreMethod } from "../../../results/CompetitionClass";
+import { ScoringParameters } from "../../CompetitionClass/ScoringParameters";
+import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
+import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
+import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup";
 import { CompetitionClassPresetsStandard } from "./CompetitionClassPresetsStandard";
 
 export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;

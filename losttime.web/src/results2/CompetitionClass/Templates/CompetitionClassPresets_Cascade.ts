@@ -1,8 +1,8 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { Cascade_SingleSoloWorldCup } from "../CompetitionClassDefinitionVariants/Cascade_SingleSoloWorldCup";
-import { Standard_Time } from "../CompetitionClassDefinitionVariants/Standard_Time";
-import { StandardRaceClassData } from "../StandardRaceClassData";
-import { raceClassesByRace } from "./CompetitionClassComposer";
+import { Cascade_SingleSoloWorldCup } from "../Variants/Cascade_SingleSoloWorldCup";
+import { Standard_Time } from "../Variants/Standard_Time";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
+import { raceClassesByRace } from "../../Components/Compose/CompetitionClassComposer";
 import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>

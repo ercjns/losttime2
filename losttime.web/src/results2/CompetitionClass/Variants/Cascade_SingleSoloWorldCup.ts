@@ -1,10 +1,10 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { StandardRaceClassData } from "../StandardRaceClassData";
-import { Computed_Cascade_SingleSoloWorldCup } from "../ComputedCompetitionClassVariants/Computed_Cascade_SingleSoloWorldCup";
-import { compareSingleSoloByTime } from "../ResultTypes/SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
-import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
-import { IndividualScoreMethod } from "../../results/CompetitionClass";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
+import { Computed_Cascade_SingleSoloWorldCup } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloWorldCup";
+import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
+import { IndividualScoreMethod } from "../../../results/CompetitionClass";
 
 
 export class Cascade_SingleSoloWorldCup extends CompetitionClass {

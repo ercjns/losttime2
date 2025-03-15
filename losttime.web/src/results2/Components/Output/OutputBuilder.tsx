@@ -1,12 +1,12 @@
 import { Button, Row, Table } from "react-bootstrap";
-import { SectionTitle } from "../../shared/SectionTitle";
-import { CompetitionClass } from "../CompetitionClass";
-import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
+import { SectionTitle } from "../../../shared/SectionTitle";
+import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
+import { ComputedCompetitionClass } from "../../ComputedCompetitionClass/ComputedCompetitionClass";
 import { Guid } from "guid-typescript";
 import { EditableTableData } from "./EditableTableData";
-import { IndividualScoreMethod } from "../../results/CompetitionClass";
-import { Standard_Time } from "../CompetitionClassDefinitionVariants/Standard_Time";
-import { Cascade_SingleSoloWorldCup } from "../CompetitionClassDefinitionVariants/Cascade_SingleSoloWorldCup";
+import { IndividualScoreMethod } from "../../../results/CompetitionClass";
+import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
+import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faTrashAlt } from "@fortawesome/free-regular-svg-icons";

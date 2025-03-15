@@ -1,9 +1,9 @@
 import { Guid } from "guid-typescript";
-import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
-import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
-import { RenderStyle } from "../RenderStyles";
-import { PlaintextColumn } from "../PlaintextColumn";
-import { PlaintextTable } from "../PlaintextTable";
+import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
+import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
+import { RenderStyle } from "../Styles/RenderStyles";
+import { PlaintextColumn } from "../Styles/PlaintextColumn";
+import { PlaintextTable } from "../Styles/PlaintextTable";
 
 export class Computed_Cascade_SingleSoloWorldCup extends ComputedCompetitionClass {
     constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {

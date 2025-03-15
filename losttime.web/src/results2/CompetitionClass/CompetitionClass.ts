@@ -1,7 +1,7 @@
 import { Guid } from "guid-typescript";
-import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
-import { PersonResult } from "../shared/orienteeringtypes/IofResultXml";
-import { StandardRaceClassData } from "./StandardRaceClassData";
+import { ComputedCompetitionClass } from "../ComputedCompetitionClass/ComputedCompetitionClass";
+import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
+import { StandardRaceClassData } from "../StandardRaceClassData";
 
 export abstract class CompetitionClass {
     id: Guid;

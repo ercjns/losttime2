@@ -1,5 +1,5 @@
 import { ToggleButton } from "react-bootstrap";
-import { StandardRaceClassData } from "../StandardRaceClassData";
+import { StandardRaceClassData } from "../../StandardRaceClassData";
 
 
 interface SelectableRaceClassProps {

@@ -1,4 +1,4 @@
-import { IndividualScoreMethod } from "../results/CompetitionClass"
+import { IndividualScoreMethod } from "../../results/CompetitionClass"
 
 
 

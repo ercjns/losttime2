@@ -1,8 +1,8 @@
 import { Guid } from "guid-typescript";
-import { SingleRaceSoloResult } from "./ResultTypes/SingleRaceSoloResult";
-import { SingleRaceSoloPointedResult } from "./ResultTypes/SingleRaceSoloPointedResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../results/scoremethods/IofStatusParser";
-import { RenderStyle } from "./RenderStyles";
+import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
+import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { RenderStyle } from "../Styles/RenderStyles";
 
 
 export abstract class ComputedCompetitionClass {

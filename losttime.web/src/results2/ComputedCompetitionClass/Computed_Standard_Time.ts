@@ -1,9 +1,9 @@
 import { Guid } from "guid-typescript";
-import { ComputedCompetitionClass } from "../ComputedCompetitionClass";
-import { SingleRaceSoloResult } from "../ResultTypes/SingleRaceSoloResult";
-import { RenderStyle } from "../RenderStyles";
-import { PlaintextColumn } from "../PlaintextColumn";
-import { PlaintextTable } from "../PlaintextTable";
+import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
+import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
+import { RenderStyle } from "../Styles/RenderStyles";
+import { PlaintextColumn } from "../Styles/PlaintextColumn";
+import { PlaintextTable } from "../Styles/PlaintextTable";
 
 
 export class Computed_Standard_Time extends ComputedCompetitionClass {

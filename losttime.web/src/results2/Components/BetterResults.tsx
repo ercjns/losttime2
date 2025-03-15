@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { PageTitle } from "../../shared/PageTitle";
 import { FileLoader } from "./FileLoader";
-import { CompetitionClassComposer } from "./CompetitionClassComposer";
+import { CompetitionClassComposer } from "./Compose/CompetitionClassComposer";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
-import { CompetitionClass } from "../CompetitionClass";
-import { OutputBuilder } from "./OutputBuilder";
+import { CompetitionClass } from "../CompetitionClass/CompetitionClass";
+import { OutputBuilder } from "./Output/OutputBuilder";
 
 export function BetterResults() {
 

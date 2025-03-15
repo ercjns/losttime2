@@ -1,5 +1,5 @@
-import { SingleRaceSoloPointedResult } from "./ResultTypes/SingleRaceSoloPointedResult"
-import { SingleRaceSoloResult } from "./ResultTypes/SingleRaceSoloResult"
+import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult"
+import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult"
 
 export class PlaintextColumn {
 
