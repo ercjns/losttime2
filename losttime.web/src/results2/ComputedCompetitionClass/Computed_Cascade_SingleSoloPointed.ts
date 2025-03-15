@@ -5,7 +5,7 @@ import { RenderStyle } from "../Styles/RenderStyles";
 import { PlaintextColumn } from "../Styles/PlaintextColumn";
 import { PlaintextTable } from "../Styles/PlaintextTable";
 
-export class Computed_Cascade_SingleSoloWorldCup extends ComputedCompetitionClass {
+export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass {
     constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {
         super(competitionClassId, name, r);
     }

@@ -1,6 +1,6 @@
 import { CompetitionClass } from "../CompetitionClass";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
-import { Computed_Cascade_SingleSoloWorldCup } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloWorldCup";
+import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloPointed";
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
@@ -22,7 +22,7 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         return IndividualScoreMethod.PointsCocWorldCup.valueOf()
     }
 
-    compute():Computed_Cascade_SingleSoloWorldCup {
+    compute():Computed_Cascade_SingleSoloPointed {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>
             new SingleRaceSoloPointedResult(x)
@@ -37,7 +37,7 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         // assign points
         results.forEach(this.assignPoints);
 
-        return new Computed_Cascade_SingleSoloWorldCup(this.id, this.name, results);
+        return new Computed_Cascade_SingleSoloPointed(this.id, this.name, results);
     }
 
     assignPlace(

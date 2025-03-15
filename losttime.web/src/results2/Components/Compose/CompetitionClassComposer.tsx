@@ -12,6 +12,7 @@ import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup";
 import { CompetitionClassPresetsStandard } from "./CompetitionClassPresetsStandard";
+import { Cascade_SingleSoloScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
 
 export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
@@ -141,7 +142,6 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
     function createCompetitionClass() {
         switch (scoringParams.individual) {
             case IndividualScoreMethod.Time :
-                console.log("creating Time competition class!")
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Standard_Time(
                         `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
@@ -151,7 +151,6 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 );
                 break;
             case IndividualScoreMethod.PointsCocWorldCup :
-                console.log("creating COC World Cup competition class!")
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleSoloWorldCup(
                         `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
@@ -159,6 +158,20 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                         getRaceClassDataForSelected()
                     )]
                 );
+                break;
+            case IndividualScoreMethod.Points1kScottish :
+                props.setCompetitionClasses((current:CompetitionClass[]) => 
+                    [...current, new Cascade_SingleSoloScottish1k(
+                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
+                        getRaceClassDataForSelected()
+                    )]
+                );
+                break;
+            case IndividualScoreMethod.AlphaWithTimes :
+            case IndividualScoreMethod.AlphaWithoutTimes :
+            case IndividualScoreMethod.PointsOusaAverageWinningTime :
+                console.log("NOT IMPLEMENTED!!!");
                 break;
             default :
                 new Error("not implemented")

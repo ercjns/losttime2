@@ -10,6 +10,7 @@ import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Casc
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faTrashAlt } from "@fortawesome/free-regular-svg-icons";
+import { Cascade_SingleSoloScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -82,6 +83,15 @@ export function OutputBuilder(props:outputBuilderProps) {
                 case IndividualScoreMethod.PointsCocWorldCup.toString():
                     next = new Cascade_SingleSoloWorldCup(old.name, old.contributingResults);
                     break;
+                case IndividualScoreMethod.Points1kScottish.toString():
+                    next = new Cascade_SingleSoloScottish1k(old.name, old.contributingResults);
+                    break;
+                case IndividualScoreMethod.AlphaWithTimes.toString():
+                case IndividualScoreMethod.AlphaWithoutTimes.toString():
+                case IndividualScoreMethod.PointsOusaAverageWinningTime.toString():
+                    console.log("Can't change to that method. Not implemented!")
+                    new Error("Can't change to that score method")
+                    return;
                 default:
                     new Error("Can't change to that score method")
                     return;
