@@ -4,6 +4,7 @@ import { Standard_Time } from "../Variants/Standard_Time";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { raceClassesByRace } from "../../Components/Compose/CompetitionClassComposer";
 import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
+import { Cascade_SingleSoloScottish1k } from "../Variants/Cascade_SingleSoloScottish1k";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
@@ -131,6 +132,77 @@ function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
 
 }
 
+function COC_UO25_Single(raceData:CompetitionClassPresetsProps) {
+    let classes:CompetitionClass[] = []
+
+    classes.push(new Standard_Time(
+        'Beginner',
+        getRaceDataByClassCode(raceData,"Beg",true)
+    ))
+    classes.push(new Standard_Time(
+        'Intermediate',
+        getRaceDataByClassCode(raceData,"Int",true)
+    ))
+    classes.push(new Standard_Time(
+        'Short Advancecd',
+        getRaceDataByClassCode(raceData,"Short Adv",true)
+    ))
+    classes.push(new Standard_Time(
+        'Long Advanced Rec / Groups',
+        getRaceDataByClassCode(raceData,"Long AdvG",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '16 and Under Female',
+        getRaceDataByClassCode(raceData,"16F",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '16 and Under Open',
+        getRaceDataByClassCode(raceData,"16O",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '18 and Under Female',
+        getRaceDataByClassCode(raceData,"18F",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '18 and Under Open',
+        getRaceDataByClassCode(raceData,"18O",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '50+ Female',
+        getRaceDataByClassCode(raceData,"50+F",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '50+ Open',
+        getRaceDataByClassCode(raceData,"50+O",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '70+ Female',
+        getRaceDataByClassCode(raceData,"70+F",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '70+ Open',
+        getRaceDataByClassCode(raceData,"70+O",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '20 and Under Female',
+        getRaceDataByClassCode(raceData,"20F",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        '20 and Under Open',
+        getRaceDataByClassCode(raceData,"20O",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        'Open (-21+) Female',
+        getRaceDataByClassCode(raceData,"21F",true)
+    ))
+    classes.push(new Cascade_SingleSoloScottish1k(
+        'Open (-21+)',
+        getRaceDataByClassCode(raceData,"21O",true)
+    ))
+
+    raceData.setCompetitionClasses((current:CompetitionClass[]) =>
+        [...current,...classes])
+}
 
 export const presets = [
     new CompetitionClassPresetButton(
@@ -139,18 +211,11 @@ export const presets = [
         "2024-25 WIOL: Single Event",
         COC_WIOL2425_Single
     )
-    // ,
-        
-    // {
-    //     org: "COC",
-    //     id: "cascade-ultimate2025-single",
-    //     label: "2025 Ultimate: Single Event",
-    //     action: ()=>false
-    // },
-    // {
-    //     org: "COC",
-    //     id: "cascade-ultimate2025-series",
-    //     label: "2025 Ultimate: Series",
-    //     action: ()=>false
-    // }
+    ,
+    new CompetitionClassPresetButton(
+        "COC",
+        "cascade-UO25-single",
+        "2025 Ultimate: Single Event",
+        COC_UO25_Single
+    )
 ]
