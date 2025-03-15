@@ -13,7 +13,7 @@ export function CompetitionClassScoringParameters(props:CompetitionClassScoringP
             <option key={`${name}-score-method-option`} value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
     );
 
-    return <div>
+    return <Form>
     <Form.Label>Scoring Method</Form.Label>
     <Form.Select 
         aria-label="score method"
@@ -21,5 +21,5 @@ export function CompetitionClassScoringParameters(props:CompetitionClassScoringP
             <option>Select a Scoring Method</option>
       {scoreMethodOptions}
     </Form.Select>
-    </div>
+    </Form>
 }

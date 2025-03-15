@@ -3,6 +3,7 @@ import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Computed_Standard_Time } from "../ComputedCompetitionClassVariants/Computed_Standard_Time";
 import { compareSingleSoloByTime, SingleRaceSoloResult } from "../ResultTypes/SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { IndividualScoreMethod } from "../../results/CompetitionClass";
 
 
 export class Standard_Time extends CompetitionClass {
@@ -15,6 +16,10 @@ export class Standard_Time extends CompetitionClass {
 
     scoreMethodFriendly(): string {
         return 'Solo - Time'
+    }
+
+    scoreMethodEnumValue(): number {
+        return IndividualScoreMethod.Time.valueOf()
     }
 
     compute():Computed_Standard_Time {

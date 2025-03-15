@@ -4,6 +4,7 @@ import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethod
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { Computed_Ousa_SingleSoloAvgWinTime } from "../ComputedCompetitionClassVariants/Computed_Ousa_SingleSoloAvgWinTime";
 import { SingleRaceSoloPointedResult } from "../ResultTypes/SingleRaceSoloPointedResult";
+import { IndividualScoreMethod } from "../../results/CompetitionClass";
 
 
 export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
@@ -30,6 +31,10 @@ export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
 
     scoreMethodFriendly(): string {
         return 'Solo - Points - OUSA Average Winning Time'
+    }
+
+    scoreMethodEnumValue(): number {
+        return IndividualScoreMethod.PointsOusaAverageWinningTime.valueOf()
     }
 
     compute(): Computed_Ousa_SingleSoloAvgWinTime {

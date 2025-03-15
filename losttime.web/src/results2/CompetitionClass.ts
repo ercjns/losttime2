@@ -18,6 +18,7 @@ export abstract class CompetitionClass {
     }
 
     abstract scoreMethodFriendly(): string
+    abstract scoreMethodEnumValue(): number
     abstract compute(): ComputedCompetitionClass
 
     // helpers for process actions go here

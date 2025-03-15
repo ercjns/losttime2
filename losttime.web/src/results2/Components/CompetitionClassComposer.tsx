@@ -144,8 +144,9 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 console.log("creating Time competition class!")
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Standard_Time(
-                    "placeholder title", 
-                    getRaceClassDataForSelected()
+                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`, 
+                        getRaceClassDataForSelected()
                     )]
                 );
                 break;
@@ -153,7 +154,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 console.log("creating COC World Cup competition class!")
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleSoloWorldCup(
-                        "placeholder title",
+                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
                         getRaceClassDataForSelected()
                     )]
                 );
@@ -206,11 +208,12 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                     <tbody>
                         {rows}
                     </tbody>
-                    
                 </Table>
                 <CompetitionClassScoringParameters 
                     handleScoringParamsChange={handleIndividualScoreMethodChange}/>
+                <p>
                 <Button onClick={()=>createCompetitionClass()}>Add Competition Class</Button>
+                </p>
             </div>
             </Collapse>
         </Row>
