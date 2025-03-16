@@ -2,7 +2,8 @@ import { Guid } from "guid-typescript";
 import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
-import { RenderStyle } from "../Styles/RenderStyles";
+import { RenderStyles } from "../Styles/RenderStyles";
+import { html_beautify } from "js-beautify";
 
 
 export abstract class ComputedCompetitionClass {
@@ -25,7 +26,7 @@ export abstract class ComputedCompetitionClass {
     }
 
     // Required render methods for all CompetitionClassResult implementations
-    abstract render(s:RenderStyle): string
+    abstract render(s:RenderStyles): string
     abstract render_txt():string
     abstract render_html():string
 
@@ -54,5 +55,11 @@ export abstract class ComputedCompetitionClass {
         } else {
             return `${CompetitiveStatus[result.competitive]} ${this.timeNumberAsMMMSS(result.time)}*`
         }
+    }
+
+    stringify_html(html:HTMLElement) {
+        const wrap = document.createElement("div");
+        wrap.appendChild(html);
+        return html_beautify(wrap.innerHTML);
     }
 }

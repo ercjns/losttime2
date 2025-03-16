@@ -1,4 +1,4 @@
-import { Button, Row, Table } from "react-bootstrap";
+import { Button, Form, Row, Table } from "react-bootstrap";
 import { SectionTitle } from "../../../shared/SectionTitle";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { ComputedCompetitionClass } from "../../ComputedCompetitionClass/ComputedCompetitionClass";
@@ -11,6 +11,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faTrashAlt } from "@fortawesome/free-regular-svg-icons";
 import { Cascade_SingleSoloScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
+import { useState } from "react";
+import { RenderStyles } from "../../Styles/RenderStyles";
+import { Standard_Html } from "../../Styles/Standard_Html";
+import { Standard_Txt } from "../../Styles/Standard_Txt";
+import { RenderStyleWrapper } from "../../Styles/RenderStyleWrapper";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -33,6 +38,8 @@ function downloadFile(data:any, name = "file.txt") {
   }
 
 export function OutputBuilder(props:outputBuilderProps) {
+
+    const [style, setStyle] = useState(RenderStyles.standard_txt.toString())
 
     function handleCompetitionClassDelete(id:Guid) {
         props.setCompetitionClasses([...props.competitionClasses.filter((x) => x.id !== id)])
@@ -104,10 +111,16 @@ export function OutputBuilder(props:outputBuilderProps) {
     }
 
     const scoreMethodOptions = Object.keys(IndividualScoreMethod)
-            .filter((v) => isNaN(Number(v)))
-            .map((name) =>
-                <option key={`${name}-score-method-option`} value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
-        );
+        .filter((v) => isNaN(Number(v)))
+        .map((name) =>
+            <option key={`${name}-score-method-option`} value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
+    );
+
+    const styleOptions = Object.keys(RenderStyles)
+        .filter((v) => isNaN(Number(v)))
+        .map((name) => 
+            <option key={`style-option-${name}`} value={RenderStyles[name as keyof typeof RenderStyles]}>{name}</option>
+    );
 
     const rows = props.competitionClasses.map((x) => {
         const names = x.contributingNames();
@@ -144,19 +157,50 @@ export function OutputBuilder(props:outputBuilderProps) {
         const computed:ComputedCompetitionClass[] = []
         props.competitionClasses.forEach((c) =>
             computed.push(c.compute()));
-        let doc = "";
-        computed.forEach((c) =>
-            doc += c.render_txt());
+        
+        let styleHelper:RenderStyleWrapper
+        switch (style) {
+            case RenderStyles.standard_txt.toString():
+                styleHelper = new Standard_Txt(computed)
+                break;
+            case RenderStyles.standard_html.toString():
+                styleHelper = new Standard_Html(computed)
+                break;
+            default:
+                console.log(`Missing style helper for ${style}`)
+                return;
+        }
+        
+        const doc = styleHelper.render()
+
         const date = new Date();
         const dateString = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getDate().toString().padStart(2,"0")}`;
         const timeString = `${date.getHours().toString().padStart(2,"0")}${date.getMinutes().toString().padStart(2,"0")}`;
-        const filename = `${dateString}_${timeString}_results.txt`
+        const filename = `${dateString}_${timeString}_results.${styleHelper.extension}`
 
         downloadFile(doc, filename);
     }
 
     return <Row>
         <SectionTitle title="3. Build Output" line={true} />
+        
+        <Form className="mb-2">
+            <p>
+            <Form.Label>Output Style</Form.Label>
+            <Form.Select
+                aria-label="output style"
+                onChange={({target:{value}}) => setStyle(value)}
+                defaultValue={style}>
+                {styleOptions}
+            </Form.Select>
+            </p>
+            <p>
+            <Button onClick={()=>computeAndDownloadClick()}>
+                Compute and Download
+            </Button>
+            </p>
+        </Form>
+
         <h4>Competition Classes</h4>
         <Table striped size="sm">
             <thead>
@@ -173,10 +217,6 @@ export function OutputBuilder(props:outputBuilderProps) {
             </tbody>
         </Table>
 
-        <p>(select output format)</p>
 
-        <Button
-            onClick={()=>computeAndDownloadClick()}
-        >Compute and Download</Button>
     </Row>
 }

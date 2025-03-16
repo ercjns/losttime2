@@ -1,18 +1,18 @@
 import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
 import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
-import { RenderStyle } from "../Styles/RenderStyles";
+import { RenderStyles } from "../Styles/RenderStyles";
 
 export class Computed_Ousa_SingleSoloAvgWinTime extends ComputedCompetitionClass {
     constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {
         super(competitionClassId, name, r);
     }
 
-    render(style:RenderStyle): string {
+    render(style:RenderStyles): string {
         switch (style) {
-            case RenderStyle.standard_txt:
+            case RenderStyles.standard_txt:
                 return this.render_txt();
-            case RenderStyle.standard_html:
+            case RenderStyles.standard_html:
                 return this.render_html();
             default: 
                 return this.render_html();

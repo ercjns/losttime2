@@ -2,7 +2,7 @@
 //   1. Add an entry here
 //   2. For each ComputedCompetitionClass, define the style output
 
-export enum RenderStyle {
+export enum RenderStyles {
     standard_txt,
     standard_html,
     cascade_wordpresshtml,
