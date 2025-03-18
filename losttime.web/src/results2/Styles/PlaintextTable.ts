@@ -1,12 +1,9 @@
 import { PlaintextColumn } from "./PlaintextColumn";
-import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
-import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
-
 
 export class PlaintextTable {
 
     columns: PlaintextColumn[]
-    data: SingleRaceSoloResult[] | SingleRaceSoloPointedResult[]
+    data: any[] // items are fed to a PlaintextColumn render function
     tableString: string
     topchar: string
     colSep: string
@@ -17,7 +14,7 @@ export class PlaintextTable {
 
     constructor(
         columns: PlaintextColumn[],
-        data: SingleRaceSoloResult[] | SingleRaceSoloPointedResult[],
+        data: any[], //
         topchar = "-",
         colSep = "|",
         bodySep = "=",

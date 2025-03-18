@@ -5,6 +5,7 @@ import { PersonResult } from "../../../shared/orienteeringtypes/IofResultXml";
 import { Computed_Ousa_SingleSoloAvgWinTime } from "../../ComputedCompetitionClass/Computed_Ousa_SingleSoloAvgWinTime";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
 import { IndividualScoreMethod } from "../../../results/CompetitionClass";
+import { CompetitionClassType } from "../../CompetitionClassType";
 
 
 export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
@@ -18,7 +19,7 @@ export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
         super(name, contributingResults)
         this.consideredResults = consideredResults;
     }
-
+    competitionClassType = CompetitionClassType.SingleEventSolo
     consideredResultsFlat(): PersonResult[] {
         // like super.contributingResultsFlat
         let results: PersonResult[] = []

@@ -5,6 +5,7 @@ import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
 import { IndividualScoreMethod } from "../../../results/CompetitionClass";
+import { CompetitionClassType } from "../../CompetitionClassType";
 
 
 export class Cascade_SingleSoloWorldCup extends CompetitionClass {
@@ -15,6 +16,8 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         super(name, contributingResults)
     }
 
+    competitionClassType = CompetitionClassType.SingleEventSolo;
+    
     scoreMethodFriendly(): string {
         return 'Solo - Points - CascadeOC World Cup'
     }
@@ -40,7 +43,7 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         return new Computed_Cascade_SingleSoloPointed(this.id, this.name, results);
     }
 
-    assignPlace(
+    private assignPlace(
         item:SingleRaceSoloPointedResult, 
         index:number, 
         results:SingleRaceSoloPointedResult[]
@@ -67,7 +70,7 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         }
     }
 
-    assignPoints(item:SingleRaceSoloPointedResult): void {
+    private assignPoints(item:SingleRaceSoloPointedResult): void {
         if (item.place === undefined || item.place === null) {
             switch (item.competitive) {
                 case CompetitiveStatus.NC:

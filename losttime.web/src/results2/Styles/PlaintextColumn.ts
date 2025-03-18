@@ -1,6 +1,3 @@
-import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult"
-import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult"
-
 export class PlaintextColumn {
 
     header: string
@@ -11,7 +8,7 @@ export class PlaintextColumn {
     constructor(
         header: string,
         renderer: Function,
-        data: SingleRaceSoloResult[] | SingleRaceSoloPointedResult[],
+        data: any[], // items are fed to a render function
         pad: "start" | "end" = "end"
     ) {
         this.header = header
@@ -20,7 +17,7 @@ export class PlaintextColumn {
         this.width = this._plaintextColumnWidth(data)
     }
 
-    private _plaintextColumnWidth(data:SingleRaceSoloResult[] | SingleRaceSoloPointedResult[]):number {
+    private _plaintextColumnWidth(data:any[]):number {
         return data
             .map((item) => this.renderer(item).length)
             .reduce((longest, current) => 

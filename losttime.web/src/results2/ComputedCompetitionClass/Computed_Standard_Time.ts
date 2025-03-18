@@ -60,7 +60,7 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         let doc = document.createElement("div")
         const h2 = document.createElement("h2")
         h2.textContent = `${this.name}`
-        h2.setAttribute("id", `compeition-class-${this.id.toString()}`)
+        h2.setAttribute("id", `competition-class-${this.id.toString()}`)
         doc.appendChild(h2);
         
         if (this.totalFinishers() === 0) {
@@ -83,7 +83,7 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
             (r:SingleRaceSoloResult):string => `${this.timeWithStatusString(r)}`,
             "text-right"
         )
-        const table = new HtmlTable([PL,NAME,TIME],this).doc
+        const table = new HtmlTable([PL,NAME,TIME],this,this.results).doc
         doc.appendChild(table)
         return this.stringify_html(doc)
     }

@@ -8,8 +8,12 @@ import { HtmlColumn } from "../Styles/HtmlColumn";
 import { HtmlTable } from "../Styles/HtmlTable";
 
 export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass {
+
+    results: SingleRaceSoloPointedResult[]
+
     constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {
         super(competitionClassId, name, r);
+        this.results = r
     }
 
     render(style:RenderStyles): string {
@@ -93,7 +97,7 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
             (r:SingleRaceSoloPointedResult):string => `${r.points ?? ""}`,
             "text-right"
         )
-        const table = new HtmlTable([PL,NAME,TIME,PTS],this).doc
+        const table = new HtmlTable([PL,NAME,TIME,PTS],this,this.results).doc
         doc.appendChild(table)
         return this.stringify_html(doc)
     }

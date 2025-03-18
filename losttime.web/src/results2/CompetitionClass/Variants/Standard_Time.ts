@@ -4,6 +4,7 @@ import { Computed_Standard_Time } from "../../ComputedCompetitionClass/Computed_
 import { compareSingleSoloByTime, SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { IndividualScoreMethod } from "../../../results/CompetitionClass";
+import { CompetitionClassType } from "../../CompetitionClassType";
 
 
 export class Standard_Time extends CompetitionClass {
@@ -13,6 +14,8 @@ export class Standard_Time extends CompetitionClass {
     ) {
         super(name, contributingResults)
     }
+
+    competitionClassType = CompetitionClassType.SingleEventSolo
 
     scoreMethodFriendly(): string {
         return 'Solo - Time'

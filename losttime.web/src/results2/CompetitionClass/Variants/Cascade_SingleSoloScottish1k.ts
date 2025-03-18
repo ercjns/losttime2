@@ -5,6 +5,7 @@ import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
 import { IndividualScoreMethod } from "../../../results/CompetitionClass";
+import { CompetitionClassType } from "../../CompetitionClassType";
 
 
 export class Cascade_SingleSoloScottish1k extends CompetitionClass {
@@ -14,6 +15,8 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
     ) {
         super(name, contributingResults)
     }
+
+    competitionClassType = CompetitionClassType.SingleEventSolo;
 
     scoreMethodFriendly(): string {
         return 'Solo - Points - CascadeOC 1000 Ratio to Winner'
