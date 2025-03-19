@@ -1,9 +1,9 @@
 import { RenderStyleWrapper } from "./RenderStyleWrapper";
 import { RenderStyles } from "./RenderStyles";
 
-export class Standard_Html extends RenderStyleWrapper {
+export class Cascade_WordpressHtml extends RenderStyleWrapper {
 
-    styleEnumValue = RenderStyles.standard_html;
+    styleEnumValue = RenderStyles.cascade_wordpresshtml;
     extension = "html"
 
     render(): string {
@@ -17,40 +17,28 @@ export class Standard_Html extends RenderStyleWrapper {
     }
 
     private beginDoc(): string {
-        return `<!doctype html>
-        <html lang="en">\r\n
-        <head>\r\n
-        <title>Results</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />\r\n
-        <meta charset="UTF-8" />
-        <style>${this.style}</style>\r\n
-        </head>\r\n
-        <body>\r\n`;
+        return `<div class="LostTimeContent">`;
     }
-    style:string = `
-    tr:nth-child(even) {background-color: #f2f2f2;}\r\n
-    .text-right {text-align: right}
-    `
+
     private menuContent(): string {
         const div = document.createElement("div")
         const h2 = document.createElement("h2")
         h2.textContent = "Competition Classes"
+        h2.setAttribute("id", "lt-menu")
         div.appendChild(h2)
-        const ul = document.createElement("ul")
         this.data.forEach((x) => {
-            const li = document.createElement("li")
+            const h4 = document.createElement("h4")
             const a = document.createElement("a")
             a.textContent = `${x.name}`
             a.setAttribute("href", `#competition-class-${x.id.toString()}`)
-            li.appendChild(a)
-            ul.appendChild(li)
+            h4.appendChild(a)
+            div.appendChild(h4)
         })
-        div.appendChild(ul)
         return this.stringify_html(div)
     }
 
     private endDoc(): string {
-        return "</body>\r\n</html>";
+        return "</div>";
     }
 
 

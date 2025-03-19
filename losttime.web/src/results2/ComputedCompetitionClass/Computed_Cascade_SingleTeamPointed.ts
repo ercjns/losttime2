@@ -31,14 +31,51 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         return res;
     }
 
+    private getTeamPlace = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+        if (r instanceof SingleRaceTeamResult) {
+            return `${r.place}`
+        } else {
+            return ``
+        }
+    }
+
+    private getTeamOrSoloNameArrowIndent = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+        if (r instanceof SingleRaceTeamResult) {
+            return `${r.teamName} (${r.club})`
+        } else {
+            return `->${r.name}`
+        }
+    }
+
+    private getPoints = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => `${r.points ?? ""}`
+
+    private getTeamOrSoloName = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+        if (r instanceof SingleRaceTeamResult) {
+            return `${r.teamName} (${r.club})`
+        } else {
+            return `${r.name} (${r.club})`
+        }
+    }
+
+    private getTeamFinishStatsOrSoloTime = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+        if (r instanceof SingleRaceTeamResult) {
+            const fin = r.soloResultsAll.filter((x)=>x.codeChecking===CodeCheckingStatus.FIN).length
+            const pct = Math.round(fin*100/r.soloResultsAll.length)
+            return `${pct}% (${fin} of ${r.soloResultsAll.length})`
+        } else {
+            return `${this.timeWithStatusString(r)}`
+        }
+    }
+
+
     render(style:RenderStyles): string {
         switch (style) {
             case RenderStyles.standard_txt: 
                 return this.render_txt();
             case RenderStyles.standard_html: 
-            case RenderStyles.cascade_wifihtml:
-            case RenderStyles.cascade_wordpresshtml:
                 return this.render_html();
+            case RenderStyles.cascade_wordpresshtml:
+                return this.cascade_wordpresshtml();
             default: 
                 return this.render_html();
         }
@@ -56,30 +93,18 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         
         const PL = new PlaintextColumn(
             "Pl",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
-                if (r instanceof SingleRaceTeamResult) {
-                    return `${r.place}`
-                } else {
-                    return ``
-                }
-            },
+            this.getTeamPlace,
             this.mixedResults,
             "start")
 
         const NAME = new PlaintextColumn(
             "Name",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
-                if (r instanceof SingleRaceTeamResult) {
-                    return `${r.teamName} (${r.club})`
-                } else {
-                    return `->${r.name}`
-                }
-            },
+            this.getTeamOrSoloNameArrowIndent,
             this.mixedResults)
         
         const PTS = new PlaintextColumn(
             "Pts",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => `${r.points}`,
+            this.getPoints,
             this.mixedResults,
             "start")
         
@@ -102,49 +127,71 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
 
         const PL = new HtmlColumn(
             "Place",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
-                if (r instanceof SingleRaceTeamResult) {
-                    return `${r.place}`
-                } else {
-                    return ``
-                }
-            }
+            this.getTeamPlace
         )
         const PTS = new HtmlColumn(
             "Points",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
-                if (r instanceof SingleRaceTeamResult) {
-                    return `${r.points}`
-                } else {
-                    return `${r.points ?? ""}`
-                }
-            },
+            this.getPoints,
             "text-right"
         )
         const NAME = new HtmlColumn(
             "Name",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
-                if (r instanceof SingleRaceTeamResult) {
-                    return `${r.teamName} (${r.club})`
-                } else {
-                    return `${r.name} (${r.club})`
-                }
-            }
+            this.getTeamOrSoloName
         )
         const FINISH = new HtmlColumn(
             "Finish",
-            (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
-                if (r instanceof SingleRaceTeamResult) {
-                    const fin = r.soloResultsAll.filter((x)=>x.codeChecking===CodeCheckingStatus.FIN).length
-                    const pct = Math.round(fin*100/r.soloResultsAll.length)
-                    return `${pct}% (${fin} of ${r.soloResultsAll.length})`
-                } else {
-                    return `${this.timeWithStatusString(r)}`
-                }
-            }
+            this.getTeamFinishStatsOrSoloTime
         )
         const table = new HtmlTable([PL,PTS,NAME,FINISH],this,this.mixedResults).doc;
         doc.appendChild(table);
+        return this.stringify_html(doc);
+    }
+
+    cascade_wordpresshtml():string {
+        let doc = document.createElement("div")
+        doc.setAttribute("class", "lg-mrg-bottom")
+        const h3 = document.createElement("h3")
+        h3.textContent = `${this.name}`
+        h3.setAttribute("id", `competition-class-${this.id.toString()}`)
+        doc.appendChild(h3);
+
+        if (this.totalFinishers() === 0) {
+            const p = document.createElement("p")
+            p.textContent = "(No participants for this class)"
+            doc.appendChild(p)
+            return this.stringify_html(doc)
+        }
+
+        const PL = new HtmlColumn(
+            "Place",
+            this.getTeamPlace
+        )
+        const PTS = new HtmlColumn(
+            "Points",
+            this.getPoints,
+            "text-right"
+        )
+        const NAME = new HtmlColumn(
+            "Name",
+            this.getTeamOrSoloName
+        )
+        const FINISH = new HtmlColumn(
+            "Finish",
+            this.getTeamFinishStatsOrSoloTime
+        )
+        const table = new HtmlTable([PL,PTS,NAME,FINISH],this,this.mixedResults).doc;
+        doc.appendChild(table);
+
+        const menudiv = document.createElement("div")
+        const p = document.createElement("p")
+        p.setAttribute("class", "lg-mrg-bottom text-center");
+        const a = document.createElement("a")
+        a.setAttribute("href", "#lt-menu")
+        a.textContent = `Menu`
+        p.appendChild(a)
+        menudiv.appendChild(p)
+        doc.appendChild(menudiv)
+
         return this.stringify_html(doc);
     }
 }

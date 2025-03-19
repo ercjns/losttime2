@@ -1,4 +1,3 @@
-import { ComputedCompetitionClass } from "../ComputedCompetitionClass/ComputedCompetitionClass";
 import { RenderStyleWrapper } from "./RenderStyleWrapper";
 import { RenderStyles } from "./RenderStyles";
 
@@ -10,7 +9,7 @@ export class Standard_Txt extends RenderStyleWrapper {
     render(): string {
         let doc = "";
         this.data.forEach((c) =>
-            doc += c.render_txt());
+            doc += c.render(this.styleEnumValue));
         return doc
     }
 }

@@ -16,6 +16,7 @@ import { RenderStyles } from "../../Styles/RenderStyles";
 import { Standard_Html } from "../../Styles/Standard_Html";
 import { Standard_Txt } from "../../Styles/Standard_Txt";
 import { RenderStyleWrapper } from "../../Styles/RenderStyleWrapper";
+import { Cascade_WordpressHtml } from "../../Styles/Cascade_WordpressHtml";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -166,6 +167,9 @@ export function OutputBuilder(props:outputBuilderProps) {
             case RenderStyles.standard_html.toString():
                 styleHelper = new Standard_Html(computed)
                 break;
+            case RenderStyles.cascade_wordpresshtml.toString():
+                styleHelper = new Cascade_WordpressHtml(computed)
+                break;
             default:
                 console.log(`Missing style helper for ${style}`)
                 return;
@@ -202,6 +206,7 @@ export function OutputBuilder(props:outputBuilderProps) {
         </Form>
 
         <h4>Competition Classes</h4>
+        <div>
         <Table striped size="sm">
             <thead>
                 <tr>
@@ -216,6 +221,7 @@ export function OutputBuilder(props:outputBuilderProps) {
                 {rows}
             </tbody>
         </Table>
+        </div>
 
 
     </Row>
