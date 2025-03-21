@@ -163,13 +163,12 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         }
 
         const PL = new HtmlColumn(
-            "Place",
+            "Pos",
             this.getTeamPlace
         )
         const PTS = new HtmlColumn(
-            "Points",
-            this.getPoints,
-            "text-right"
+            "Score",
+            this.getPoints
         )
         const NAME = new HtmlColumn(
             "Name",

@@ -108,7 +108,7 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         }
 
         const PL = new HtmlColumn(
-            "Place", 
+            "Pos", 
             this.getPlace
         )
         const NAME = new HtmlColumn(

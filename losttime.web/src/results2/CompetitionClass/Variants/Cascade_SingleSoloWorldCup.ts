@@ -4,8 +4,7 @@ import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionCla
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
-import { IndividualScoreMethod } from "../../../results/CompetitionClass";
-import { CompetitionClassType } from "../../CompetitionClassType";
+import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 
 export class Cascade_SingleSoloWorldCup extends CompetitionClass {
@@ -17,12 +16,10 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
     }
 
     competitionClassType = CompetitionClassType.SingleEventSolo;
+    scoreMethod = Results2ScoreMethod.SingleSolo_Cascade_WorldCup;
     
     scoreMethodFriendly(): string {
         return 'Solo - Points - CascadeOC World Cup'
-    }
-    scoreMethodEnumValue(): number {
-        return IndividualScoreMethod.PointsCocWorldCup.valueOf()
     }
 
     compute():Computed_Cascade_SingleSoloPointed {

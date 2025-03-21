@@ -125,7 +125,7 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         }
 
         const PL = new HtmlColumn(
-            "Place", 
+            "Pos", 
             this.getPlace
         )
         const NAME = new HtmlColumn(
@@ -142,7 +142,7 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
             "text-right"
         )
         const PTS = new HtmlColumn(
-            "Points",
+            "Score",
             this.getPoints,
             "text-right"
         )

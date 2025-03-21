@@ -1,23 +1,18 @@
-import { TeamScoreMethod } from "../../../results/CompetitionClass";
 import { Computed_Cascade_SingleTeamPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleTeamPointed";
 import { CompetitionClass } from "../CompetitionClass";
 import { SingleRaceTeamResult } from "../SingleRaceTeamResult";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
 import { Cascade_SingleSoloWorldCup } from "./Cascade_SingleSoloWorldCup";
 import { CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
-import { CompetitionClassType } from "../../CompetitionClassType";
+import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 export class Cascade_SingleTeamWorldCup extends CompetitionClass {
 
     competitionClassType = CompetitionClassType.SingleEventTeam;
+    scoreMethod = Results2ScoreMethod.SingleTeam_Cascade_WorldCup;
 
     scoreMethodFriendly(): string {
         return 'Team - CascadeOC World Cup'
-    }
-
-    scoreMethodEnumValue(): number {
-        // This feels bad. 
-        return TeamScoreMethod.SumAllHighestWins
     }
 
     compute():Computed_Cascade_SingleTeamPointed {

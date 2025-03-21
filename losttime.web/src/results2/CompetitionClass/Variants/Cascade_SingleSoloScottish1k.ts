@@ -4,8 +4,7 @@ import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionCla
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
-import { IndividualScoreMethod } from "../../../results/CompetitionClass";
-import { CompetitionClassType } from "../../CompetitionClassType";
+import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 
 export class Cascade_SingleSoloScottish1k extends CompetitionClass {
@@ -17,12 +16,10 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
     }
 
     competitionClassType = CompetitionClassType.SingleEventSolo;
+    scoreMethod = Results2ScoreMethod.SingleSolo_Cascade_Scottish1k
 
     scoreMethodFriendly(): string {
         return 'Solo - Points - CascadeOC 1000 Ratio to Winner'
-    }
-    scoreMethodEnumValue(): number {
-        return IndividualScoreMethod.Points1kScottish.valueOf()
     }
 
     compute():Computed_Cascade_SingleSoloPointed {
