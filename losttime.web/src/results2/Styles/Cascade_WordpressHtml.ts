@@ -38,7 +38,38 @@ export class Cascade_WordpressHtml extends RenderStyleWrapper {
     }
 
     private endDoc(): string {
-        return "</div>";
+        return `
+        <div>
+        <h3>Result Status Codes</h3>
+        <dl class="dl-horizontal">
+          <dt>msp: missing punch</dt>
+          <dd>a control was skipped or taken out of order</dd>
+          <dt>dnf: did not finish</dt>
+          <dd>
+            a control or set of controls at the end of the course were skipped
+          </dd>
+          <dt>nc: not competing</dt>
+          <dd>
+            the competitor is not eligible for standings, such as when running a
+            second course
+          </dd>
+          <dt>dq: disqualified</dt>
+          <dd>
+            breaking competition rules, such as conferring with another competitor
+            or entering an out of bounds area
+          </dd>
+          <dt>ovt: overtime</dt>
+          <dd>returning after the course closure time</dd>
+          <dt>dns: did not start</dt>
+          <dd>the competitor did not start</dd>
+          <dt>&lt;time&gt;*</dt>
+          <dd>
+            the star indicates course completion status was not reported and may be
+            valid, msp, or dnf
+          </dd>
+        </dl>
+        </div>
+    </div>`
     }
 
 

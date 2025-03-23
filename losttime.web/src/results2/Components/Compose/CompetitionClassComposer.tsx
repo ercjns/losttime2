@@ -124,8 +124,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
     function getRaceClassDataForSelected() {
         let res:StandardRaceClassData[] = [];
-        [...props.raceClassesByRace].map(([raceid,raceClasses]) =>
-        [...raceClasses].map(([shortName,raceClass]) => {
+        [...props.raceClassesByRace].forEach(([raceid,raceClasses]) =>
+        [...raceClasses].forEach(([shortName,raceClass]) => {
             if (selectedRaceClasses.includes(raceClass.id.toString())) {
                 res.push(raceClass)
             }
