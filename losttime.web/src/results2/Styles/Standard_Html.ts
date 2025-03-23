@@ -1,4 +1,3 @@
-import { ComputedCompetitionClass } from "../ComputedCompetitionClass/ComputedCompetitionClass";
 import { RenderStyleWrapper } from "./RenderStyleWrapper";
 import { RenderStyles } from "./RenderStyles";
 
@@ -12,7 +11,7 @@ export class Standard_Html extends RenderStyleWrapper {
         doc += this.beginDoc()
         doc += this.menuContent()
         this.data.forEach((c) =>
-            doc += c.render_html());
+            doc += c.render(this.styleEnumValue));
         doc += this.endDoc()
         return doc
     }

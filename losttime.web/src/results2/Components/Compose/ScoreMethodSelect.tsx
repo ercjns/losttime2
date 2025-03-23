@@ -1,16 +1,16 @@
 import { Form } from "react-bootstrap";
-import { IndividualScoreMethod } from "../../../results/CompetitionClass"
+import { Results2ScoreMethod } from "../../CompetitionClassType";
 
-interface CompetitionClassScoringParametersProps {
+interface ScoreMethodSelectProps {
     handleScoringParamsChange: Function
 }
 
-export function CompetitionClassScoringParameters(props:CompetitionClassScoringParametersProps) {
+export function ScoreMethodSelect(props:ScoreMethodSelectProps) {
 
-    const scoreMethodOptions = Object.keys(IndividualScoreMethod)
+    const scoreMethodOptions = Object.keys(Results2ScoreMethod)
         .filter((v) => isNaN(Number(v)))
         .map((name) =>
-            <option key={`${name}-score-method-option`} value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
+            <option key={`${name}-score-method-option`} value={Results2ScoreMethod[name as keyof typeof Results2ScoreMethod]}>{name}</option>
     );
 
     return <Form>

@@ -5,14 +5,14 @@ import React, { useState } from "react";
 import { Button, Col, Collapse, Row, Table } from "react-bootstrap";
 import { SectionTitle } from "../../../shared/SectionTitle";
 import { CompetitionClassPresetsCustom } from "./CompetitionClassPresetsCustom";
-import { CompetitionClassScoringParameters } from "./CompetitionClassScoringParameters";
-import { IndividualScoreMethod } from "../../../results/CompetitionClass";
-import { ScoringParameters } from "../../CompetitionClass/ScoringParameters";
+import { ScoreMethodSelect } from "./ScoreMethodSelect";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup";
 import { CompetitionClassPresetsStandard } from "./CompetitionClassPresetsStandard";
 import { Cascade_SingleSoloScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
+import { Results2ScoreMethod } from "../../CompetitionClassType";
+import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
 
 export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
@@ -73,7 +73,7 @@ interface CompetitionClassComposerProps {
 export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
     const [selectedRaceClasses, setSelectedRaceClasses] = useState(Array<string>())
-    const [scoringParams, setScoringParams] = useState(new ScoringParameters())
+    const [scoringParams, setScoringParams] = useState(Results2ScoreMethod.SingleSolo_Time)
     const [advancedOpen, setAdvancedOpen] = useState(false)
 
     const columnHeaders = getRaces(props.raceClassesByRace).map((el) =>
@@ -118,17 +118,14 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             </tr>
     );
 
-    function handleIndividualScoreMethodChange(e:React.ChangeEvent<HTMLInputElement>) {
-        setScoringParams({
-            ...scoringParams, 
-            individual:Number(e.target.value)
-        });
+    function handleScoreMethodChange(e:React.ChangeEvent<HTMLInputElement>) {
+        setScoringParams(Number(e.target.value));
     }
 
     function getRaceClassDataForSelected() {
         let res:StandardRaceClassData[] = [];
-        [...props.raceClassesByRace].map(([raceid,raceClasses]) =>
-        [...raceClasses].map(([shortName,raceClass]) => {
+        [...props.raceClassesByRace].forEach(([raceid,raceClasses]) =>
+        [...raceClasses].forEach(([shortName,raceClass]) => {
             if (selectedRaceClasses.includes(raceClass.id.toString())) {
                 res.push(raceClass)
             }
@@ -140,8 +137,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
     }
 
     function createCompetitionClass() {
-        switch (scoringParams.individual) {
-            case IndividualScoreMethod.Time :
+        switch (scoringParams) {
+            case Results2ScoreMethod.SingleSolo_Time :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Standard_Time(
                         `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
@@ -150,7 +147,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                     )]
                 );
                 break;
-            case IndividualScoreMethod.PointsCocWorldCup :
+            case Results2ScoreMethod.SingleSolo_Cascade_WorldCup :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleSoloWorldCup(
                         `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
@@ -159,7 +156,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                     )]
                 );
                 break;
-            case IndividualScoreMethod.Points1kScottish :
+            case Results2ScoreMethod.SingleSolo_Cascade_Scottish1k :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleSoloScottish1k(
                         `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
@@ -168,10 +165,14 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                     )]
                 );
                 break;
-            case IndividualScoreMethod.AlphaWithTimes :
-            case IndividualScoreMethod.AlphaWithoutTimes :
-            case IndividualScoreMethod.PointsOusaAverageWinningTime :
-                console.log("NOT IMPLEMENTED!!!");
+            case Results2ScoreMethod.SingleTeam_Cascade_WorldCup :
+                props.setCompetitionClasses((current:CompetitionClass[]) => 
+                    [...current, new Cascade_SingleTeamWorldCup(
+                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
+                        getRaceClassDataForSelected()
+                    )]
+                );
                 break;
             default :
                 new Error("not implemented")
@@ -222,8 +223,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                         {rows}
                     </tbody>
                 </Table>
-                <CompetitionClassScoringParameters 
-                    handleScoringParamsChange={handleIndividualScoreMethodChange}/>
+                <ScoreMethodSelect 
+                    handleScoringParamsChange={handleScoreMethodChange}/>
                 <p>
                 <Button onClick={()=>createCompetitionClass()}>Add Competition Class</Button>
                 </p>

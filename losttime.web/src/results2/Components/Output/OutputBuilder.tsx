@@ -4,7 +4,6 @@ import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { ComputedCompetitionClass } from "../../ComputedCompetitionClass/ComputedCompetitionClass";
 import { Guid } from "guid-typescript";
 import { EditableTableData } from "./EditableTableData";
-import { IndividualScoreMethod } from "../../../results/CompetitionClass";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
 import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +15,9 @@ import { RenderStyles } from "../../Styles/RenderStyles";
 import { Standard_Html } from "../../Styles/Standard_Html";
 import { Standard_Txt } from "../../Styles/Standard_Txt";
 import { RenderStyleWrapper } from "../../Styles/RenderStyleWrapper";
+import { Cascade_WordpressHtml } from "../../Styles/Cascade_WordpressHtml";
+import { Results2ScoreMethod } from "../../CompetitionClassType";
+import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -79,26 +81,23 @@ export function OutputBuilder(props:outputBuilderProps) {
         const idx = props.competitionClasses.findIndex((x) => x.id === id)
         if (idx > -1) {
             const old = props.competitionClasses.at(idx)!;
-            if (old.scoreMethodEnumValue.toString() === scoreMethod) {
+            if (old.scoreMethod.toString() === scoreMethod) {
                 return;
             }
             let next:CompetitionClass
             switch (scoreMethod) {
-                case IndividualScoreMethod.Time.toString():
+                case Results2ScoreMethod.SingleSolo_Time.toString():
                     next = new Standard_Time(old.name, old.contributingResults);
                     break;
-                case IndividualScoreMethod.PointsCocWorldCup.toString():
+                case Results2ScoreMethod.SingleSolo_Cascade_WorldCup.toString():
                     next = new Cascade_SingleSoloWorldCup(old.name, old.contributingResults);
                     break;
-                case IndividualScoreMethod.Points1kScottish.toString():
+                case Results2ScoreMethod.SingleSolo_Cascade_Scottish1k.toString():
                     next = new Cascade_SingleSoloScottish1k(old.name, old.contributingResults);
                     break;
-                case IndividualScoreMethod.AlphaWithTimes.toString():
-                case IndividualScoreMethod.AlphaWithoutTimes.toString():
-                case IndividualScoreMethod.PointsOusaAverageWinningTime.toString():
-                    console.log("Can't change to that method. Not implemented!")
-                    new Error("Can't change to that score method")
-                    return;
+                case Results2ScoreMethod.SingleTeam_Cascade_WorldCup.toString():
+                    next = new Cascade_SingleTeamWorldCup(old.name, old.contributingResults);
+                    break;
                 default:
                     new Error("Can't change to that score method")
                     return;
@@ -110,10 +109,10 @@ export function OutputBuilder(props:outputBuilderProps) {
         
     }
 
-    const scoreMethodOptions = Object.keys(IndividualScoreMethod)
+    const scoreMethodOptions = Object.keys(Results2ScoreMethod)
         .filter((v) => isNaN(Number(v)))
         .map((name) =>
-            <option key={`${name}-score-method-option`} value={IndividualScoreMethod[name as keyof typeof IndividualScoreMethod]}>{name}</option>
+            <option key={`${name}-score-method-option`} value={Results2ScoreMethod[name as keyof typeof Results2ScoreMethod]}>{name}</option>
     );
 
     const styleOptions = Object.keys(RenderStyles)
@@ -123,31 +122,30 @@ export function OutputBuilder(props:outputBuilderProps) {
     );
 
     const rows = props.competitionClasses.map((x) => {
-        const names = x.contributingNames();
-        let namesConcat = "";
-        names.forEach(n =>
-            namesConcat += `${n.class} (${n.race}), `
-        )
-        namesConcat = namesConcat.slice(0,-2);
+        let contributingNames = x.contributingNames()
+            .map(n => `${n.class} (${n.race})`)
+            .join(`, `)
+
+        const scoreMethod = <EditableTableData 
+            data={x.scoreMethodFriendly()}
+            type="option"
+            options={scoreMethodOptions}
+            defaultOption={x.scoreMethod.toString()}
+            onSave={(value:string) => handleScoreMethodChange(x.id, value)}/>
 
         return <tr key={x.id.toString()}>
             <EditableTableData 
                 data={x.name}
                 type="string" 
                 onSave={(value:string) => handleCompetitionClassRename(x.id, value)}/>
-            <EditableTableData 
-                data={x.scoreMethodFriendly()}
-                type="option"
-                options={scoreMethodOptions}
-                defaultOption={x.scoreMethodEnumValue().toString()}
-                onSave={(value:string) => handleScoreMethodChange(x.id, value)}/>
+            {scoreMethod}
             <td valign="middle">
                 <Button variant='outline-dark' size='sm' onClick={()=>handleCompetitionClassUp(x.id)} title="move up"><FontAwesomeIcon icon={faArrowUp}/></Button>&nbsp;
                 <Button variant='outline-dark' size='sm' onClick={()=>handleCompetitionClassDown(x.id)} title="move down"><FontAwesomeIcon icon={faArrowDown}/></Button>&nbsp;
                 <Button variant='outline-danger' size='sm' onClick={()=>handleCompetitionClassDelete(x.id)} title="remove"><FontAwesomeIcon icon={faTrashAlt}/></Button>
             </td>
             <td valign="middle">{x.contributingResultsFlat().length.toString()}</td>
-            <td valign="middle">{namesConcat}</td>
+            <td valign="middle">{contributingNames}</td>
         </tr>
     })
 
@@ -165,6 +163,9 @@ export function OutputBuilder(props:outputBuilderProps) {
                 break;
             case RenderStyles.standard_html.toString():
                 styleHelper = new Standard_Html(computed)
+                break;
+            case RenderStyles.cascade_wordpresshtml.toString():
+                styleHelper = new Cascade_WordpressHtml(computed)
                 break;
             default:
                 console.log(`Missing style helper for ${style}`)
@@ -202,6 +203,7 @@ export function OutputBuilder(props:outputBuilderProps) {
         </Form>
 
         <h4>Competition Classes</h4>
+        <div>
         <Table striped size="sm">
             <thead>
                 <tr>
@@ -216,6 +218,7 @@ export function OutputBuilder(props:outputBuilderProps) {
                 {rows}
             </tbody>
         </Table>
+        </div>
 
 
     </Row>

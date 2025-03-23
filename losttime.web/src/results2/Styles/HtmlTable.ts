@@ -1,4 +1,3 @@
-import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { ComputedCompetitionClass } from "../ComputedCompetitionClass/ComputedCompetitionClass";
 import { HtmlColumn } from "./HtmlColumn";
 
@@ -6,16 +5,17 @@ import { HtmlColumn } from "./HtmlColumn";
 export class HtmlTable {
     columns: HtmlColumn[]
     computedClass: ComputedCompetitionClass
-    data: SingleRaceSoloResult[]
+    data: any[]
     doc: HTMLElement
 
     constructor(
         columns: HtmlColumn[],
-        computedClass: ComputedCompetitionClass
+        computedClass: ComputedCompetitionClass,
+        data: any[]
     ) {
         this.columns = columns
         this.computedClass = computedClass
-        this.data = this.computedClass.results
+        this.data = data
         this.doc = this._buildDocument()
     }
 

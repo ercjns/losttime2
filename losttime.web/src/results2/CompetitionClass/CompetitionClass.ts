@@ -2,6 +2,7 @@ import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "../ComputedCompetitionClass/ComputedCompetitionClass";
 import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { StandardRaceClassData } from "../StandardRaceClassData";
+import { CompetitionClassType, Results2ScoreMethod } from "../CompetitionClassType";
 
 export abstract class CompetitionClass {
     id: Guid;
@@ -17,8 +18,9 @@ export abstract class CompetitionClass {
         this.contributingResults = contributingResults;
     }
 
+    abstract competitionClassType: CompetitionClassType
+    abstract scoreMethod: Results2ScoreMethod
     abstract scoreMethodFriendly(): string
-    abstract scoreMethodEnumValue(): number
     abstract compute(): ComputedCompetitionClass
 
     // helpers for process actions go here

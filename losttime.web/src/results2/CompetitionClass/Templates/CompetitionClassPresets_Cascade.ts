@@ -5,6 +5,7 @@ import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { raceClassesByRace } from "../../Components/Compose/CompetitionClassComposer";
 import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
 import { Cascade_SingleSoloScottish1k } from "../Variants/Cascade_SingleSoloScottish1k";
+import { Cascade_SingleTeamWorldCup } from "../Variants/Cascade_SingleTeamWorldCup";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
@@ -12,6 +13,14 @@ interface CompetitionClassPresetsProps {
     raceClassesByRace: raceClassesByRace
     raceClassesByClass: raceClassesByClass,
     setCompetitionClasses: Function
+}
+
+function getRaceDataByClassCodes(raceData:CompetitionClassPresetsProps, codes:string[], firstRaceOnly=false):StandardRaceClassData[] {
+    let result:StandardRaceClassData[] = []
+    codes.forEach((code) => {
+        result.push(...getRaceDataByClassCode(raceData, code, firstRaceOnly))
+    })
+    return result
 }
 
 function getRaceDataByClassCode(raceData:CompetitionClassPresetsProps, code:string, firstRaceOnly=false):StandardRaceClassData[] {
@@ -78,6 +87,10 @@ function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
         'Elementary Male',
         getRaceDataByClassCode(raceData,"W1M",true)
     ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'Elementary Teams',
+        getRaceDataByClassCodes(raceData,["W1F","W1M"],true)
+    ))
     classes.push(new Cascade_SingleSoloWorldCup(
         'Middle School Female',
         getRaceDataByClassCode(raceData,"W2F",true)
@@ -85,6 +98,10 @@ function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
     classes.push(new Cascade_SingleSoloWorldCup(
         'Middle School Male',
         getRaceDataByClassCode(raceData,"W2M",true)
+    ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'Middle School Teams',
+        getRaceDataByClassCodes(raceData,["W2F","W2M"],true)
     ))
     classes.push(new Cascade_SingleSoloWorldCup(
         'High School Rookie Female',
@@ -94,12 +111,24 @@ function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
         'High School Rookie Male',
         getRaceDataByClassCode(raceData,"W4M",true)
     ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'High School Rookie Teams',
+        getRaceDataByClassCodes(raceData,["W3F","W4M"],true)
+    ))
     classes.push(new Cascade_SingleSoloWorldCup(
         'High School JV Female',
         getRaceDataByClassCode(raceData,"W5F",true)
     ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'High School JV Female Teams',
+        getRaceDataByClassCode(raceData,"W5F",true)
+    ))
     classes.push(new Cascade_SingleSoloWorldCup(
         'High School JV Male',
+        getRaceDataByClassCode(raceData,"W6M",true)
+    ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'High School JV Male Teams',
         getRaceDataByClassCode(raceData,"W6M",true)
     ))
     classes.push(new Cascade_SingleSoloWorldCup(
@@ -109,6 +138,10 @@ function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
     classes.push(new Cascade_SingleSoloWorldCup(
         'High School Varsity Male',
         getRaceDataByClassCode(raceData,"W7M",true)
+    ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'High School Varsity Teams',
+        getRaceDataByClassCodes(raceData,["W7F","W7M"],true)
     ))
     classes.push(new Cascade_SingleSoloWorldCup(
         'Collegiate JV Female',
@@ -125,6 +158,10 @@ function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
     classes.push(new Cascade_SingleSoloWorldCup(
         'Collegiate Varsity Male',
         getRaceDataByClassCode(raceData,"W9M",true)
+    ))
+    classes.push(new Cascade_SingleTeamWorldCup(
+        'Collegiate Varsity Teams',
+        getRaceDataByClassCodes(raceData,["W9F","W9M"],true)
     ))
 
     raceData.setCompetitionClasses((current:CompetitionClass[]) =>
