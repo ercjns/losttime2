@@ -15,11 +15,15 @@ export function BetterResults() {
     return (
         <div>
         <PageTitle title="Better Results" />
+        <p>Create results that match your website's styles. Customize the names of classes and the order they're listed. Combine multiple events into multi-day results or series results (under development). Apply your club's unique scoring algorithms (requests welcome!). </p>
         <FileLoader 
+            raceClassesByRace={raceClasses}
             setRaceClasses={setRaceClasses}
+            setCompetitionClasses={setCompetitionClasses}
         />
         <CompetitionClassComposer 
             raceClassesByRace={raceClasses}
+            competitionClasses={competitionClasses}
             setCompetitionClasses={setCompetitionClasses}
         />
         <OutputBuilder

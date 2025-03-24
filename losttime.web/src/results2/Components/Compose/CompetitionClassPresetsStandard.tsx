@@ -25,9 +25,10 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
     }
 
     return <Row className="mb-2">
-        <Col sm={12} md={6} lg={4}>
+        <Col sm={12} md={6}>
         <Button 
             id="one-comp-class-per-race-class"
+            variant="outline-primary"
             onClick={()=>onePerClassClickHandler()}
             disabled={(props.raceClassesByRace.size !== 1)}
             >

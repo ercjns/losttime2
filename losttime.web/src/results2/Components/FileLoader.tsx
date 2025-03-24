@@ -4,11 +4,16 @@ import { useDropzone } from "react-dropzone";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { SectionTitle } from "../../shared/SectionTitle";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
+import { WizardSectionTitle } from "../../shared/WizardSectionTitle";
+import { raceClassesByRace } from "./Compose/CompetitionClassComposer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 
 interface FileLoaderProps {
+    raceClassesByRace: raceClassesByRace
     setRaceClasses: Function;
+    setCompetitionClasses: Function;
 }
 
 const baseStyle = {
@@ -17,12 +22,12 @@ const baseStyle = {
     flexDirection: 'column' as 'column', // hack fix https://github.com/cssinjs/jss/issues/1344
     alignItems: 'center',
     padding: '20px',
-    borderWidth: 2,
-    borderRadius: 10,
-    borderColor: 'magenta',
-    borderStyle: 'dashed',
-    backgroundColor: 'lightgrey',
-    color: 'black',
+    borderWidth: 3,
+    borderRadius: 20,
+    borderColor: '#0d6efd',
+    borderStyle: 'dotted',
+    backgroundColor: 'white',
+    color: '#0d6efd',
     fontStyle: 'italic',
     outline: 'none',
     transition: 'border .24s ease-in-out'
@@ -94,22 +99,28 @@ export function FileLoader(props: FileLoaderProps) {
         )
         classes = classes.slice(0,-2);
         return <li key={x.race_id.toString()}><strong>{x.filename}</strong> with <strong>{x.data.length.toString()}</strong> classes: {classes}</li>
+    });
+
+    function removeFilesClick() {
+        setFiles([]);
+        props.setRaceClasses(new Map());
+        props.setCompetitionClasses([]);
     }
-        
-    )
+
+    const icon = files.length > 0 ? "check" : "arrow"
 
     return (
         <Row className="mb-4">
-            <SectionTitle title="1. Load Results File(s)" line={true} />
+            <WizardSectionTitle title="Load Results File(s)" showLine={false} icon={icon}/>
             
             <Col md={12} lg={5}>
-            <p>Add Orienteering Results or Splits files in the IOF XML v3 format.</p>
+            <p>Add Orienteering Results or Splits files in the <strong>IOF XML v3</strong> format.</p>
             <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
                 <input id="dz-file-input" {...getInputProps()} />
                 {
                     isDragActive ?
                         <p>Drop files here...</p> :
-                        <p>Drag and drop files here, or click to select files</p>
+                        <p>Drag and drop files here, or click to open a file browser and select files</p>
                 }
             </div>
             </Col>
@@ -119,6 +130,13 @@ export function FileLoader(props: FileLoaderProps) {
             <ul>
                 {fileItems}
             </ul>
+            {(props.raceClassesByRace.size > 0 ? 
+            <Button onClick={()=>removeFilesClick()}
+                variant="outline-danger"
+                disabled={(props.raceClassesByRace.size > 0 ? false : true)}>
+                <FontAwesomeIcon icon={faRotateLeft}/> Start Over - Remove all files and competition classes
+            </Button>
+            : "" )}
             </Col>
         </Row>
     )

@@ -3,7 +3,6 @@ import { Guid } from "guid-typescript";
 import { SelectableRaceClass } from "./SelectableRaceClass";
 import React, { useState } from "react";
 import { Button, Col, Collapse, Row, Table } from "react-bootstrap";
-import { SectionTitle } from "../../../shared/SectionTitle";
 import { CompetitionClassPresetsCustom } from "./CompetitionClassPresetsCustom";
 import { ScoreMethodSelect } from "./ScoreMethodSelect";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
@@ -13,6 +12,9 @@ import { CompetitionClassPresetsStandard } from "./CompetitionClassPresetsStanda
 import { Cascade_SingleSoloScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
 import { Results2ScoreMethod } from "../../CompetitionClassType";
 import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
+import { WizardSectionTitle } from "../../../shared/WizardSectionTitle";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
@@ -66,6 +68,7 @@ function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
 
 interface CompetitionClassComposerProps {
     raceClassesByRace:raceClassesByRace;
+    competitionClasses:CompetitionClass[];
     setCompetitionClasses:Function;
 }
 
@@ -177,12 +180,17 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             default :
                 new Error("not implemented")
         };
+        // clear selection after adding class
+        setSelectedRaceClasses([])
     }
+
+    const icon = props.raceClassesByRace.size > 0 ? 
+            (props.competitionClasses.length > 0 ? "check" : "arrow") : "none"
 
     return (
         <Row>
-        <SectionTitle title="2. Define Classes" line={true} />
-
+        <WizardSectionTitle title="Define Classes" showLine={true} icon={icon}/>
+        <Col sm={6}>
         <p><strong>Standard:</strong> replicate the classes from your results software file. Only supported for single events.
         </p>
         <CompetitionClassPresetsStandard
@@ -190,7 +198,9 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             raceClassesByClass={pivotByRaceToByClass(props.raceClassesByRace)}
             setCompetitionClasses={props.setCompetitionClasses}
         />
+        </Col>
         
+        <Col sm={6}>
         <p><strong>Custom Templates:</strong> pre-defined class scoring setups for your events and series (requests are welcome!)
         </p>
         <CompetitionClassPresetsCustom 
@@ -198,20 +208,25 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             raceClassesByClass={pivotByRaceToByClass(props.raceClassesByRace)}
             setCompetitionClasses={props.setCompetitionClasses}
         />
+        </Col>
 
-        <p><strong>Advanced:</strong> manually define competition classes by selecting which race classes to consider and scoring methods to apply
-        </p>
         <Row className="mb-4">
             <Col sm={6} md={4}>
             <Button 
             onClick={() => setAdvancedOpen(!advancedOpen)}
             variant="outline-secondary"
+            size="sm"
+            disabled={(props.raceClassesByRace.size < 1)}
             aria-controls="advanced-definition" 
-            aria-expanded={advancedOpen}>{advancedOpen ? "Hide advanced settings" : "Show advanced settings"}</Button>
+            aria-expanded={advancedOpen}>Advanced Settings {advancedOpen ? <FontAwesomeIcon icon={faChevronUp}/> : <FontAwesomeIcon icon={faChevronDown}/>}</Button>
             </Col>
         
-            <Collapse in={advancedOpen}>
+            <Collapse in={advancedOpen && props.raceClassesByRace.size > 0}>
             <div id="advanced-definition">
+                <p>
+                    <strong>Advanced:</strong> Select race classes from one or more races to combine into a single competition class. Click each button to select or de-select, then select a scoring method and click "Add Competition Class." Repeat as needed. Class names can be edited in the next section.
+                    When selecting a single event scoring method, all results from selected classes will be combined as if the times were from a single course/class, even if they were not!
+                </p>
                 <Table striped hover size="sm">
                     <thead>
                     <tr>
@@ -223,10 +238,18 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                         {rows}
                     </tbody>
                 </Table>
+                <p>
+                Selected Race Classes: {selectedRaceClasses.length}
                 <ScoreMethodSelect 
                     handleScoringParamsChange={handleScoreMethodChange}/>
+                </p>
                 <p>
-                <Button onClick={()=>createCompetitionClass()}>Add Competition Class</Button>
+                <Button 
+                    onClick={()=>createCompetitionClass()}
+                    disabled={(selectedRaceClasses.length < 1)}
+                    variant='outline-primary'>
+                    Add Competition Class
+                </Button>
                 </p>
             </div>
             </Collapse>

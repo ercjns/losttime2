@@ -1,5 +1,4 @@
 import { CompetitionClass } from "../CompetitionClass";
-// import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloPointed";
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
@@ -8,12 +7,6 @@ import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClas
 
 
 export class Cascade_SingleSoloScottish1k extends CompetitionClass {
-    // constructor(
-    //     name: string,
-    //     contributingResults: StandardRaceClassData[]
-    // ) {
-    //     super(name, contributingResults)
-    // }
 
     competitionClassType = CompetitionClassType.SingleEventSolo;
     scoreMethod = Results2ScoreMethod.SingleSolo_Cascade_Scottish1k

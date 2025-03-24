@@ -2,8 +2,9 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { raceClassesByRace } from "./CompetitionClassComposer";
 import { useState } from "react";
-import { presets } from "../../CompetitionClass/Templates/CompetitionClassPresets_Cascade";
 import { CompetitionClassPresetButton } from "../../CompetitionClass/Templates/CompetitionClassPresetButton";
+
+import { presets as presets_Cascade } from "../../CompetitionClass/Templates/CompetitionClassPresets_Cascade";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
@@ -14,7 +15,7 @@ interface CompetitionClassPresetsProps {
 }
 
 let buttons:CompetitionClassPresetButton[] = []
-buttons.push(...presets)
+buttons.push(...presets_Cascade)
 
 export function CompetitionClassPresetsCustom(props:CompetitionClassPresetsProps) {
 
@@ -22,12 +23,13 @@ export function CompetitionClassPresetsCustom(props:CompetitionClassPresetsProps
 
     const liveButtons = buttons.map((x) => {
         if (x.org === org) {
-            return <Col sm={12} md={6} lg={4} key={`${x.id}-container`}>
+            return <Col sm={12} md={6} key={`${x.id}-container`}>
                 <Button
                     key={x.id}
                     id={x.id}
                     variant="outline-primary"
                     onClick={()=>x.onClick(props)}
+                    disabled={!x.isEnabledWhen(props)}
                     >{x.label}</Button>
                 </Col>
         } else {

@@ -1,5 +1,4 @@
 import { Button, Form, Row, Table } from "react-bootstrap";
-import { SectionTitle } from "../../../shared/SectionTitle";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { ComputedCompetitionClass } from "../../ComputedCompetitionClass/ComputedCompetitionClass";
 import { Guid } from "guid-typescript";
@@ -7,7 +6,7 @@ import { EditableTableData } from "./EditableTableData";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
 import { Cascade_SingleSoloWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faTrashAlt } from "@fortawesome/free-regular-svg-icons";
 import { Cascade_SingleSoloScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
 import { useState } from "react";
@@ -18,6 +17,7 @@ import { RenderStyleWrapper } from "../../Styles/RenderStyleWrapper";
 import { Cascade_WordpressHtml } from "../../Styles/Cascade_WordpressHtml";
 import { Results2ScoreMethod } from "../../CompetitionClassType";
 import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
+import { WizardSectionTitle } from "../../../shared/WizardSectionTitle";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -41,7 +41,7 @@ function downloadFile(data:any, name = "file.txt") {
 
 export function OutputBuilder(props:outputBuilderProps) {
 
-    const [style, setStyle] = useState(RenderStyles.standard_txt.toString())
+    const [style, setStyle] = useState(RenderStyles.cascade_wordpresshtml.toString())
 
     function handleCompetitionClassDelete(id:Guid) {
         props.setCompetitionClasses([...props.competitionClasses.filter((x) => x.id !== id)])
@@ -115,11 +115,11 @@ export function OutputBuilder(props:outputBuilderProps) {
             <option key={`${name}-score-method-option`} value={Results2ScoreMethod[name as keyof typeof Results2ScoreMethod]}>{name}</option>
     );
 
-    const styleOptions = Object.keys(RenderStyles)
-        .filter((v) => isNaN(Number(v)))
-        .map((name) => 
-            <option key={`style-option-${name}`} value={RenderStyles[name as keyof typeof RenderStyles]}>{name}</option>
-    );
+    const styleOptions = [
+        <option key={`style-option-${RenderStyles.standard_txt}`} value={RenderStyles.standard_txt}>Plaintext</option>,
+        <option key={`style-option-${RenderStyles.standard_html}`} value={RenderStyles.standard_html}>General HTML</option>,
+        <option key={`style-option-${RenderStyles.cascade_wordpresshtml}`} value={RenderStyles.cascade_wordpresshtml}>Cascade OC: WordPress HTML</option>
+    ];
 
     const rows = props.competitionClasses.map((x) => {
         let contributingNames = x.contributingNames()
@@ -149,7 +149,9 @@ export function OutputBuilder(props:outputBuilderProps) {
         </tr>
     })
 
-
+    function clearCompetitionClassesClick() {
+        props.setCompetitionClasses([])
+    }
 
     function computeAndDownloadClick() {
         const computed:ComputedCompetitionClass[] = []
@@ -182,8 +184,10 @@ export function OutputBuilder(props:outputBuilderProps) {
         downloadFile(doc, filename);
     }
 
+    const icon = props.competitionClasses.length > 0 ? "arrow" : "none"
+
     return <Row>
-        <SectionTitle title="3. Build Output" line={true} />
+        <WizardSectionTitle title="Build Output" showLine={true} icon={icon} />
         
         <Form className="mb-2">
             <p>
@@ -196,13 +200,25 @@ export function OutputBuilder(props:outputBuilderProps) {
             </Form.Select>
             </p>
             <p>
-            <Button onClick={()=>computeAndDownloadClick()}>
-                Compute and Download
+            <Button onClick={()=>computeAndDownloadClick()}
+                disabled={(props.competitionClasses.length > 0 ? false : true)}>
+                <FontAwesomeIcon icon={faDownload}/> Compute and Download
             </Button>
             </p>
         </Form>
 
         <h4>Competition Classes</h4>
+        {(props.competitionClasses.length > 0 ?
+            <p>
+            <Button onClick={()=>clearCompetitionClassesClick()}
+                variant="outline-danger"
+                disabled={(props.competitionClasses.length > 0 ? false : true)}>
+                <FontAwesomeIcon icon={faTrashAlt}/> Remove All
+            </Button>
+            </p>
+            :
+            ""
+        )}
         <div>
         <Table striped size="sm">
             <thead>
