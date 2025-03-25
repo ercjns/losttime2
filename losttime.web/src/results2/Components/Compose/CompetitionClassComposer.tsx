@@ -240,17 +240,15 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                 </Table>
                 <p>
                 Selected Race Classes: {selectedRaceClasses.length}
+                </p>
                 <ScoreMethodSelect 
                     handleScoringParamsChange={handleScoreMethodChange}/>
-                </p>
-                <p>
-                <Button 
+                <Button className="mb-2"
                     onClick={()=>createCompetitionClass()}
                     disabled={(selectedRaceClasses.length < 1)}
                     variant='outline-primary'>
                     Add Competition Class
                 </Button>
-                </p>
             </div>
             </Collapse>
         </Row>

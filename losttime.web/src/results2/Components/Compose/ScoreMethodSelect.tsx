@@ -5,15 +5,15 @@ interface ScoreMethodSelectProps {
     handleScoringParamsChange: Function
 }
 
+export const scoreMethodOptions = [
+    <option key={`score-option-${Results2ScoreMethod.SingleSolo_Time}`} value={Results2ScoreMethod.SingleSolo_Time}>Solo - Time</option>,
+    <option key={`score-option-${Results2ScoreMethod.SingleSolo_Cascade_WorldCup}`} value={Results2ScoreMethod.SingleSolo_Cascade_WorldCup}>Solo - Points - CascadeOC World Cup</option>,
+    <option key={`score-option-${Results2ScoreMethod.SingleTeam_Cascade_WorldCup}`} value={Results2ScoreMethod.SingleTeam_Cascade_WorldCup}>Team - Cascade - World Cup</option>
+];
+
 export function ScoreMethodSelect(props:ScoreMethodSelectProps) {
 
-    const scoreMethodOptions = Object.keys(Results2ScoreMethod)
-        .filter((v) => isNaN(Number(v)))
-        .map((name) =>
-            <option key={`${name}-score-method-option`} value={Results2ScoreMethod[name as keyof typeof Results2ScoreMethod]}>{name}</option>
-    );
-
-    return <Form>
+    return <Form className="mb-4">
     <Form.Label>Scoring Method</Form.Label>
     <Form.Select 
         aria-label="score method"

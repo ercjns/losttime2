@@ -18,6 +18,7 @@ import { Cascade_WordpressHtml } from "../../Styles/Cascade_WordpressHtml";
 import { Results2ScoreMethod } from "../../CompetitionClassType";
 import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
 import { WizardSectionTitle } from "../../../shared/WizardSectionTitle";
+import { scoreMethodOptions } from "../Compose/ScoreMethodSelect";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -108,12 +109,6 @@ export function OutputBuilder(props:outputBuilderProps) {
         }
         
     }
-
-    const scoreMethodOptions = Object.keys(Results2ScoreMethod)
-        .filter((v) => isNaN(Number(v)))
-        .map((name) =>
-            <option key={`${name}-score-method-option`} value={Results2ScoreMethod[name as keyof typeof Results2ScoreMethod]}>{name}</option>
-    );
 
     const styleOptions = [
         <option key={`style-option-${RenderStyles.standard_txt}`} value={RenderStyles.standard_txt}>Plaintext</option>,
