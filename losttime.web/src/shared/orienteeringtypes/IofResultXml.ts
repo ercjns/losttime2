@@ -16,7 +16,7 @@ export type ClassResult = {
 export type Class = {
     Id: Number;
     Name: string;
-    ShortName?: string;
+    ShortName: string;
     Fee?: any;
 }
 
