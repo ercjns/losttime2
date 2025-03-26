@@ -29,12 +29,13 @@ function App() {
                 <EntryProcessor />
               </Route>
               <Redirect from="/registrations" to="/entries" />
-              <Route path="/results">
+              <Route path="/results-v1">
                 <ResultsBuilder />
               </Route>
-              <Route path="/compute">
+              <Route path="/results">
                 <BetterResults />
               </Route>
+              <Redirect from="/compute" to="/results" />
               <Route path="/docs">
                 <Documentation />
               </Route>
