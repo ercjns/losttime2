@@ -80,24 +80,26 @@ export class CompetitionClass {
         return true;
     }
 
-    totalParticipants() : Number {
+    totalParticipants(countPaired=true) : number {
         if (this.RaceResults == null || this.RaceResults.length === 0) {
             return 0;
         }
         const initial = 0;
-        const particpants = this.RaceResults.reduce(
+        const participants = this.RaceResults.reduce(
             (prev,current) => prev + current.PersonResults.length,
             initial,
         )
-        if (this.PairedRaceResults == null || this.PairedRaceResults.length === 0) {
-            return particpants;
+        if (!countPaired || this.PairedRaceResults == null || this.PairedRaceResults.length === 0) {
+            return participants;
         }
-        const pairedparticipants = this.PairedRaceResults.reduce(
+        const participantsPlusPaired = this.PairedRaceResults.reduce(
             (prev,current) => prev + current.PersonResults.length,
-            particpants,
+            participants,
         )
-        return pairedparticipants;
+        return participantsPlusPaired;
     }
+
+
 
     computeScores() {
         if (!this.readyToScore()) {
