@@ -1,4 +1,3 @@
-// import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
 import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { RenderStyles } from "../Styles/RenderStyles";
@@ -9,15 +8,6 @@ import { HtmlTable } from "../Styles/HtmlTable";
 
 
 export class Computed_Standard_Time extends ComputedCompetitionClass {
-    // constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloResult[]) {
-    //     super(competitionClassId, name, r);
-    // }
-
-    private getPlace = (r:SingleRaceSoloResult):string => `${r.place ?? ""}`
-    private getNameClub = (r:SingleRaceSoloResult):string => `${r.name} (${r.club})`
-    private getName = (r:SingleRaceSoloResult):string => `${r.name}`
-    private getClub = (r:SingleRaceSoloResult):string => `${r.club}`
-    private getTime = (r:SingleRaceSoloResult):string => `${this.timeWithStatusString(r)}`
 
     render(style:RenderStyles): string {
         switch (style) {
@@ -44,18 +34,18 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         
         const PL = new PlaintextColumn(
             "Pl",
-            this.getPlace,
+            SingleRaceSoloResult.getPlace,
             this.results,
             "start")
 
         const NAME = new PlaintextColumn(
             "Name",
-            this.getNameClub,
+            SingleRaceSoloResult.getNameClub,
             this.results)
         
         const TIME = new PlaintextColumn(
             "Time",
-            this.getTime,
+            SingleRaceSoloResult.getTimeWithStatus,
             this.results,
             "start")
         
@@ -78,15 +68,15 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
 
         const PL = new HtmlColumn(
             "Place", 
-            this.getPlace
+            SingleRaceSoloResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            this.getNameClub
+            SingleRaceSoloResult.getNameClub
         )
         const TIME = new HtmlColumn(
             "Time",
-            this.getTime,
+            SingleRaceSoloResult.getTimeWithStatus,
             "text-right"
         )
         const table = new HtmlTable([PL,NAME,TIME],this,this.results).doc
@@ -111,19 +101,19 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
 
         const PL = new HtmlColumn(
             "Pos", 
-            this.getPlace
+            SingleRaceSoloResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            this.getName
+            SingleRaceSoloResult.getName
         )
         const CLUB = new HtmlColumn(
             "Club",
-            this.getClub
+            SingleRaceSoloResult.getClubCode
         )
         const TIME = new HtmlColumn(
             "Time",
-            this.getTime,
+            SingleRaceSoloResult.getTimeWithStatus,
             "text-right"
         )
         const table = new HtmlTable([PL,NAME,CLUB,TIME],this,this.results).doc

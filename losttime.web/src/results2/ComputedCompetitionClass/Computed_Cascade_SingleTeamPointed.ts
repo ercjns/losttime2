@@ -1,6 +1,6 @@
 import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
-import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { PlaintextColumn } from "../Styles/PlaintextColumn";
 import { PlaintextTable } from "../Styles/PlaintextTable";
@@ -12,7 +12,7 @@ import { CodeCheckingStatus } from "../../results/scoremethods/IofStatusParser";
 export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass {
 
     results:SingleRaceTeamResult[]
-    mixedResults: (SingleRaceTeamResult|SingleRaceSoloPointedResult)[]
+    mixedResults: (SingleRaceTeamResult|SingleRaceSoloResult)[]
 
     constructor(competitionClassId:Guid, name:string, r: SingleRaceTeamResult[]) {
         super(competitionClassId, name, r);
@@ -20,8 +20,8 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         this.mixedResults = this.buildMixedResults()
     }
 
-    private buildMixedResults():(SingleRaceTeamResult|SingleRaceSoloPointedResult)[] {
-        let res:(SingleRaceTeamResult|SingleRaceSoloPointedResult)[] = []
+    private buildMixedResults():(SingleRaceTeamResult|SingleRaceSoloResult)[] {
+        let res:(SingleRaceTeamResult|SingleRaceSoloResult)[] = []
         this.results.forEach((team) => {
             res.push(team);
             team.soloResults.forEach((r) => {
@@ -31,7 +31,7 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         return res;
     }
 
-    private getTeamPlace = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+    private getTeamPlace = (r:SingleRaceTeamResult|SingleRaceSoloResult):string => {
         if (r instanceof SingleRaceTeamResult) {
             return `${r.place}`
         } else {
@@ -39,25 +39,25 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         }
     }
 
-    private getTeamOrSoloNameArrowIndent = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+    private getTeamOrSoloNameArrowIndent = (r:SingleRaceTeamResult|SingleRaceSoloResult):string => {
         if (r instanceof SingleRaceTeamResult) {
-            return `${r.teamName} (${r.club})`
+            return SingleRaceTeamResult.getTeamClub(r)
         } else {
-            return `->${r.name}`
+            return `->${SingleRaceSoloResult.getName(r)}`
         }
     }
 
-    private getPoints = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => `${r.points ?? ""}`
+    private getPoints = (r:SingleRaceTeamResult|SingleRaceSoloResult):string => `${r.points ?? ""}`
 
-    private getTeamOrSoloName = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+    private getTeamOrSoloName = (r:SingleRaceTeamResult|SingleRaceSoloResult):string => {
         if (r instanceof SingleRaceTeamResult) {
-            return `${r.teamName} (${r.club})`
+            return SingleRaceTeamResult.getTeamClub(r)
         } else {
-            return `${r.name} (${r.club})`
+            return SingleRaceSoloResult.getNameClub(r)
         }
     }
 
-    private getTeamFinishStatsOrSoloTime = (r:SingleRaceTeamResult|SingleRaceSoloPointedResult):string => {
+    private getTeamFinishStatsOrSoloTime = (r:SingleRaceTeamResult|SingleRaceSoloResult):string => {
         if (r instanceof SingleRaceTeamResult) {
             const fin = r.soloResultsAll.filter((x)=>x.codeChecking===CodeCheckingStatus.FIN).length
             const pct = Math.round(fin*100/r.soloResultsAll.length)
