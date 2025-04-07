@@ -55,7 +55,7 @@ export class Cascade_SingleTeamWorldCup extends CompetitionClass {
 
     private assignPointsWiolTeams(team:SingleRaceTeamResult): void {
         team.soloResultsAll.sort(compareSingleSoloPointedByPointsHighestFirst)
-        console.log(team)
+        // console.log(team)
         const size = team.soloResultsAll.length > 3 ? 3 : team.soloResultsAll.length
         team.soloResults = team.soloResultsAll
             .slice(0,size) // only top 3 max
