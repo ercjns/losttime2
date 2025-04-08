@@ -4,7 +4,6 @@ import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
-import { LtResult } from "../../../shared/orienteeringtypes/LtResult";
 
 
 export class Cascade_SingleSoloScottish1k extends CompetitionClass {

@@ -121,7 +121,7 @@ function COC_UO25_SingleScoreO(raceData:CompetitionClassPresetsProps) {
     ])
 }
 
-function COC_UO22_Single(raceData:CompetitionClassPresetsProps) {
+function COC_UO22_SingleScoreO(raceData:CompetitionClassPresetsProps) {
     raceData.setCompetitionClasses([
     new Standard_ScoreO('Beginner', getRaceDataByClassCode(raceData,"1",true)),
     new Standard_ScoreO('Intermediate', getRaceDataByClassCode(raceData,"2",true)),
@@ -166,9 +166,9 @@ export const presets = [
     ),
     new CompetitionClassPresetButton(
         "COC",
-        "cascade-UO22-single",
-        "2022 Ultimate: Single Event",
-        COC_UO22_Single,
+        "cascade-UO22-singleScoreO",
+        "2022 Ultimate: Single ScoreO Event",
+        COC_UO22_SingleScoreO,
         requireExactlyOneRace
     )
 ]

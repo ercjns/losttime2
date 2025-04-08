@@ -7,7 +7,6 @@ export class SingleRaceTeamResult {
     soloResults: SingleRaceSoloResult[]
     place: number | null | undefined
     points: number | null | undefined
-    isValid: boolean
 
     constructor(results:SingleRaceSoloResult[], name:string, club?:string, ) {
         this.teamName = name;
@@ -15,7 +14,6 @@ export class SingleRaceTeamResult {
         this.soloResultsAll = results
 
         this.soloResults = []
-        this.isValid = false
     }
 
     static getPoints = (r:SingleRaceTeamResult):string =>`${r.place ?? ""}`
