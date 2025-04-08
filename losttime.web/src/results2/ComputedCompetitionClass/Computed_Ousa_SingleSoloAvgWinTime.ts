@@ -1,10 +1,10 @@
 import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
-import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { RenderStyles } from "../Styles/RenderStyles";
 
 export class Computed_Ousa_SingleSoloAvgWinTime extends ComputedCompetitionClass {
-    constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {
+    constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloResult[]) {
         super(competitionClassId, name, r);
     }
 
@@ -24,9 +24,9 @@ export class Computed_Ousa_SingleSoloAvgWinTime extends ComputedCompetitionClass
             return "";
         }
         let doc = "";
-        for (const el of this.results as SingleRaceSoloPointedResult[]) {
+        for (const el of this.results as SingleRaceSoloResult[]) {
             doc += `Place: ${el.place} `;
-            doc += `Name: ${el.name} (${el.club}) `;
+            doc += `Name: ${el.person.first + el.person.last} (${el.person.clubCode}) `;
             doc += `Time: ${this.timeWithStatusString(el)} `;
             doc += `Points: ${el.points}`;
             doc += "\r\n";

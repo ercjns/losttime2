@@ -1,10 +1,10 @@
 import { CompetitionClass } from "../CompetitionClass";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
-import { PersonResult } from "../../../shared/orienteeringtypes/IofResultXml";
 import { Computed_Ousa_SingleSoloAvgWinTime } from "../../ComputedCompetitionClass/Computed_Ousa_SingleSoloAvgWinTime";
-import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
+import { LtResult } from "../../../shared/orienteeringtypes/LtResult";
 
 
 export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
@@ -19,12 +19,12 @@ export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
         this.consideredResults = consideredResults;
     }
 
-    consideredResultsFlat(): PersonResult[] {
+    consideredResultsFlat(): LtResult[] {
         // like super.contributingResultsFlat
-        let results: PersonResult[] = []
+        let results: LtResult[] = []
         for (const race of this.consideredResults) {
-            if (race.xmlPersonResults.length === undefined) {continue;}
-            results.push(...race.xmlPersonResults);
+            if (race.results.length === undefined) {continue;}
+            results.push(...race.results);
         }
         return results
     }
@@ -38,10 +38,10 @@ export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
     compute(): Computed_Ousa_SingleSoloAvgWinTime {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>
-            new SingleRaceSoloPointedResult(x)
+            new SingleRaceSoloResult(x)
         )
         let pairedResults = this.consideredResultsFlat().map(x =>
-            new SingleRaceSoloPointedResult(x)
+            new SingleRaceSoloResult(x)
         )
 
         // do AWT calcs for this class
@@ -58,7 +58,7 @@ export class Ousa_SingleSoloAvgWinTime extends CompetitionClass {
 
 
 //from OusaAwt.tsx
-function CalcAwtForClass(raceResults:SingleRaceSoloPointedResult[]):number|undefined {
+function CalcAwtForClass(raceResults:SingleRaceSoloResult[]):number|undefined {
     const valids = raceResults.filter(x => x.competitive === CompetitiveStatus.COMP && x.codeChecking === CodeCheckingStatus.FIN && x.time)
 
     if (!valids || !valids.length) {
@@ -67,7 +67,7 @@ function CalcAwtForClass(raceResults:SingleRaceSoloPointedResult[]):number|undef
 
     valids.sort((a,b) => a.time - b.time)
 
-    let topFinishers:SingleRaceSoloPointedResult[] = [];
+    let topFinishers:SingleRaceSoloResult[] = [];
     const maxToConsider:number = valids.length > 3 ? 3 : valids.length;
     topFinishers = valids.slice(0,maxToConsider);
 
