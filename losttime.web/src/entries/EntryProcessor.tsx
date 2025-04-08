@@ -40,7 +40,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       this.setState({entries: [], filesprocessed: []});
     }
   
-    downloadOeRegCsv(isScoreO:boolean=false) {
+    downloadOeRegCsv(OEversion:string="12",isScoreO:boolean=false) {
       if (this.state.entries.length === 0) {
         console.log("No entries");
         return
@@ -50,13 +50,19 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
   
       // export assigns start numbers to the LtEntry, so update state here
       this.setState({entries: this.state.entries});
+      let cols:string[] = []
+      if (OEversion === "11") {
+        cols = isScoreO ? SS.COLUMNS_SCOREO : SS.COLUMNS_STANDARD
+      } else if (OEversion === "12") {
+        cols = isScoreO ? SS.COLUMNS_SCOREO_V12 : SS.COLUMNS_STANDARD_V12
+      }
   
       const unparseconfig:Papa.UnparseConfig = {
         quotes: false,
         delimiter: ";",
         header: true,
         skipEmptyLines: "greedy",
-        columns: isScoreO ? SS.COLUMNS_SCOREO : SS.COLUMNS_STANDARD
+        columns: cols
       }
   
       const csvstring:string = Papa.unparse(forexport, unparseconfig);
@@ -204,8 +210,10 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
                     <DropdownButton title="Download OE File" 
                       variant="primary"
                       disabled={this.state.entries.length > 0 ? false:true}>
-                      <Dropdown.Item onClick={() => this.downloadOeRegCsv()}>Regular</Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.downloadOeRegCsv(true)}>Score O</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("12", false)}>OE12 - Regular</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("12", true)}>OE12 - Score O</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("11", false)}>OE11 - Regular</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("11", true)}>OE11 - Score O</Dropdown.Item>
                     </DropdownButton>
                   </ButtonGroup>
                   <ButtonGroup className="me-2">
