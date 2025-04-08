@@ -1,4 +1,3 @@
-import { iofStatusParser } from "../../results/scoremethods/IofStatusParser";
 import { LtPerson } from "./LtPerson";
 import { LtResult } from "./LtResult";
 

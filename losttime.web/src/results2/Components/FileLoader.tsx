@@ -13,7 +13,6 @@ import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { OESco0012, OEScoCsvToLtScoreOResult } from "../../shared/orienteeringtypes/OESco0012";
 import { LtRaceClass } from "../../shared/orienteeringtypes/LtRaceClass";
 import { LtCourse } from "../../shared/orienteeringtypes/LtCourse";
-import { LtResult } from "../../shared/orienteeringtypes/LtResult";
 
 
 interface FileLoaderProps {

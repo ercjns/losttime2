@@ -4,6 +4,8 @@ import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { PlaintextColumn } from "../Styles/PlaintextColumn";
 import { PlaintextTable } from "../Styles/PlaintextTable";
+import { HtmlColumn } from "../Styles/HtmlColumn";
+import { HtmlTable } from "../Styles/HtmlTable";
 
 export class Computed_Standard_ScoreO extends ComputedCompetitionClass {
 
@@ -76,10 +78,112 @@ export class Computed_Standard_ScoreO extends ComputedCompetitionClass {
     }
 
     render_html(): string {
-        return ""
+        let doc = document.createElement("div")
+        const h2 = document.createElement("h2")
+        h2.textContent = `${this.name}`
+        h2.setAttribute("id", `competition-class-${this.id.toString()}`)
+        doc.appendChild(h2);
+        
+        if (this.totalFinishers() === 0) {
+            const p = document.createElement("p")
+            p.textContent = "(No participants for this class)"
+            doc.appendChild(p)
+            return this.stringify_html(doc)
+        }
+
+        const PL = new HtmlColumn(
+            "Place", 
+            SingleRaceSoloScoreOResult.getPlace
+        )
+        const NAME = new HtmlColumn(
+            "Name",
+            SingleRaceSoloScoreOResult.getNameClub
+        )
+        const RAW = new HtmlColumn(
+            "Points",
+            SingleRaceSoloScoreOResult.getRawScore,
+            "text-right"
+        )
+        const PEN = new HtmlColumn(
+            "Penalty",
+            SingleRaceSoloScoreOResult.getPenalty,
+            "text-right"
+        )
+        const SCORE = new HtmlColumn(
+            "Score",
+            SingleRaceSoloScoreOResult.getFinalScore,
+            "text-right"
+        )
+        const TIME = new HtmlColumn(
+            "Time",
+            SingleRaceSoloScoreOResult.getTimeWithStatus,
+            "text-right"
+        )
+        const table = new HtmlTable([PL,NAME,RAW,PEN,SCORE,TIME],this,this.results).doc
+        doc.appendChild(table)
+        return this.stringify_html(doc)
     }
 
     cascade_wordpresshtml(): string {
-        return ""
+        let doc = document.createElement("div")
+        doc.setAttribute("class", "lg-mrg-bottom")
+        const h3 = document.createElement("h3")
+        h3.textContent = `${this.name}`
+        h3.setAttribute("id", `competition-class-${this.id.toString()}`)
+        doc.appendChild(h3);
+        
+        if (this.totalFinishers() === 0) {
+            const p = document.createElement("p")
+            p.textContent = "(No participants for this class)"
+            doc.appendChild(p)
+            return this.stringify_html(doc)
+        }
+
+        const PL = new HtmlColumn(
+            "Pos", 
+            SingleRaceSoloScoreOResult.getPlace
+        )
+        const NAME = new HtmlColumn(
+            "Name",
+            SingleRaceSoloScoreOResult.getName
+        )
+        const CLUB = new HtmlColumn(
+            "Club",
+            SingleRaceSoloScoreOResult.getClubCode
+        )
+        const RAW = new HtmlColumn(
+            "Points",
+            SingleRaceSoloScoreOResult.getRawScore,
+            "text-right"
+        )
+        const PEN = new HtmlColumn(
+            "Penalty",
+            SingleRaceSoloScoreOResult.getPenalty,
+            "text-right"
+        )
+        const SCORE = new HtmlColumn(
+            "Score",
+            SingleRaceSoloScoreOResult.getFinalScore,
+            "text-right"
+        )
+        const TIME = new HtmlColumn(
+            "Time",
+            SingleRaceSoloScoreOResult.getTimeMMMSS,
+            "text-right"
+        )
+        const table = new HtmlTable([PL,NAME,CLUB,RAW,PEN,SCORE,TIME],this,this.results).doc
+        doc.appendChild(table)
+
+        const menudiv = document.createElement("div")
+        const p = document.createElement("p")
+        p.setAttribute("class", "lg-mrg-bottom text-center");
+        const a = document.createElement("a")
+        a.setAttribute("href", "#lt-menu")
+        a.textContent = `Menu`
+        p.appendChild(a)
+        menudiv.appendChild(p)
+        doc.appendChild(menudiv)
+
+        return this.stringify_html(doc)
     }
 }
