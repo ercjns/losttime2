@@ -34,13 +34,59 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       this.nowtimestring = this.nowtimestring.bind(this);
       this.downloadpdf = this.downloadpdf.bind(this);
       this.onpdftextchange = this.onpdftextchange.bind(this);
+      this.handleFixUltClasses = this.handleFixUltClasses.bind(this);
     }
   
     handleClearEntries() {
       this.setState({entries: [], filesprocessed: []});
     }
+
+    handleFixUltClasses() {
+      let old = this.state.entries;
+      this.setState({entries: old.map((x) => {
+        if (x.ClassId.includes("70") && x.ClassId.includes("O")) {
+          x.ClassId = "O70+"
+          return x
+        } else if (x.ClassId.includes("70") && x.ClassId.includes("F")) {
+          x.ClassId = "F70+"
+          return x
+        } else if (x.ClassId.includes("50") && x.ClassId.includes("O")) {
+          x.ClassId = "O50+"
+          return x
+        } else if (x.ClassId.includes("50") && x.ClassId.includes("F")) {
+          x.ClassId = "F50+"
+          return x
+        } else if (x.ClassId.includes("16") && x.ClassId.includes("O")) {
+          x.ClassId = "O-16"
+          return x
+        } else if (x.ClassId.includes("16") && x.ClassId.includes("F")) {
+          x.ClassId = "F-16"
+          return x
+        } else if (x.ClassId.includes("18") && x.ClassId.includes("O")) {
+          x.ClassId = "O-18"
+          return x
+        } else if (x.ClassId.includes("18") && x.ClassId.includes("F")) {
+          x.ClassId = "F-18"
+          return x
+        } else if (x.ClassId.includes("20") && x.ClassId.includes("O")) {
+          x.ClassId = "O-20"
+          return x
+        } else if (x.ClassId.includes("20") && x.ClassId.includes("F")) {
+          x.ClassId = "F-20"
+          return x
+        } else if (x.ClassId.includes("21") && x.ClassId.includes("O")) {
+          x.ClassId = "O-21+"
+          return x
+        } else if (x.ClassId.includes("21") && x.ClassId.includes("F")) {
+          x.ClassId = "F-21+"
+          return x
+      } else {
+         return x
+      }})
+      })
+    }
   
-    downloadOeRegCsv(isScoreO:boolean=false) {
+    downloadOeRegCsv(OEversion:string="12",isScoreO:boolean=false) {
       if (this.state.entries.length === 0) {
         console.log("No entries");
         return
@@ -50,13 +96,19 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
   
       // export assigns start numbers to the LtEntry, so update state here
       this.setState({entries: this.state.entries});
+      let cols:string[] = []
+      if (OEversion === "11") {
+        cols = isScoreO ? SS.COLUMNS_SCOREO : SS.COLUMNS_STANDARD
+      } else if (OEversion === "12") {
+        cols = isScoreO ? SS.COLUMNS_SCOREO_V12 : SS.COLUMNS_STANDARD_V12
+      }
   
       const unparseconfig:Papa.UnparseConfig = {
         quotes: false,
         delimiter: ";",
         header: true,
         skipEmptyLines: "greedy",
-        columns: isScoreO ? SS.COLUMNS_SCOREO : SS.COLUMNS_STANDARD
+        columns: cols
       }
   
       const csvstring:string = Papa.unparse(forexport, unparseconfig);
@@ -118,6 +170,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       const entries = (this.state.entries.length > 0) ? 
         this.state.entries.map((entry) =>
         <EntriesTableRow 
+          key={`${entry.FirstName}-${entry.LastName}-${entry.Club}-${entry.ClassId}`}
           value={entry}
         />) :
         <tr>
@@ -152,6 +205,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
   
       const counts = regmeta.sort((a, b) => a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase())).map((regclass) => 
       <EntriesByClassItem
+        key={regclass[0]}
         classname={regclass[0]}
         regcount={regclass[1]}
       />
@@ -174,15 +228,13 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
           </p>
           
           <SectionTitle title="Files" line={false}/>
-          <p>
-            <BasicDz parser={this.updateEntries} helpText="Drop csv file(s) here or click to open file browser."/>
-          </p>
-          <p>Files Uploaded: {this.state.filesprocessed.length} &nbsp; {this.state.filesprocessed.length > 0 ? 
+          <BasicDz parser={this.updateEntries} helpText="Drop csv file(s) here or click to open file browser."/>
+          <p className='mt-2'>Files Uploaded: {this.state.filesprocessed.length} &nbsp; {this.state.filesprocessed.length > 0 ? 
           <Button 
             variant="outline-secondary" 
             onClick={this.handleClearEntries}>
             Reset - Clear Files
-          </Button> : <div></div>}</p>
+          </Button> : <span></span>}</p>
           <ul>{files}</ul>
           <Row>
             <Col xs={12} md={6}>
@@ -190,13 +242,20 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
               <Row>
 
                 <p><i>Solo participants and group leaders are counted; additional group members do not count towards total starts.</i></p>
-                <p>
                 <Row>
                   <p>Starts by Class:</p>
                   {counts}
                 </Row>
-                </p>
   
+              </Row>
+              <Row>
+                <p>
+                <Button 
+                  variant='outline-secondary'
+                  onClick={()=>this.handleFixUltClasses()}>
+                  COC: fix Ultimate Classes
+                </Button>
+                </p>
               </Row>
               <Row>
                 <ButtonToolbar>
@@ -204,8 +263,10 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
                     <DropdownButton title="Download OE File" 
                       variant="primary"
                       disabled={this.state.entries.length > 0 ? false:true}>
-                      <Dropdown.Item onClick={() => this.downloadOeRegCsv()}>Regular</Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.downloadOeRegCsv(true)}>Score O</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("12", false)}>OE12 - Regular</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("12", true)}>OE12 - Score O</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("11", false)}>OE11 - Regular</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.downloadOeRegCsv("11", true)}>OE11 - Score O</Dropdown.Item>
                     </DropdownButton>
                   </ButtonGroup>
                   <ButtonGroup className="me-2">

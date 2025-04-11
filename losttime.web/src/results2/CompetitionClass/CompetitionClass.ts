@@ -1,8 +1,9 @@
 import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "../ComputedCompetitionClass/ComputedCompetitionClass";
-import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { CompetitionClassType, Results2ScoreMethod } from "../CompetitionClassType";
+import { LtResult } from "../../shared/orienteeringtypes/LtResult";
+import { LtScoreOResult } from "../../shared/orienteeringtypes/LtScoreOResult";
 
 export abstract class CompetitionClass {
     id: Guid;
@@ -26,11 +27,11 @@ export abstract class CompetitionClass {
     // helpers for process actions go here
     // but ONLY if they are relevant to all Result types
 
-    contributingResultsFlat(): PersonResult[] {
-        let results: PersonResult[] = []
+    contributingResultsFlat(): (LtResult|LtScoreOResult)[] {
+        let results:(LtResult|LtScoreOResult)[] = []
         for (const race of this.contributingResults) {
-            if (race.xmlPersonResults.length === undefined) {continue;}
-            results.push(...race.xmlPersonResults);
+            if (race.results.length === undefined) {continue;}
+            results.push(...race.results)
         }
         return results
     }
@@ -38,7 +39,7 @@ export abstract class CompetitionClass {
     contributingNames(): {race:string, class:string}[] {
         let names:{race:string, class:string}[] = []
         this.contributingResults.forEach(raceClass => {
-            names.push({race:raceClass.race_name, class:raceClass.xmlClass.Name})
+            names.push({race:raceClass.race_name, class:raceClass.class.name})
         });
         return names;
     }

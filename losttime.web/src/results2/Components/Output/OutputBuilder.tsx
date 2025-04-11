@@ -19,6 +19,8 @@ import { Results2ScoreMethod } from "../../CompetitionClassType";
 import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
 import { WizardSectionTitle } from "../../../shared/WizardSectionTitle";
 import { scoreMethodOptions } from "../Compose/ScoreMethodSelect";
+import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
+import { Cascade_SingleSoloScoreOScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -98,6 +100,12 @@ export function OutputBuilder(props:outputBuilderProps) {
                     break;
                 case Results2ScoreMethod.SingleTeam_Cascade_WorldCup.toString():
                     next = new Cascade_SingleTeamWorldCup(old.name, old.contributingResults);
+                    break;
+                case Results2ScoreMethod.SingleSolo_ScoreO.toString():
+                    next = new Standard_ScoreO(old.name, old.contributingResults);
+                    break;
+                case Results2ScoreMethod.SingleSolo_ScoreO_Cascade_Scottish1k.toString():
+                    next = new Cascade_SingleSoloScoreOScottish1k(old.name, old.contributingResults);
                     break;
                 default:
                     new Error("Can't change to that score method")

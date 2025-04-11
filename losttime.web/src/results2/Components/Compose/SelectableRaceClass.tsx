@@ -18,6 +18,6 @@ export function SelectableRaceClass(props:SelectableRaceClassProps) {
         value={props.raceClass.id.toString()}
         onChange={(e) => props.onChange(e)}
     >
-    {props.raceClass.xmlClass.Name} - {props.raceClass.xmlPersonResults.length} Results
+    {props.raceClass.class.name} - {props.raceClass.results.length} Results
   </ToggleButton>
 }

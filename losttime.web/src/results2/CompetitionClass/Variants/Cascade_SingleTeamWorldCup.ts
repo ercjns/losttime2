@@ -1,7 +1,7 @@
 import { Computed_Cascade_SingleTeamPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleTeamPointed";
 import { CompetitionClass } from "../CompetitionClass";
 import { SingleRaceTeamResult } from "../SingleRaceTeamResult";
-import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { Cascade_SingleSoloWorldCup } from "./Cascade_SingleSoloWorldCup";
 import { CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
@@ -13,27 +13,27 @@ export class Cascade_SingleTeamWorldCup extends CompetitionClass {
     scoreMethod = Results2ScoreMethod.SingleTeam_Cascade_WorldCup;
 
     scoreMethodFriendly(): string {
-        return 'Team - CascadeOC World Cup'
+        return 'Team - CascadeOC Winter'
     }
 
     compute():Computed_Cascade_SingleTeamPointed {
-        let solos:SingleRaceSoloPointedResult[] = []
+        let solos:SingleRaceSoloResult[] = []
         this.contributingResults.forEach((c) => {
             //score each class individually
-            const scored = new Cascade_SingleSoloWorldCup(c.xmlClass.ShortName, [c])
+            const scored = new Cascade_SingleSoloWorldCup(c.class.code, [c])
                 .compute()
             solos.push(...scored.results)
         })
 
         // determine all possible teams
         const teamNames = solos.reduce((teams:string[],r): string[] => 
-            teams.some((x) => x === r.club) ? teams : [...teams, r.club]
+            teams.some((x) => x === r.person.clubCode) ? teams : [...teams, r.person.clubCode]
         , [])
 
         // create team result if more than one result for that team.
         let teams:SingleRaceTeamResult[] = []
         teamNames.forEach((t) => {
-            const members = solos.filter((x) => x.club === t 
+            const members = solos.filter((x) => x.person.clubCode === t 
                 && x.competitive !== CompetitiveStatus.NC);
             if (members.length > 1) {
                 teams.push(new SingleRaceTeamResult(members, getClubNameString(t), t))
@@ -55,7 +55,7 @@ export class Cascade_SingleTeamWorldCup extends CompetitionClass {
 
     private assignPointsWiolTeams(team:SingleRaceTeamResult): void {
         team.soloResultsAll.sort(compareSingleSoloPointedByPointsHighestFirst)
-        console.log(team)
+        // console.log(team)
         const size = team.soloResultsAll.length > 3 ? 3 : team.soloResultsAll.length
         team.soloResults = team.soloResultsAll
             .slice(0,size) // only top 3 max
@@ -112,7 +112,7 @@ function getClubNameString(clubcode:string, checkAllNamespaces:boolean=true, pre
     return res ? res.Name : clubcode
 }
 
-function compareSingleSoloPointedByPointsHighestFirst(a:SingleRaceSoloPointedResult, b:SingleRaceSoloPointedResult) {
+function compareSingleSoloPointedByPointsHighestFirst(a:SingleRaceSoloResult, b:SingleRaceSoloResult) {
     if (a.points && b.points) {
         return b.points - a.points;
     }

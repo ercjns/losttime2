@@ -1,38 +1,46 @@
-import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "../../results/scoremethods/IofStatusParser";
-import { PersonResult } from "../../shared/orienteeringtypes/IofResultXml";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { LtPerson } from "../../shared/orienteeringtypes/LtPerson";
+import { LtResult } from "../../shared/orienteeringtypes/LtResult";
 
 export class SingleRaceSoloResult {
-    _raw: PersonResult;
-    name: string;
-    club: string;
+    person: LtPerson
     time: number; // TODO: HANDLE UNDEFINED TIME??
     place: number | null | undefined;
     codeChecking: CodeCheckingStatus;
     competitive: CompetitiveStatus;
+    points?: number
 
-    constructor(personResult: PersonResult) {
-        this._raw = personResult;
-        this.name = this._extractName()
-        this.club = this._extractClub()
-        this.time = this._extractTime()
-        const s = this._extractStatuses()
-        this.codeChecking = s.CodeCheckingStatus;
-        this.competitive = s.CompetitiveStatus
-    }
-    _extractName() {
-        return (this._raw.Person.Name.Given + " " + this._raw.Person.Name.Family).trim();
+    constructor(ltResult: LtResult) {
+        this.person = ltResult.person
+        this.time = ltResult.time
+        this.place = ltResult.position
+        this.codeChecking = ltResult.codeCheckStatus
+        this.competitive = ltResult.competeStatus
     }
 
-    _extractClub() {
-        return this._raw.Organisation.ShortName;
+    // Move some render helpers here so that they can be re-used across different 
+    // computed competition classes that use the same result variants.
+    static getPlace = (r:SingleRaceSoloResult):string => `${r.place ?? ""}`
+    static getNameClub = (r:SingleRaceSoloResult):string => `${(r.person.first + " " + r.person.last).trim()} (${r.person.clubCode})`
+    static getName = (r:SingleRaceSoloResult):string => `${(r.person.first + " " + r.person.last).trim()}`
+    static getClubCode = (r:SingleRaceSoloResult):string => `${r.person.clubCode}`
+    static getTimeMMMSS = (r:SingleRaceSoloResult):string => `${SingleRaceSoloResult.timeNumberAsMMMSS(r.time)}`
+    static getTimeWithStatus = (r:SingleRaceSoloResult):string => {
+        if (r.codeChecking === CodeCheckingStatus.FIN && r.competitive === CompetitiveStatus.COMP) {
+               return `${SingleRaceSoloResult.timeNumberAsMMMSS(r.time)}`;
+       } else if (r.codeChecking !== CodeCheckingStatus.UNK) {
+           return `${CodeCheckingStatus[r.codeChecking]} ${SingleRaceSoloResult.timeNumberAsMMMSS(r.time)}`
+       } else {
+           return `${CompetitiveStatus[r.competitive]} ${SingleRaceSoloResult.timeNumberAsMMMSS(r.time)}*`
+       }
     }
+    static getPoints = (r:SingleRaceSoloResult):string => `${r.points ?? ""}`
 
-    _extractTime() {
-        return this._raw.Result.Time;
-    }
-
-    _extractStatuses() {
-        return iofStatusParser(this._raw.Result.Status);
+    static timeNumberAsMMMSS(time:number|undefined) {
+        if (time === undefined) {return "--:--"}
+        const mins = Math.floor(time / 60)
+        const secs = time % 60;
+        return mins.toString() + ":" + secs.toString().padStart(2, "0");
     }
 
 }

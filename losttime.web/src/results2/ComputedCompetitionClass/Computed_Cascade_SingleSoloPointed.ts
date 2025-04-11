@@ -1,6 +1,6 @@
 import { Guid } from "guid-typescript";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
-import { SingleRaceSoloPointedResult } from "../CompetitionClass/SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { PlaintextColumn } from "../Styles/PlaintextColumn";
 import { PlaintextTable } from "../Styles/PlaintextTable";
@@ -9,19 +9,12 @@ import { HtmlTable } from "../Styles/HtmlTable";
 
 export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass {
 
-    results: SingleRaceSoloPointedResult[]
+    results: SingleRaceSoloResult[]
 
-    constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloPointedResult[]) {
+    constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloResult[]) {
         super(competitionClassId, name, r);
         this.results = r
     }
-
-    private getPlace = (r:SingleRaceSoloPointedResult):string => `${r.place ?? ""}`
-    private getNameClub = (r:SingleRaceSoloPointedResult):string => `${r.name} (${r.club})`
-    private getName = (r:SingleRaceSoloPointedResult):string => `${r.name}`
-    private getClub = (r:SingleRaceSoloPointedResult):string => `${r.club}`
-    private getTime = (r:SingleRaceSoloPointedResult):string => `${this.timeWithStatusString(r)}`
-    private getPoints = (r:SingleRaceSoloPointedResult):string => `${r.points ?? ""}`
 
     render(style:RenderStyles): string {
         switch (style) {
@@ -48,24 +41,24 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
 
         const PL = new PlaintextColumn(
             "Pl",
-            this.getPlace,
+            SingleRaceSoloResult.getPlace,
             this.results,
             "start")
 
         const NAME = new PlaintextColumn(
             "Name",
-            this.getNameClub,
+            SingleRaceSoloResult.getNameClub,
             this.results)
         
         const TIME = new PlaintextColumn(
             "Time",
-            this.getTime,
+            SingleRaceSoloResult.getTimeWithStatus,
             this.results,
             "start")
 
         const PTS = new PlaintextColumn(
             "Pts",
-            this.getPoints,
+            SingleRaceSoloResult.getPoints,
             this.results,
             "start")
 
@@ -88,20 +81,20 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
 
         const PL = new HtmlColumn(
             "Place", 
-            this.getPlace
+            SingleRaceSoloResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            this.getNameClub
+            SingleRaceSoloResult.getNameClub
         )
         const TIME = new HtmlColumn(
             "Time",
-            this.getTime,
+            SingleRaceSoloResult.getTimeWithStatus,
             "text-right"
         )
         const PTS = new HtmlColumn(
             "Points",
-            this.getPoints,
+            SingleRaceSoloResult.getPoints,
             "text-right"
         )
         const table = new HtmlTable([PL,NAME,TIME,PTS],this,this.results).doc
@@ -126,24 +119,24 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
 
         const PL = new HtmlColumn(
             "Pos", 
-            this.getPlace
+            SingleRaceSoloResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            this.getName
+            SingleRaceSoloResult.getName
         )
         const CLUB = new HtmlColumn(
             "Club",
-            this.getClub
+            SingleRaceSoloResult.getClubCode
         )
         const TIME = new HtmlColumn(
             "Time",
-            this.getTime,
+            SingleRaceSoloResult.getTimeWithStatus,
             "text-right"
         )
         const PTS = new HtmlColumn(
             "Score",
-            this.getPoints,
+            SingleRaceSoloResult.getPoints,
             "text-right"
         )
         const table = new HtmlTable([PL,NAME,CLUB,TIME,PTS],this,this.results).doc

@@ -1,3 +1,6 @@
+import { LtPerson } from "./LtPerson";
+import { LtResult } from "./LtResult";
+
 export type ResultList = {
     ClassResult: ClassResult[];
     Event: Event;
@@ -21,11 +24,11 @@ export type Class = {
 }
 
 export type Course = {
-    Id: Number;
+    Id: number;
     Name: string;
-    Length?: Number;
-    NumberOfControls?: Number;
-    Climb?: Number;
+    Length?: number;
+    NumberOfControls?: number;
+    Climb?: number;
 }
 
 export type PersonResult = {
@@ -64,4 +67,19 @@ export type Result = {
 export type SplitTime = {
     ControlCode: number;
     Time?: number;
+}
+
+export function IofXml3ToLtResult(r:PersonResult):LtResult {
+    const person = new LtPerson(r.Person.Name.Given??"", r.Person.Name.Family??"",r.Organisation.ShortName, r.Organisation.Name)
+
+    return new LtResult({
+        person: person,
+        bib: r.Result.BibNumber?.toString(),
+        card: r.Result.ControlCard?.toString(),
+        start: r.Result.StartTime?? undefined,
+        finish: r.Result.FinishTime?? undefined,
+        time: r.Result.Time,
+        status: r.Result.Status,
+        position: r.Result.Position?? undefined
+    })
 }
