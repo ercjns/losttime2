@@ -10,6 +10,7 @@ export const scoreMethodOptions = [
     <option key={`score-option-${Results2ScoreMethod.SingleSolo_Time}`} value={Results2ScoreMethod.SingleSolo_Time}>Solo - Time</option>,
     
     <option key={`score-option-${Results2ScoreMethod.SingleSolo_Cascade_WorldCup}`} value={Results2ScoreMethod.SingleSolo_Cascade_WorldCup}>Solo - CascadeOC Winter</option>,
+    <option key={`score-option-${Results2ScoreMethod.SingleSolo_Cascade_Scottish1k}`} value={Results2ScoreMethod.SingleSolo_Cascade_Scottish1k}>Solo - CascadeOC Ultimate</option>,
     <option key="list-sep-scoreo">-- Score O --</option>,
     <option key={`score-option-${Results2ScoreMethod.SingleSolo_ScoreO}`} value={Results2ScoreMethod.SingleSolo_ScoreO}>Solo - ScoreO</option>,
     <option key={`score-option-${Results2ScoreMethod.SingleSolo_ScoreO_Cascade_Scottish1k}`} value={Results2ScoreMethod.SingleSolo_ScoreO_Cascade_Scottish1k}>Solo - ScoreO - CascadeOC Ultimate</option>,
