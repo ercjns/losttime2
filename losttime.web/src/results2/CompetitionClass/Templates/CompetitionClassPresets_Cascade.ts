@@ -121,35 +121,7 @@ function COC_UO25_SingleScoreO(raceData:CompetitionClassPresetsProps) {
     ])
 }
 
-function COC_UO22_SingleScoreO(raceData:CompetitionClassPresetsProps) {
-    raceData.setCompetitionClasses([
-    new Standard_ScoreO('Beginner', getRaceDataByClassCode(raceData,"1",true)),
-    new Standard_ScoreO('Intermediate', getRaceDataByClassCode(raceData,"2",true)),
-    new Standard_ScoreO('Open Groups', getRaceDataByClassCode(raceData,"3G",true)),
-    new Cascade_SingleSoloScoreOScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"UJ16F",true)),
-    new Cascade_SingleSoloScoreOScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"UJ16M",true)),
-    new Cascade_SingleSoloScoreOScottish1k('18 and Under Female', getRaceDataByClassCode(raceData,"UJ18F",true)),
-    new Cascade_SingleSoloScoreOScottish1k('18 and Under Open', getRaceDataByClassCode(raceData,"UJ18M",true)),
-    new Cascade_SingleSoloScoreOScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"UJ20F",true)),
-    new Cascade_SingleSoloScoreOScottish1k('20 and Under Open', getRaceDataByClassCode(raceData,"UJ20M",true)),
-    new Cascade_SingleSoloScoreOScottish1k('50+ Female', getRaceDataByClassCode(raceData,"UM50F",true)),
-    new Cascade_SingleSoloScoreOScottish1k('50+ Open', getRaceDataByClassCode(raceData,"UM50M",true)),
-    new Cascade_SingleSoloScoreOScottish1k('70+ Female', getRaceDataByClassCode(raceData,"UM70F",true)),
-    new Cascade_SingleSoloScoreOScottish1k('70+ Open', getRaceDataByClassCode(raceData,"UM70M",true)),
-    new Cascade_SingleSoloScoreOScottish1k('Open (-21+) Female', getRaceDataByClassCode(raceData,"UOF",true)),
-    new Cascade_SingleSoloScoreOScottish1k('Open (-21+)', getRaceDataByClassCode(raceData,"UOM",true))
-    ])
-}
-
 export const presets = [
-    new CompetitionClassPresetButton(
-        "COC",
-        "cascade-WIOL2425-single",
-        "2024-25 WIOL: Single Event",
-        COC_WIOL2425_Single,
-        requireExactlyOneRace
-    )
-    ,
     new CompetitionClassPresetButton(
         "COC",
         "cascade-UO25-single",
@@ -166,9 +138,9 @@ export const presets = [
     ),
     new CompetitionClassPresetButton(
         "COC",
-        "cascade-UO22-singleScoreO",
-        "2022 Ultimate: Single ScoreO Event",
-        COC_UO22_SingleScoreO,
+        "cascade-WIOL2425-single",
+        "2024-25 WIOL: Single Event",
+        COC_WIOL2425_Single,
         requireExactlyOneRace
     )
 ]
