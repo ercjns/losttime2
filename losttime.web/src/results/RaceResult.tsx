@@ -16,14 +16,14 @@ export class LtStaticRaceClassResult {
     ID:Guid;
     Event:LtEvent;
     Class:Class;
-    Course:Course;
+    Course?:Course;
     PersonResults:PersonResult[];
 
     constructor(rawClassResult: ClassResult, event:LtEvent) {
         this.ID = Guid.create();
         this.Event = event;
         this.Class = rawClassResult.Class;
-        this.Course = rawClassResult.Course;
+        this.Course = rawClassResult.Course ?? undefined;
         // Use [wrap].flat() to ensure there's an array.
         // without this, if only one PersonResult, it's just an object
         // and does not get filled because it's expecting an array.

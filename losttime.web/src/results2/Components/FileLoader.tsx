@@ -125,7 +125,7 @@ export function FileLoader(props: FileLoaderProps) {
                             { id: race_id, name: race_name },
                             new LtRaceClass(el.Class.Name, el.Class.ShortName),
                             [el.PersonResult].flat().map(IofXml3ToLtResult),
-                            new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb)
+                            el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
                         )
                     )
     
