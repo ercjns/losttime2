@@ -12,7 +12,7 @@ export type Event = {
 
 export type ClassResult = {
     Class:Class;
-    Course:Course;
+    Course?:Course;
     PersonResult:PersonResult[];
 }
 
@@ -35,7 +35,9 @@ export type PersonResult = {
     Person: Person;
     Organisation: Organisation;
     Result: Result;
+    Course?: Course;
 }
+
 export type Person = {
     Name: Name;
 }
