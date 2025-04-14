@@ -23,7 +23,7 @@ export function CompetitionClassPresetsCustom(props:CompetitionClassPresetsProps
 
     const liveButtons = buttons.map((x) => {
         if (x.org === org) {
-            return <Col sm={12} md={6} key={`${x.id}-container`}>
+            return <Col sm={12} lg={6} key={`${x.id}-container`} className="mb-1">
                 <Button
                     key={x.id}
                     id={x.id}

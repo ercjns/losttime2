@@ -2,7 +2,7 @@ import { CompetitionClass } from "../CompetitionClass";
 import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloPointed";
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
-import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 
@@ -12,13 +12,13 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
     scoreMethod = Results2ScoreMethod.SingleSolo_Cascade_WorldCup;
     
     scoreMethodFriendly(): string {
-        return 'Solo - Points - CascadeOC World Cup'
+        return 'Solo - Points - CascadeOC Winter'
     }
 
     compute():Computed_Cascade_SingleSoloPointed {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>
-            new SingleRaceSoloPointedResult(x)
+            new SingleRaceSoloResult(x)
         )
 
         // order by time
@@ -34,9 +34,9 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
     }
 
     private assignPlace(
-        item:SingleRaceSoloPointedResult, 
+        item:SingleRaceSoloResult, 
         index:number, 
-        results:SingleRaceSoloPointedResult[]
+        results:SingleRaceSoloResult[]
     ): void {
         // no place for NC/DSQ/SPW/
         if (item.competitive !== CompetitiveStatus.COMP) {
@@ -60,12 +60,11 @@ export class Cascade_SingleSoloWorldCup extends CompetitionClass {
         }
     }
 
-    private assignPoints(item:SingleRaceSoloPointedResult): void {
+    private assignPoints(item:SingleRaceSoloResult): void {
         if (item.place === undefined || item.place === null) {
             switch (item.competitive) {
                 case CompetitiveStatus.NC:
                 case CompetitiveStatus.DSQ:
-                    item.points = null;
                     break;
                 case CompetitiveStatus.COMP:
                 case CompetitiveStatus.OVT:
