@@ -1,13 +1,20 @@
+import { Guid } from "guid-typescript";
+import { SingleRaceSoloScoreOResult } from "../CompetitionClass/SingleRaceSoloScoreOResult";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
-import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { PlaintextColumn } from "../Styles/PlaintextColumn";
 import { PlaintextTable } from "../Styles/PlaintextTable";
 import { HtmlColumn } from "../Styles/HtmlColumn";
 import { HtmlTable } from "../Styles/HtmlTable";
 
+export class Computed_Standard_ScoreO extends ComputedCompetitionClass {
 
-export class Computed_Standard_Time extends ComputedCompetitionClass {
+    results: SingleRaceSoloScoreOResult[]
+
+    constructor(competitionClassId:Guid, name:string, r: SingleRaceSoloScoreOResult[]) {
+        super(competitionClassId, name, r);
+        this.results = r
+    }
 
     render(style:RenderStyles): string {
         switch (style) {
@@ -22,37 +29,55 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         }
     }
 
-    render_txt():string {
+    render_txt(): string {
         let doc = "";
         doc += `${this.name}`
         doc += "\r\n";
-        
+
         if (this.totalFinishers() === 0) {
             doc += `(No participants for this class)\r\n\r\n`
             return doc;
         }
-        
+
         const PL = new PlaintextColumn(
             "Pl",
-            SingleRaceSoloResult.getPlace,
+            SingleRaceSoloScoreOResult.getPlace,
             this.results,
             "start")
 
         const NAME = new PlaintextColumn(
             "Name",
-            SingleRaceSoloResult.getNameClub,
+            SingleRaceSoloScoreOResult.getNameClub,
             this.results)
         
-        const TIME = new PlaintextColumn(
-            "Time",
-            SingleRaceSoloResult.getTimeWithStatus,
+        const RAW = new PlaintextColumn(
+            "Points",
+            SingleRaceSoloScoreOResult.getRawScore,
             this.results,
             "start")
-        
-        return doc += new PlaintextTable([PL,NAME,TIME], this.results).tableString;
+
+        const PEN = new PlaintextColumn(
+            "Penalty",
+            SingleRaceSoloScoreOResult.getPenalty,
+            this.results,
+            "start")
+
+        const SCORE = new PlaintextColumn(
+            "Score",
+            SingleRaceSoloScoreOResult.getFinalScore,
+            this.results,
+            "start")
+
+        const TIME = new PlaintextColumn(
+            "Time",
+            SingleRaceSoloScoreOResult.getTimeMMMSS,
+            this.results,
+            "start")
+
+        return doc += new PlaintextTable([PL,NAME,RAW,PEN,SCORE,TIME], this.results).tableString
     }
 
-    render_html():string {
+    render_html(): string {
         let doc = document.createElement("div")
         const h2 = document.createElement("h2")
         h2.textContent = `${this.name}`
@@ -68,18 +93,33 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
 
         const PL = new HtmlColumn(
             "Place", 
-            SingleRaceSoloResult.getPlace
+            SingleRaceSoloScoreOResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            SingleRaceSoloResult.getNameClub
+            SingleRaceSoloScoreOResult.getNameClub
+        )
+        const RAW = new HtmlColumn(
+            "Points",
+            SingleRaceSoloScoreOResult.getRawScore,
+            "text-right"
+        )
+        const PEN = new HtmlColumn(
+            "Penalty",
+            SingleRaceSoloScoreOResult.getPenalty,
+            "text-right"
+        )
+        const SCORE = new HtmlColumn(
+            "Score",
+            SingleRaceSoloScoreOResult.getFinalScore,
+            "text-right"
         )
         const TIME = new HtmlColumn(
             "Time",
-            SingleRaceSoloResult.getTimeWithStatus,
+            SingleRaceSoloScoreOResult.getTimeWithStatus,
             "text-right"
         )
-        const table = new HtmlTable([PL,NAME,TIME],this,this.results).doc
+        const table = new HtmlTable([PL,NAME,RAW,PEN,SCORE,TIME],this,this.results).doc
         doc.appendChild(table)
         return this.stringify_html(doc)
     }
@@ -101,22 +141,37 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
 
         const PL = new HtmlColumn(
             "Pos", 
-            SingleRaceSoloResult.getPlace
+            SingleRaceSoloScoreOResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            SingleRaceSoloResult.getName
+            SingleRaceSoloScoreOResult.getName
         )
         const CLUB = new HtmlColumn(
             "Club",
-            SingleRaceSoloResult.getClubCode
+            SingleRaceSoloScoreOResult.getClubCode
+        )
+        const RAW = new HtmlColumn(
+            "Points",
+            SingleRaceSoloScoreOResult.getRawScore,
+            "text-right"
+        )
+        const PEN = new HtmlColumn(
+            "Penalty",
+            SingleRaceSoloScoreOResult.getPenalty,
+            "text-right"
+        )
+        const SCORE = new HtmlColumn(
+            "Score",
+            SingleRaceSoloScoreOResult.getFinalScore,
+            "text-right"
         )
         const TIME = new HtmlColumn(
             "Time",
-            SingleRaceSoloResult.getTimeWithStatus,
+            SingleRaceSoloScoreOResult.getTimeMMMSS,
             "text-right"
         )
-        const table = new HtmlTable([PL,NAME,CLUB,TIME],this,this.results).doc
+        const table = new HtmlTable([PL,NAME,CLUB,RAW,PEN,SCORE,TIME],this,this.results).doc
         doc.appendChild(table)
 
         const menudiv = document.createElement("div")

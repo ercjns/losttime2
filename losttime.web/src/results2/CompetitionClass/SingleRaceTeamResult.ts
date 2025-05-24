@@ -1,20 +1,21 @@
-import { SingleRaceSoloPointedResult } from "./SingleRaceSoloPointedResult"
+import { SingleRaceSoloResult } from "./SingleRaceSoloResult"
 
 export class SingleRaceTeamResult {
     teamName: string
     club?: string
-    soloResultsAll: SingleRaceSoloPointedResult[]
-    soloResults: SingleRaceSoloPointedResult[]
+    soloResultsAll: SingleRaceSoloResult[]
+    soloResults: SingleRaceSoloResult[]
     place: number | null | undefined
     points: number | null | undefined
-    isValid: boolean
 
-    constructor(results:SingleRaceSoloPointedResult[], name:string, club?:string, ) {
+    constructor(results:SingleRaceSoloResult[], name:string, club?:string, ) {
         this.teamName = name;
         this.club = club;
         this.soloResultsAll = results
 
         this.soloResults = []
-        this.isValid = false
     }
+
+    static getPoints = (r:SingleRaceTeamResult):string =>`${r.place ?? ""}`
+    static getTeamClub = (r:SingleRaceTeamResult):string => `${r.teamName} (${r.club})`
 }

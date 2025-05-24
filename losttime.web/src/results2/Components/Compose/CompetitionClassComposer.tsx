@@ -15,6 +15,8 @@ import { Cascade_SingleTeamWorldCup } from "../../CompetitionClass/Variants/Casc
 import { WizardSectionTitle } from "../../../shared/WizardSectionTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
+import { Cascade_SingleSoloScoreOScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
 
 export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
@@ -27,7 +29,7 @@ function getUniqueClassLabels(raceClassesByRace:raceClassesByRace) {
     let classLabels:Map<string, string> = new Map();
     [...raceClassesByRace].map(([raceid,raceClasses]) =>
         [...raceClasses].map(([shortName,raceClass]) =>
-            classLabels.set(raceClass.xmlClass.ShortName, raceClass.xmlClass.Name)
+            classLabels.set(raceClass.class.code, raceClass.class.name)
         )
     );
     const sorted = [...classLabels.keys()].sort();
@@ -144,7 +146,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             case Results2ScoreMethod.SingleSolo_Time :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Standard_Time(
-                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
                         `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`, 
                         getRaceClassDataForSelected()
                     )]
@@ -153,7 +155,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             case Results2ScoreMethod.SingleSolo_Cascade_WorldCup :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleSoloWorldCup(
-                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
                         `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
                         getRaceClassDataForSelected()
                     )]
@@ -162,7 +164,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             case Results2ScoreMethod.SingleSolo_Cascade_Scottish1k :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleSoloScottish1k(
-                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
                         `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
                         getRaceClassDataForSelected()
                     )]
@@ -171,7 +173,25 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             case Results2ScoreMethod.SingleTeam_Cascade_WorldCup :
                 props.setCompetitionClasses((current:CompetitionClass[]) => 
                     [...current, new Cascade_SingleTeamWorldCup(
-                        `${getRaceClassDataForSelected()[0]!.xmlClass.Name}`+
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
+                        getRaceClassDataForSelected()
+                    )]
+                );
+                break;
+            case Results2ScoreMethod.SingleSolo_ScoreO :
+                props.setCompetitionClasses((current:CompetitionClass[]) =>
+                    [...current, new Standard_ScoreO(
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
+                        getRaceClassDataForSelected()
+                    )]
+                );
+                break;
+            case Results2ScoreMethod.SingleSolo_ScoreO_Cascade_Scottish1k :
+                props.setCompetitionClasses((current:CompetitionClass[]) =>
+                    [...current, new Cascade_SingleSoloScoreOScottish1k(
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
                         `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
                         getRaceClassDataForSelected()
                     )]

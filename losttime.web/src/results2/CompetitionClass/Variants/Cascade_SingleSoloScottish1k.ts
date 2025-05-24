@@ -2,7 +2,7 @@ import { CompetitionClass } from "../CompetitionClass";
 import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloPointed";
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
 import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
-import { SingleRaceSoloPointedResult } from "../SingleRaceSoloPointedResult";
+import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 
@@ -12,23 +12,24 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
     scoreMethod = Results2ScoreMethod.SingleSolo_Cascade_Scottish1k
 
     scoreMethodFriendly(): string {
-        return 'Solo - Points - CascadeOC 1000 Ratio to Winner'
+        return 'Solo - CascadeOC Ultimate'
     }
 
     compute():Computed_Cascade_SingleSoloPointed {
         // gather all Single Race Solo Results head to head
         let results = this.contributingResultsFlat().map(x =>
-            new SingleRaceSoloPointedResult(x)
+            new SingleRaceSoloResult(x)
         )
 
+        // order by time
+        results.sort(compareSingleSoloByTime);
+        
+        // break out early if no results, no finishers, or no competitive
         if (results.length === 0 || 
             (results[0].competitive !== CompetitiveStatus.COMP ||
             results[0].codeChecking !== CodeCheckingStatus.FIN)) {
             return new Computed_Cascade_SingleSoloPointed(this.id, this.name, results);
         }
-
-        // order by time
-        results.sort(compareSingleSoloByTime);
 
         // assign points
         const bestTime = results[0].time
@@ -40,11 +41,10 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
         return new Computed_Cascade_SingleSoloPointed(this.id, this.name, results);
     }
 
-    assignPoints(bestTime:number, item:SingleRaceSoloPointedResult): void {
+    private assignPoints(bestTime:number, item:SingleRaceSoloResult): void {
         switch (item.competitive) {
             case CompetitiveStatus.NC:
             case CompetitiveStatus.DSQ:
-                item.points = null;
                 break;
             case CompetitiveStatus.OVT:
             case CompetitiveStatus.SWD:
@@ -59,10 +59,10 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
         }
     }
 
-    assignPlace(
-        item:SingleRaceSoloPointedResult, 
+    private assignPlace(
+        item:SingleRaceSoloResult, 
         index:number, 
-        results:SingleRaceSoloPointedResult[]
+        results:SingleRaceSoloResult[]
     ): void {
         // no place for NC/DSQ/SPW/
         if (item.competitive !== CompetitiveStatus.COMP) {
@@ -91,7 +91,7 @@ function CascadeScottish1kPoints(bestTime:number, thisTime:number):number {
     return Math.round(bestTime / thisTime * 1000)
 }
 
-function compareScottish1kPoints(a:SingleRaceSoloPointedResult, b:SingleRaceSoloPointedResult):number {
+function compareScottish1kPoints(a:SingleRaceSoloResult, b:SingleRaceSoloResult):number {
     if (a.competitive !== b.competitive) {
         return a.competitive - b.competitive;
     }
