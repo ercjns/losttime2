@@ -116,7 +116,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       const el = document.createElement('a');
       el.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvstring);
       el.target = '_blank';
-      el.download = 'EntriesForOe-'.concat(nowstring, '.csv');
+      el.download = 'EntriesForOe'.concat(OEversion==="11" ? '11' : '12').concat('-', nowstring, '.csv');
       el.click();
     }
   
