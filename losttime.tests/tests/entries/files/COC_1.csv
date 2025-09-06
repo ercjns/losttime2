@@ -1,0 +1,2 @@
+FirstName,LastName,Email,Club,Class,Sex,EPunch,Rental,StartTime,Phone,EmergencyPhone,CarLicense,BirthYear,Newcomer,Group,Paid,Owed,Waiver
+"Alice","Smith","ASmith@example.com","COC","9F","F","2345678","False","","","","","","False","","True","","True"
