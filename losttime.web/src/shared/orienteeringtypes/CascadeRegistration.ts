@@ -9,6 +9,7 @@ export class CascadeRegistrationCsv {
     Sex!: "F" | "M";
     EPunch!: string;
     Rental!: string;
+    StartTime!: string | null;
     Phone!: string;
     EmergencyPhone!: string;
     CarLicense!: string;
