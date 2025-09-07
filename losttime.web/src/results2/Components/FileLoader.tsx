@@ -5,11 +5,11 @@ import { parse as PapaParse, RECORD_SEP, UNIT_SEP, ParseResult, ParseLocalConfig
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult, IofXml3ToLtResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Row, Table } from "react-bootstrap";
 import { WizardSectionTitle } from "../../shared/WizardSectionTitle";
 import { raceClassesByRace } from "./Compose/CompetitionClassComposer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faRotateLeft, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { OESco0012, OEScoCsvToLtScoreOResult } from "../../shared/orienteeringtypes/OESco0012";
 import { LtRaceClass } from "../../shared/orienteeringtypes/LtRaceClass";
 import { LtCourse } from "../../shared/orienteeringtypes/LtCourse";
@@ -101,6 +101,83 @@ export function FileLoader(props: FileLoaderProps) {
 
     const [files, setFiles] = useState<loadedFile[]>([])
 
+    function handleResultFileUp(id:Guid) {
+        const index = files.findIndex((x) => x.race_id === id);
+        const swapWith = index - 1;
+        if (index > -1 && swapWith < files.length && swapWith > -1) {
+            const A = files.at(index)!
+            const B = files.at(swapWith)!
+            files.splice(swapWith, 2, A, B)
+            setFiles([...files])
+        }
+        
+        props.setRaceClasses((existing: Map<Guid,Map<string,StandardRaceClassData>>) => {
+            const asArray = Array.from(existing);
+            var updated = new Map();
+            const index = asArray.findIndex((x) => x[0] === id)
+            const swapWith = index + 1;
+            if (index > -1 && swapWith < asArray.length && swapWith > -1) {
+                const A = asArray.at(index)!
+                const B = asArray.at(swapWith)!
+                asArray.splice(swapWith, 2, A, B)
+                asArray.forEach(([key,value]) => {
+                    updated.set(key, value);
+                })
+                return updated;
+            } else {
+                return existing;
+            }
+        })
+    }
+
+    function handleResultFileDown(id:Guid) {
+        const index = files.findIndex((x) => x.race_id === id);
+        const swapWith = index + 1;
+        if (index > -1 && swapWith < files.length && swapWith > -1) {
+            const A = files.at(index)!
+            const B = files.at(swapWith)!
+            files.splice(index, 2, B, A)
+            setFiles([...files])
+        }
+        
+        props.setRaceClasses((existing: Map<Guid,Map<string,StandardRaceClassData>>) => {
+            const asArray = Array.from(existing);
+            var updated = new Map();
+            const index = asArray.findIndex((x) => x[0] === id)
+            const swapWith = index + 1;
+            if (index > -1 && swapWith < asArray.length && swapWith > -1) {
+                const A = asArray.at(index)!
+                const B = asArray.at(swapWith)!
+                asArray.splice(index, 2, B, A)
+                asArray.forEach(([key,value]) => {
+                    updated.set(key, value);
+                })
+                return updated;
+            } else {
+                return existing;
+            }
+        })
+    }
+
+    function handleResultFileDelete(id:Guid) {
+        setFiles([...files.filter((x) => x.race_id !== id)])
+        props.setRaceClasses((existing: Map<Guid,Map<string,StandardRaceClassData>>) => {
+            var updated = new Map();
+            existing.forEach((value, key) => {
+                if (key !== id) {
+                    updated.set(key, value);
+                }
+            })
+            return updated;
+        });
+    }
+
+    function removeFilesClick() {
+        setFiles([]);
+        props.setRaceClasses(new Map());
+        props.setCompetitionClasses([]);
+    }
+
     const onDrop = useCallback((acceptedFiles: File[]) => {
         acceptedFiles.forEach((file) => {
             console.log(`got ${file.name}`);
@@ -167,22 +244,28 @@ export function FileLoader(props: FileLoaderProps) {
             }
             reader.readAsText(file);
         })
-    }, []);
+    }, [props]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-    const fileItems = files.map((x) => {
+    const loadedFileRows = files.map((x, idx) => {
         let classes = "";
         x.data.forEach((c) => {classes += `${c.class.code}, `})
         classes = classes.slice(0,-2);
-        return <li key={x.race_id.toString()}><strong>{x.filename}</strong> with <strong>{x.data.length.toString()}</strong> classes: {classes}</li>
-    });
+        return <tr key={x.race_id.toString()}>
+            <td>{idx+1}</td>
+            <td>{x.data[0].race_name}</td>
+            <td>{x.filename}</td>
+            <td>{classes}</td>
+            <td valign="middle">
+                <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileUp(x.race_id)} title="move up"><FontAwesomeIcon icon={faArrowUp}/></Button>&nbsp;
+                <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileDown(x.race_id)} title="move down"><FontAwesomeIcon icon={faArrowDown}/></Button>&nbsp;
+                <Button variant='outline-danger' size='sm' onClick={()=>handleResultFileDelete(x.race_id)} title="remove"><FontAwesomeIcon icon={faTrashAlt}/></Button>
+            </td>
+        </tr>
+    })
 
-    function removeFilesClick() {
-        setFiles([]);
-        props.setRaceClasses(new Map());
-        props.setCompetitionClasses([]);
-    }
+    
 
     const icon = files.length > 0 ? "check" : "arrow"
 
@@ -190,7 +273,7 @@ export function FileLoader(props: FileLoaderProps) {
         <Row className="mb-4">
             <WizardSectionTitle title="Load Results File(s)" showLine={false} icon={icon}/>
             
-            <Col md={12} lg={5}>
+            <Col md={12} lg={4}>
             <p>Add Orienteering Results or Splits files in the <strong>IOF XML v3</strong> format.<br/>Add ScoreO results from Sport Software OE Score in <strong>OESco0012 csv</strong> format.</p>
             <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
                 <input id="dz-file-input" {...getInputProps()} />
@@ -202,11 +285,22 @@ export function FileLoader(props: FileLoaderProps) {
             </div>
             </Col>
 
-            <Col md={12} lg={7}>
-            <p><strong>{fileItems.length.toString()}</strong> Loaded file{`${fileItems.length === 1 ? "" : "s"}`}:</p>
-            <ul>
-                {fileItems}
-            </ul>
+            <Col md={12} lg={8}>
+            <p><strong>{loadedFileRows.length.toString()}</strong> Loaded file{`${loadedFileRows.length === 1 ? "" : "s"}`}.</p>
+            <Table striped size="sm">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Event Name</th>
+                        <th>File Name</th>
+                        <th>Classes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loadedFileRows}
+                </tbody>
+            </Table>
             {(props.raceClassesByRace.size > 0 ? 
             <Button onClick={()=>removeFilesClick()}
                 variant="outline-danger"
