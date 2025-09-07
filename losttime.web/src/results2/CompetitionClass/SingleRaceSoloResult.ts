@@ -64,3 +64,18 @@ export function compareSingleSoloByTime(a:SingleRaceSoloResult, b:SingleRaceSolo
         return 0;
     }
 }
+
+export const isSingleRaceSoloResult = (x: SingleRaceSoloResult | undefined): x is SingleRaceSoloResult => !!x;
+
+export function compareSingleSoloPointedByPointsHighestFirst(a:SingleRaceSoloResult, b:SingleRaceSoloResult) {
+    if (a.points && b.points) {
+        return b.points - a.points;
+    }
+    if (a.points) {
+        return -1;
+    } else if (b.points) {
+        return 1;
+    } else {
+        return 0;
+    }
+}

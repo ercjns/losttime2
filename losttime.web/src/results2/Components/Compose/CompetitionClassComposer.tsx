@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
 import { Cascade_SingleSoloScoreOScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
+import { Cascade_ManySoloWorldCup } from "../../CompetitionClass/Variants/Cascade_ManySoloWorldCup";
 
 export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
 
@@ -191,6 +192,15 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             case Results2ScoreMethod.SingleSolo_ScoreO_Cascade_Scottish1k :
                 props.setCompetitionClasses((current:CompetitionClass[]) =>
                     [...current, new Cascade_SingleSoloScoreOScottish1k(
+                        `${getRaceClassDataForSelected()[0]!.class.name}`+
+                        `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
+                        getRaceClassDataForSelected()
+                    )]
+                );
+                break;
+            case Results2ScoreMethod.ManySolo_Cascade_WorldCup:
+                props.setCompetitionClasses((current:CompetitionClass[]) =>
+                    [...current, new Cascade_ManySoloWorldCup(
                         `${getRaceClassDataForSelected()[0]!.class.name}`+
                         `${getRaceClassDataForSelected().length > 1 ? " and More" : ""}`,
                         getRaceClassDataForSelected()

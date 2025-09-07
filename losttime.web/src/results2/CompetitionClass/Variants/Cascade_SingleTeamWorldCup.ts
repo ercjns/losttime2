@@ -1,7 +1,7 @@
 import { Computed_Cascade_SingleTeamPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleTeamPointed";
 import { CompetitionClass } from "../CompetitionClass";
 import { SingleRaceTeamResult } from "../SingleRaceTeamResult";
-import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
+import { compareSingleSoloPointedByPointsHighestFirst, SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { Cascade_SingleSoloWorldCup } from "./Cascade_SingleSoloWorldCup";
 import { CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
@@ -110,19 +110,6 @@ function getClubNameString(clubcode:string, checkAllNamespaces:boolean=true, pre
     if (res !== undefined) {return res.Name}
     res = clubs2.find(x => x.Code === clubcode)
     return res ? res.Name : clubcode
-}
-
-function compareSingleSoloPointedByPointsHighestFirst(a:SingleRaceSoloResult, b:SingleRaceSoloResult) {
-    if (a.points && b.points) {
-        return b.points - a.points;
-    }
-    if (a.points) {
-        return -1;
-    } else if (b.points) {
-        return 1;
-    } else {
-        return 0;
-    }
 }
 
 function compareSingleTeamHighestFirst(a:SingleRaceTeamResult, b:SingleRaceTeamResult) {

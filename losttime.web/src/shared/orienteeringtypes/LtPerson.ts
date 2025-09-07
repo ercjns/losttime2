@@ -18,4 +18,12 @@ export class LtPerson {
             this.club = club
         }
     }
+
+    sameNameAndClubCode = (other:LtPerson):boolean => {
+        if (this.first === other.first &&
+            this.last === other.last &&
+            this.clubCode === other.clubCode
+        ) { return true}
+        return false
+    }
 }
