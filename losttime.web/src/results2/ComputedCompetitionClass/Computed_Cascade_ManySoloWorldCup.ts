@@ -11,10 +11,12 @@ import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
 export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
 
     results:ManyRaceSoloResult[]
+    totalEvents:number
 
     constructor(competitionClassId:Guid, name:string, r: ManyRaceSoloResult[]) {
         super(competitionClassId, name, r);
         this.results = r
+        this.totalEvents = this.results[0].raceResults.length
     }
     
     render(style:RenderStyles): string {
@@ -25,6 +27,18 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
                 return this.render_html();
             default: 
                 return this.render_html();
+        }
+    }
+
+    private getEventPoints = (eventNumber:number) => {
+        return (r:ManyRaceSoloResult):string => {
+            if (r.raceResults[eventNumber] === undefined || r.raceResults[eventNumber] === null) {
+                return "";
+            } else if (r.raceResults[eventNumber]!.points === undefined) {
+                return "";
+            } else {
+                return r.raceResults[eventNumber]!.points!.toString();
+            }
         }
     }
 
@@ -49,13 +63,24 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
             ManyRaceSoloResult.getNameClub,
             this.results)
 
+        let RaceColumns:PlaintextColumn[] = [];
+        for (let i = 0; i < this.totalEvents; i++) {
+            const COL = new PlaintextColumn(
+                '#'+i+1,
+                this.getEventPoints(i),
+                this.results,
+                "start"
+            )
+            RaceColumns.push(COL)
+        }
+
         const PTS = new PlaintextColumn(
             "Pts",
             ManyRaceSoloResult.getPoints,
             this.results,
             "start")
         
-        return doc += new PlaintextTable([PL,NAME,PTS], this.results).tableString;
+        return doc += new PlaintextTable([PL,NAME,...RaceColumns,PTS], this.results).tableString;
     }
     
     render_html():string {
