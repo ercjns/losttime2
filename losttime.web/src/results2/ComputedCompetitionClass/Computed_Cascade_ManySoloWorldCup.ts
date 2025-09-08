@@ -66,7 +66,7 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
         let RaceColumns:PlaintextColumn[] = [];
         for (let i = 0; i < this.totalEvents; i++) {
             const COL = new PlaintextColumn(
-                '#'+i+1,
+                '#'.concat((i+1).toString()),
                 this.getEventPoints(i),
                 this.results,
                 "start"

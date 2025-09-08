@@ -1,5 +1,4 @@
 import { StandardRaceClassData } from "../../StandardRaceClassData";
-import { Guid } from "guid-typescript";
 import { SelectableRaceClass } from "./SelectableRaceClass";
 import React, { useState } from "react";
 import { Button, Col, Collapse, Row, Table } from "react-bootstrap";
@@ -18,18 +17,12 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
 import { Cascade_SingleSoloScoreOScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
 import { Cascade_ManySoloWorldCup } from "../../CompetitionClass/Variants/Cascade_ManySoloWorldCup";
+import { RaceResultsData } from "../FileLoader";
 
-export type raceClassesByRace = Map<Guid,Map<string,StandardRaceClassData>>;
-
-type raceInfo = {
-    id:Guid,
-    name:string
-}
-
-function getUniqueClassLabels(raceClassesByRace:raceClassesByRace) {
+function getUniqueClassLabels(raceResultsData:RaceResultsData[]) {
     let classLabels:Map<string, string> = new Map();
-    [...raceClassesByRace].map(([raceid,raceClasses]) =>
-        [...raceClasses].map(([shortName,raceClass]) =>
+    [...raceResultsData].map((race) =>
+        [...race.raceClasses].map(([shortName,raceClass]) =>
             classLabels.set(raceClass.class.code, raceClass.class.name)
         )
     );
@@ -39,30 +32,15 @@ function getUniqueClassLabels(raceClassesByRace:raceClassesByRace) {
     })
 }
 
-function getRaces(raceClassesByRace:raceClassesByRace) {
-    let raceNames:raceInfo[] = [];
-    raceClassesByRace.forEach((race) => {
-        const anyRaceClass = race.values().next().value
-        if (anyRaceClass === undefined) {new Error("Race has no raceclasses?")}
-        else {
-            raceNames.push({
-                id: anyRaceClass.race_id,
-                name: anyRaceClass.race_name
-            });
-        }
-    });
-    return raceNames;
-}
-
-function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
-    const rows = getUniqueClassLabels(raceClassesByRace);
-    const cols = getRaces(raceClassesByRace);
+function pivotByRaceToByClass(raceResultsData:RaceResultsData[]) {
+    const rows = getUniqueClassLabels(raceResultsData);
+    const cols = raceResultsData;
 
     let outData: Map<string,Array<StandardRaceClassData|undefined>> = new Map();
     rows.forEach((raceClass) => {
         let matchingRaces: Array<StandardRaceClassData|undefined> = [];
         cols.forEach((race) => {
-            matchingRaces.push(raceClassesByRace.get(race.id)?.get(raceClass.short.toString()))
+            matchingRaces.push(race.raceClasses.get(raceClass.short.toString()))
         })
         outData.set(raceClass.short.toString(),matchingRaces);
     });
@@ -70,7 +48,7 @@ function pivotByRaceToByClass(raceClassesByRace:raceClassesByRace) {
 }
 
 interface CompetitionClassComposerProps {
-    raceClassesByRace:raceClassesByRace;
+    raceResultsData:RaceResultsData[];
     competitionClasses:CompetitionClass[];
     setCompetitionClasses:Function;
 }
@@ -82,7 +60,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
     const [scoringParams, setScoringParams] = useState(Results2ScoreMethod.SingleSolo_Time)
     const [advancedOpen, setAdvancedOpen] = useState(false)
 
-    const columnHeaders = getRaces(props.raceClassesByRace).map((el) =>
+    const columnHeaders = props.raceResultsData.map((el) =>
         <th key={el.id.toString()}>{el.name}</th>
     );
 
@@ -116,7 +94,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
         });
     }
 
-    const rows = [...pivotByRaceToByClass(props.raceClassesByRace).entries()]
+    const rows = [...pivotByRaceToByClass(props.raceResultsData).entries()]
         .map(([code, raceClass]) =>
             <tr key={code.toString().concat("-tr")}>
                 <td key={code}>{code}</td>
@@ -130,8 +108,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
     function getRaceClassDataForSelected() {
         let res:StandardRaceClassData[] = [];
-        [...props.raceClassesByRace].forEach(([raceid,raceClasses]) =>
-        [...raceClasses].forEach(([shortName,raceClass]) => {
+        [...props.raceResultsData].forEach((race) =>
+        [...race.raceClasses].forEach(([shortName,raceClass]) => {
             if (selectedRaceClasses.includes(raceClass.id.toString())) {
                 res.push(raceClass)
             }
@@ -214,7 +192,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
         setSelectedRaceClasses([])
     }
 
-    const icon = props.raceClassesByRace.size > 0 ? 
+    const icon = props.raceResultsData.length > 0 ? 
             (props.competitionClasses.length > 0 ? "check" : "arrow") : "none"
 
     return (
@@ -224,8 +202,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
         <p><strong>Standard:</strong> replicate the classes from your results software file. Only supported for single events.
         </p>
         <CompetitionClassPresetsStandard
-            raceClassesByRace={props.raceClassesByRace}
-            raceClassesByClass={pivotByRaceToByClass(props.raceClassesByRace)}
+            raceResultsData={props.raceResultsData}
+            raceClassesByClass={pivotByRaceToByClass(props.raceResultsData)}
             setCompetitionClasses={props.setCompetitionClasses}
         />
         </Col>
@@ -234,8 +212,8 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
         <p><strong>Custom Templates:</strong> pre-defined class scoring setups for your events and series (requests are welcome!)
         </p>
         <CompetitionClassPresetsCustom 
-            raceClassesByRace={props.raceClassesByRace}
-            raceClassesByClass={pivotByRaceToByClass(props.raceClassesByRace)}
+            raceResultsData={props.raceResultsData}
+            raceClassesByClass={pivotByRaceToByClass(props.raceResultsData)}
             setCompetitionClasses={props.setCompetitionClasses}
         />
         </Col>
@@ -246,12 +224,12 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             onClick={() => setAdvancedOpen(!advancedOpen)}
             variant="outline-secondary"
             size="sm"
-            disabled={(props.raceClassesByRace.size < 1)}
+            disabled={(props.raceResultsData.length < 1)}
             aria-controls="advanced-definition" 
             aria-expanded={advancedOpen}>Advanced Settings {advancedOpen ? <FontAwesomeIcon icon={faChevronUp}/> : <FontAwesomeIcon icon={faChevronDown}/>}</Button>
             </Col>
         
-            <Collapse in={advancedOpen && props.raceClassesByRace.size > 0}>
+            <Collapse in={advancedOpen && props.raceResultsData.length > 0}>
             <div id="advanced-definition">
                 <p>
                     <strong>Advanced:</strong> Select race classes from one or more races to combine into a single competition class. Click each button to select or de-select, then select a scoring method and click "Add Competition Class." Repeat as needed. Class names can be edited in the next section.

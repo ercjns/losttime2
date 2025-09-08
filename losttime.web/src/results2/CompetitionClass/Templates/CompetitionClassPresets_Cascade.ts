@@ -1,18 +1,18 @@
 import { Cascade_SingleSoloWorldCup } from "../Variants/Cascade_SingleSoloWorldCup";
 import { Standard_Time } from "../Variants/Standard_Time";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
-import { raceClassesByRace } from "../../Components/Compose/CompetitionClassComposer";
 import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
 import { Cascade_SingleSoloScottish1k } from "../Variants/Cascade_SingleSoloScottish1k";
 import { Cascade_SingleTeamWorldCup } from "../Variants/Cascade_SingleTeamWorldCup";
 import { Cascade_SingleSoloScoreOScottish1k } from "../Variants/Cascade_SingleSoloScoreOScottish1k";
 import { Standard_ScoreO } from "../Variants/Standard_ScoreO";
 import { Cascade_ManySoloWorldCup } from "../Variants/Cascade_ManySoloWorldCup";
+import { RaceResultsData } from "../../Components/FileLoader";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
 interface CompetitionClassPresetsProps {
-    raceClassesByRace: raceClassesByRace
+    raceResultsData: RaceResultsData[]
     raceClassesByClass: raceClassesByClass
     setCompetitionClasses: Function
 }
@@ -42,11 +42,11 @@ function getRaceDataByClassCode(raceData:CompetitionClassPresetsProps, code:stri
 }
 
 function requireExactlyOneRace(raceData:CompetitionClassPresetsProps):boolean {
-    return raceData.raceClassesByRace.size === 1;
+    return raceData.raceResultsData.length === 1;
 }
 
 function requireAtLeastTwoRaces(raceData:CompetitionClassPresetsProps):boolean {
-    return raceData.raceClassesByRace.size > 1;
+    return raceData.raceResultsData.length > 1;
 }
 
 function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {

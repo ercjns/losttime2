@@ -2,12 +2,12 @@ import { Button, Col, Row } from "react-bootstrap";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
-import { raceClassesByRace } from "./CompetitionClassComposer";
+import { RaceResultsData } from "../FileLoader";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
 interface CompetitionClassPresetsProps {
-    raceClassesByRace: raceClassesByRace
+    raceResultsData: RaceResultsData[]
     raceClassesByClass: raceClassesByClass,
     setCompetitionClasses: Function
 }
@@ -30,7 +30,7 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
             id="one-comp-class-per-race-class"
             variant="outline-primary"
             onClick={()=>onePerClassClickHandler()}
-            disabled={(props.raceClassesByRace.size !== 1)}
+            disabled={(props.raceResultsData.length !== 1)}
             >
         One Competition Class For Each Race Class</Button>
         </Col>
