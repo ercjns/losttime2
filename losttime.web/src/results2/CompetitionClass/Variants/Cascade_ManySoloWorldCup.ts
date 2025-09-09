@@ -42,12 +42,16 @@ export class Cascade_ManySoloWorldCup extends CompetitionClass {
             solos.push(new ManyRaceSoloResult(singleResults));
         });
 
-        console.log('solos:', solos.length)
         // compute series score
-        solos.forEach(this.assignSeriesPoints)
+        solos.forEach(this.assignSeriesPoints);
 
         // order by points
         solos.sort(compareManySoloHighestFirst);
+
+        // for series, remove people without points
+        // series results should not include people
+        // running NC all season
+        solos = solos.filter((x) => x.points !== undefined)
 
         // assign places
         solos.forEach(this.assignPlaces);
@@ -60,14 +64,15 @@ export class Cascade_ManySoloWorldCup extends CompetitionClass {
         let scoringResults:SingleRaceSoloResult[] = seriesSolo.raceResults.filter(isSingleRaceSoloResult)
         scoringResults.sort(compareSingleSoloPointedByPointsHighestFirst)
         const size = scoringResults.length > MAX_RACES ? MAX_RACES : scoringResults.length
-        scoringResults
+        scoringResults = scoringResults
             .slice(0,size) // only top MAX_RACES
-            .filter((r) => !(r.points===null || r.points===undefined))
+            .filter((r) => !(r.points === null || r.points === undefined));
         if (scoringResults.length === 0) {
             seriesSolo.points = undefined;
             return;
         }
-        seriesSolo.points = scoringResults.reduce((score:number, r) => score + r.points!, 0)
+        seriesSolo.points = scoringResults.reduce((score:number, r) => score + r.points!, 0);
+        return;
     }
 
     private assignPlaces(
@@ -75,20 +80,29 @@ export class Cascade_ManySoloWorldCup extends CompetitionClass {
         index:number,
         results:ManyRaceSoloResult[]
     ): void {
+        if (seriesSolo.points === undefined) {
+            return;
+        }
         if (index === 0) {
-            seriesSolo.place = 1
+            seriesSolo.place = 1;
+            return;
         } else {
             if (compareManySoloHighestFirst(seriesSolo, results[index-1]) === 0) {
                 seriesSolo.place = results[index - 1].place;
+                return;
             } else {
                 seriesSolo.place = index + 1;
+                return;
             }
         }
     }
 }
 
 function compareManySoloHighestFirst(a:ManyRaceSoloResult, b:ManyRaceSoloResult) {
-    if (a.points && b.points) {
+    // Zero is a falsy value, but zero is a valid score! Check explicitly for undefined.
+    // Do NOT simply check for existence `if (a.points)` returns false when a.points === 0.
+    // But a score of zero MUST rank ahead of a score of undefined or things break.
+    if (a.points !== undefined && b.points !== undefined) {
         if (a.points !== b.points) {
             return b.points - a.points;
         }
@@ -109,9 +123,9 @@ function compareManySoloHighestFirst(a:ManyRaceSoloResult, b:ManyRaceSoloResult)
         else if (bScores[minScores+1]) {return 1}
         else {return 0}
     }
-    if (a.points) {
+    if (a.points !== undefined) {
         return -1;
-    } else if (b.points) {
+    } else if (b.points !== undefined) {
         return 1;
     } else {
         return 0;

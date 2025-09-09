@@ -4,7 +4,7 @@ import { SingleRaceSoloResult } from "./SingleRaceSoloResult";
 export class ManyRaceSoloResult {
     raceResults: (SingleRaceSoloResult|undefined)[]
     person: LtPerson
-    place: number | null | undefined;
+    place?: number;
     time?: number
     points?: number
     
