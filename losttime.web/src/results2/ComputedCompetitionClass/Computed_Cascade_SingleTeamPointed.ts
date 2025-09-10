@@ -132,7 +132,7 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         const PTS = new HtmlColumn(
             "Points",
             this.getPoints,
-            "text-right"
+            ()=>"text-right"
         )
         const NAME = new HtmlColumn(
             "Name",

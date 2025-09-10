@@ -71,6 +71,11 @@ export class Cascade_ManySoloWorldCup extends CompetitionClass {
             seriesSolo.points = undefined;
             return;
         }
+        // Set is contributing flag
+        scoringResults.forEach((x) => {
+            const contributingIndex = seriesSolo.resultsSummary.findIndex((y)=>y.isContributing===false && x.points ===y.points);
+            seriesSolo.resultsSummary[contributingIndex].isContributing = true;
+        });
         seriesSolo.points = scoringResults.reduce((score:number, r) => score + r.points!, 0);
         return;
     }
@@ -107,6 +112,8 @@ function compareManySoloHighestFirst(a:ManyRaceSoloResult, b:ManyRaceSoloResult)
             return b.points - a.points;
         }
         // points are tied, look at each score best to worst (does not care about MAX_RACES)
+        // TODO: this is missing the case where double 0 should rank above single 0.
+        // It's treating those as equals. What about other similar cases?
         const aScores:SingleRaceSoloResult[] = a.raceResults.filter(isSingleRaceSoloResult)
             .filter((x) => x.points !== undefined)
             .sort((c,d) => (d.points! - c.points!))

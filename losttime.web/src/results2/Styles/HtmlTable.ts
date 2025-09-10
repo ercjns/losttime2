@@ -36,7 +36,7 @@ export class HtmlTable {
         for (const r of this.data) {
             const trdata = document.createElement("tr");
             this.columns.forEach((col:HtmlColumn) => {
-                trdata.appendChild(_docElement("td", col.renderer(r), col.classNames))
+                trdata.appendChild(_docElement("td", col.renderer(r), col.classNames ? col.classNames(r) : undefined))
             })
             tbody.appendChild(trdata)
         }

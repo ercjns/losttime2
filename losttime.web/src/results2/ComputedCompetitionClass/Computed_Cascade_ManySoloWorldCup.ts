@@ -32,15 +32,36 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
 
     private getEventPoints = (eventNumber:number) => {
         return (r:ManyRaceSoloResult):string => {
-            if (r.raceResults[eventNumber] === undefined || r.raceResults[eventNumber] === null) {
+            if (r.resultsSummary[eventNumber].hasResult === false) {
                 return "";
-            } else if (r.raceResults[eventNumber]!.points === undefined) {
+            } else if (r.resultsSummary[eventNumber].points === undefined) {
                 return "";
             } else {
-                return r.raceResults[eventNumber]!.points!.toString();
+                return r.resultsSummary[eventNumber].points!.toString()
             }
         }
     }
+
+    private getSeasonDecorators = (eventNumber:number) => {
+        return (r:ManyRaceSoloResult):string|undefined => {
+            let res = "";
+            if (r.resultsSummary[eventNumber].hasResult === false) {
+                return undefined
+            } else {
+                if (r.resultsSummary[eventNumber].isContributing === true) {
+                    res += "season-contributing "
+                } 
+                if (r.resultsSummary[eventNumber].place === 1) {
+                    res += "season1 "
+                } else if (r.resultsSummary[eventNumber].place === 2) {
+                    res += "season2 "
+                } else if (r.resultsSummary[eventNumber].place === 3) {
+                    res += "season3 "
+                }
+                return res;
+            }
+        }
+    };
 
     render_txt():string {
         let doc = "";
@@ -99,22 +120,28 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
 
         const PL = new HtmlColumn(
             "Place",
-            ()=>"0"
-        )
-        const PTS = new HtmlColumn(
-            "Points",
-            ()=>"0",
-            "text-right"
+            ManyRaceSoloResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            ()=>"Name"
+            ManyRaceSoloResult.getNameClub
         )
-        const FINISH = new HtmlColumn(
-            "Finish",
-            ()=>"finish"
+        let RaceColumns:HtmlColumn[] = [];
+        for (let i = 0; i < this.totalEvents; i++) {
+            const COL = new HtmlColumn(
+                '#'.concat((i+1).toString()),
+                this.getEventPoints(i),
+                this.getSeasonDecorators(i)
+            )
+            RaceColumns.push(COL)
+        }
+        const PTS = new HtmlColumn(
+            "Points",
+            ManyRaceSoloResult.getPoints,
+            ()=>"text-right"
         )
-        const table = new HtmlTable([PL,PTS,NAME,FINISH],this,[]).doc;
+
+        const table = new HtmlTable([PL,NAME,...RaceColumns,PTS],this,this.results).doc;
         doc.appendChild(table);
         return this.stringify_html(doc);
     }

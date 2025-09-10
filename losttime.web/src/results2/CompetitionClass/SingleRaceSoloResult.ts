@@ -5,7 +5,7 @@ import { LtResult } from "../../shared/orienteeringtypes/LtResult";
 export class SingleRaceSoloResult {
     person: LtPerson
     time: number; // TODO: HANDLE UNDEFINED TIME??
-    place: number | null | undefined;
+    place?: number;
     codeChecking: CodeCheckingStatus;
     competitive: CompetitiveStatus;
     points?: number

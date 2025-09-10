@@ -66,10 +66,10 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
     ): void {
         // no place for NC/DSQ/SPW/
         if (item.competitive !== CompetitiveStatus.COMP) {
-            item.place = null;
+            item.place = undefined;
         // no place for MSP/DNF/UNK 
         } else if (item.codeChecking !== CodeCheckingStatus.FIN) {
-            item.place = null;
+            item.place = undefined;
         // COMP and FIN
         } else {
             if (index === 0) {

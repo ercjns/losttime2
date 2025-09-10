@@ -17,7 +17,10 @@ export class Cascade_WordpressHtml extends RenderStyleWrapper {
     }
 
     private beginDoc(): string {
-        return `<div class="LostTimeContent">`;
+      let doc = ""
+      doc += `<div class="LostTimeContent">`;
+      doc += `<style>.season1{ color: Red;} .season2{ color: Crimson;} .season3{ color: FireBrick;} .season-contributing{ text-decoration: underline;}</style>`
+      return doc;
     }
 
     private menuContent(): string {

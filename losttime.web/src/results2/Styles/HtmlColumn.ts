@@ -2,12 +2,12 @@ export class HtmlColumn {
 
     header: string
     renderer: Function
-    classNames?: string
+    classNames?: Function
 
     constructor(
         header: string,
         renderer: Function,
-        classNames?: string
+        classNames?: Function
     ) {
         this.header = header
         this.renderer = renderer
