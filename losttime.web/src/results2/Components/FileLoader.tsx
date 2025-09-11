@@ -1,11 +1,11 @@
 import { XMLParser } from "fast-xml-parser";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { parse as PapaParse, RECORD_SEP, UNIT_SEP, ParseResult, ParseLocalConfig, LocalFile } from "papaparse"
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult, IofXml3ToLtResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { Button, Col, Row, Table } from "react-bootstrap";
+import { Alert, Button, Col, Row, Table } from "react-bootstrap";
 import { WizardSectionTitle } from "../../shared/WizardSectionTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faRotateLeft, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -94,6 +94,8 @@ function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:File
 
 export function FileLoader(props: FileLoaderProps) {
 
+    const [fileLoaderAlert, setFileLoaderAlert] = useState({isVisible:false, body:""})
+
     function handleResultFileUp(id:Guid) {
         const idx = props.raceResultsData.findIndex((x) => x.id === id)
         const swapWith = idx - 1;
@@ -127,6 +129,7 @@ export function FileLoader(props: FileLoaderProps) {
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         acceptedFiles.forEach((file) => {
+            setFileLoaderAlert({isVisible:false, body:""});
             console.log(`got ${file.name}`);
             const reader = new FileReader()
 
@@ -142,22 +145,45 @@ export function FileLoader(props: FileLoaderProps) {
                     const resultsObj = parser.parse(reader.result as string);
     
                     const race_id = Guid.create();
+
+                    if (!resultsObj.ResultList) {
+                        setFileLoaderAlert({isVisible:true, body:"No ResultsList in this xml file."})
+                        return;
+                    }
+
+                    if (!resultsObj.ResultList.Event) {
+                        setFileLoaderAlert({isVisible:true, body:"No Event in this ResultList xml file."})
+                        return;
+                    }
+
                     const race_name = resultsObj.ResultList.Event.Name
-    
-                    const raceClasses: StandardRaceClassData[] = resultsObj.ResultList.ClassResult.map((el: ClassResult) =>
+
+                    if (resultsObj.ResultList.ClassResult === undefined) {
+                        setFileLoaderAlert({isVisible:true, body:"No ClassResult object in this ResultList xml file."})
+                        return;
+                    }
+                    
+                    // uses [possibly-not-an-array].flat() to ensure we have an array here so we can map()
+                    const raceClasses: StandardRaceClassData[] = [resultsObj.ResultList.ClassResult].flat().map((el: ClassResult) =>
                         new StandardRaceClassData(
                             { id: race_id, name: race_name},
-                            new LtRaceClass(el.Class.Name, el.Class.ShortName),
+                            new LtRaceClass(el.Class.Name, el.Class.ShortName ?? el.Class.Name),
                             [el.PersonResult].flat().map(IofXml3ToLtResult),
                             el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
                         )
                     )
     
                     let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
-                    raceClasses.forEach((el) =>
+                    raceClasses.forEach((el) => {
                         // without toString() here, a ShortName of 1 ends up as an
                         // integer type key in the map, causing things to break later.
-                        raceClassesMap.set(el.class.code.toString(), el))
+                        if (el.class.code === undefined) {
+                            // pull code / ShortName might not exist if this is splits by course. Fallback to name.
+                            return raceClassesMap.set(el.class.name.toString(), el)
+                        }
+                        return raceClassesMap.set(el.class.code.toString(), el)
+                    });
+                        
 
                     const newRaceResultsData:RaceResultsData = {
                         id: race_id,
@@ -198,7 +224,7 @@ export function FileLoader(props: FileLoaderProps) {
         return <tr key={x.id.toString()}>
             <td>{idx+1}</td>
             <td>{x.name}</td>
-            <td>{x.filename}</td>
+            <td style={{wordBreak:"break-all"}}>{x.filename}</td>
             <td>{classes}</td>
             <td valign="middle">
                 <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileUp(x.id)} title="move up"><FontAwesomeIcon icon={faArrowUp}/></Button>&nbsp;
@@ -215,6 +241,10 @@ export function FileLoader(props: FileLoaderProps) {
             <WizardSectionTitle title="Load Results File(s)" showLine={false} icon={icon}/>
             
             <Col md={12} lg={4}>
+            <Alert variant="danger" show={fileLoaderAlert.isVisible} onClose={() => setFileLoaderAlert({isVisible:false, body:""})} dismissible>
+                <Alert.Heading as='h5'>File not loaded.</Alert.Heading>
+                <p style={{marginBottom:'0'}}>{fileLoaderAlert.body}</p>
+            </Alert>
             <p>Add Orienteering Results or Splits files in the <strong>IOF XML v3</strong> format.<br/>Add ScoreO results from Sport Software OE Score in <strong>OESco0012 csv</strong> format.</p>
             <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
                 <input id="dz-file-input" {...getInputProps()} />
