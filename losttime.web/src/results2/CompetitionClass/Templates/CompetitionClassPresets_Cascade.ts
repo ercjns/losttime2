@@ -8,6 +8,8 @@ import { Cascade_SingleSoloScoreOScottish1k } from "../Variants/Cascade_SingleSo
 import { Standard_ScoreO } from "../Variants/Standard_ScoreO";
 import { Cascade_ManySoloWorldCup } from "../Variants/Cascade_ManySoloWorldCup";
 import { RaceResultsData } from "../../Components/FileLoader";
+import { LtRaceClass } from "../../../shared/orienteeringtypes/LtRaceClass";
+import { Guid } from "guid-typescript";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
@@ -36,6 +38,15 @@ function getRaceDataByClassCode(raceData:CompetitionClassPresetsProps, code:stri
         let validClassData:StandardRaceClassData[] = []
         classData.forEach((x) => {
             if (x !== undefined) {validClassData.push(x)}
+            else {
+                // no class data for this class this race, add a placeholder
+                validClassData.push(new StandardRaceClassData(
+                    {id:Guid.create(), name:'Placeholder'},
+                    new LtRaceClass(code, code),
+                    []
+                    )
+                )
+            }
         })
         return validClassData
     }

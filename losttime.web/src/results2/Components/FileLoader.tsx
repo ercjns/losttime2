@@ -8,7 +8,7 @@ import { ClassResult, IofXml3ToLtResult } from "../../shared/orienteeringtypes/I
 import { Alert, Button, Col, Row, Table } from "react-bootstrap";
 import { WizardSectionTitle } from "../../shared/WizardSectionTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp, faRotateLeft, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faPlus, faRotateLeft, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { OESco0012, OEScoCsvToLtScoreOResult } from "../../shared/orienteeringtypes/OESco0012";
 import { LtRaceClass } from "../../shared/orienteeringtypes/LtRaceClass";
 import { LtCourse } from "../../shared/orienteeringtypes/LtCourse";
@@ -31,6 +31,7 @@ const baseStyle = {
     display: 'flex',
     flexDirection: 'column' as 'column', // hack fix https://github.com/cssinjs/jss/issues/1344
     alignItems: 'center',
+    marginBottom: '1rem',
     padding: '20px',
     borderWidth: 3,
     borderRadius: 20,
@@ -127,6 +128,15 @@ export function FileLoader(props: FileLoaderProps) {
         props.setCompetitionClasses([]);
     }
 
+    function addPlaceholderFileClick() {
+        props.setRaceResultsData([...props.raceResultsData, {
+            id: Guid.create(),
+            name: 'placeholder',
+            filename: 'placeholder',
+            raceClasses: new Map()
+        }])
+    }
+
     const onDrop = useCallback((acceptedFiles: File[]) => {
         acceptedFiles.forEach((file) => {
             setFileLoaderAlert({isVisible:false, body:""});
@@ -158,20 +168,19 @@ export function FileLoader(props: FileLoaderProps) {
 
                     const race_name = resultsObj.ResultList.Event.Name
 
-                    if (resultsObj.ResultList.ClassResult === undefined) {
-                        setFileLoaderAlert({isVisible:true, body:"No ClassResult object in this ResultList xml file."})
-                        return;
-                    }
-                    
-                    // uses [possibly-not-an-array].flat() to ensure we have an array here so we can map()
-                    const raceClasses: StandardRaceClassData[] = [resultsObj.ResultList.ClassResult].flat().map((el: ClassResult) =>
-                        new StandardRaceClassData(
-                            { id: race_id, name: race_name},
-                            new LtRaceClass(el.Class.Name, el.Class.ShortName ?? el.Class.Name),
-                            [el.PersonResult].flat().map(IofXml3ToLtResult),
-                            el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+                    // init empty - allows for files with no results
+                    let raceClasses: StandardRaceClassData[] = []
+                    if (resultsObj.ResultList.ClassResult !== undefined) {
+                        // uses [possibly-not-an-array].flat() to ensure we have an array here so we can map()
+                        raceClasses = [resultsObj.ResultList.ClassResult].flat().map((el: ClassResult) =>
+                            new StandardRaceClassData(
+                                { id: race_id, name: race_name},
+                                new LtRaceClass(el.Class.Name, el.Class.ShortName ?? el.Class.Name),
+                                [el.PersonResult].flat().map(IofXml3ToLtResult),
+                                el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+                            )
                         )
-                    )
+                    }
     
                     let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
                     raceClasses.forEach((el) => {
@@ -254,10 +263,23 @@ export function FileLoader(props: FileLoaderProps) {
                         <p>Drag and drop files here, or click to open a file browser and select files</p>
                 }
             </div>
+            <Button onClick={()=>addPlaceholderFileClick()}
+                variant="outline-secondary">
+                <FontAwesomeIcon icon={faPlus}/> Add a placeholder file
+            </Button>
             </Col>
 
             <Col md={12} lg={8}>
-            <p><strong>{loadedFileRows.length.toString()}</strong> Loaded file{`${loadedFileRows.length === 1 ? "" : "s"}`}.</p>
+            <p><strong>{loadedFileRows.length.toString()}</strong> Loaded file{`${loadedFileRows.length === 1 ? "" : "s"}`}.
+            &nbsp;
+            {(props.raceResultsData.length > 0 ? 
+            <Button onClick={()=>removeFilesClick()}
+                variant="outline-danger"
+                disabled={(props.raceResultsData.length > 0 ? false : true)}>
+                <FontAwesomeIcon icon={faRotateLeft}/> Start Over - Remove all files and competition classes
+            </Button>
+            : "" )}
+            </p>
             <Table striped size="sm">
                 <thead>
                     <tr>
@@ -272,13 +294,6 @@ export function FileLoader(props: FileLoaderProps) {
                     {loadedFileRows}
                 </tbody>
             </Table>
-            {(props.raceResultsData.length > 0 ? 
-            <Button onClick={()=>removeFilesClick()}
-                variant="outline-danger"
-                disabled={(props.raceResultsData.length > 0 ? false : true)}>
-                <FontAwesomeIcon icon={faRotateLeft}/> Start Over - Remove all files and competition classes
-            </Button>
-            : "" )}
             </Col>
         </Row>
     )
