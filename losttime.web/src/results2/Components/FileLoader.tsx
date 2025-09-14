@@ -128,12 +128,25 @@ export function FileLoader(props: FileLoaderProps) {
         props.setCompetitionClasses([]);
     }
 
-    function addPlaceholderFileClick() {
+    function addPlaceholderWithClassesClick() {
+        const race_id = Guid.create()
+        const race_name = 'placeholder'
+        const knownRaceClasses = props.raceResultsData[props.raceResultsData.length-1].raceClasses
+        const newRaceClasses: Map<string,StandardRaceClassData> = new Map()
+        knownRaceClasses.forEach((v,k) => {
+            newRaceClasses.set(v.class.code.toString(), {
+                id: Guid.create(),
+                race_id: race_id,
+                race_name: race_name,
+                class: v.class,
+                results: []
+            });
+        });
         props.setRaceResultsData([...props.raceResultsData, {
-            id: Guid.create(),
-            name: 'placeholder',
-            filename: 'placeholder',
-            raceClasses: new Map()
+            id: race_id,
+            name: race_name,
+            filename: race_name,
+            raceClasses: newRaceClasses
         }])
     }
 
@@ -186,8 +199,9 @@ export function FileLoader(props: FileLoaderProps) {
                     raceClasses.forEach((el) => {
                         // without toString() here, a ShortName of 1 ends up as an
                         // integer type key in the map, causing things to break later.
+                        
+                        // code (ShortName) does not exist if this is splits by course. Fallback to class name.
                         if (el.class.code === undefined) {
-                            // pull code / ShortName might not exist if this is splits by course. Fallback to name.
                             return raceClassesMap.set(el.class.name.toString(), el)
                         }
                         return raceClassesMap.set(el.class.code.toString(), el)
@@ -263,7 +277,7 @@ export function FileLoader(props: FileLoaderProps) {
                         <p>Drag and drop files here, or click to open a file browser and select files</p>
                 }
             </div>
-            <Button onClick={()=>addPlaceholderFileClick()}
+            <Button onClick={()=>addPlaceholderWithClassesClick()}
                 variant="outline-secondary">
                 <FontAwesomeIcon icon={faPlus}/> Add a placeholder file
             </Button>
