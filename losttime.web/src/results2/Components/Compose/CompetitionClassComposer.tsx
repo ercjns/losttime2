@@ -57,6 +57,7 @@ interface CompetitionClassComposerProps {
 export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
     const [selectedRaceClasses, setSelectedRaceClasses] = useState(Array<string>())
+    const [skippedRaceClasses, setSkippedRaceClasses] = useState(Array<string>())
     const [scoringParams, setScoringParams] = useState(Results2ScoreMethod.SingleSolo_Time)
     const [advancedOpen, setAdvancedOpen] = useState(false)
 
@@ -66,6 +67,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
 
     function handleRaceClassClick(e:React.ChangeEvent<HTMLInputElement>) {
         const updated:string[] = selectedRaceClasses.slice();
+        const skippedUpdated:string[] = skippedRaceClasses.slice();
         if (e.target.checked) {
             updated.push(e.target.value)
         } else {
@@ -73,12 +75,29 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
             if (indx > -1) {
                 updated.splice(indx,1)
             }
+            const skippedIndx = skippedUpdated.indexOf(e.target.value);
+            if (skippedIndx > -1) {
+                skippedUpdated.splice(skippedIndx, 1);
+                setSkippedRaceClasses(skippedUpdated);
+            }
         }
         setSelectedRaceClasses(updated);
     }
 
-    function makeTableDataForClass(
-        racesInClass:Array<StandardRaceClassData|undefined>) {
+    function handleRaceClassSkipClick(e:React.ChangeEvent<HTMLInputElement>) {
+        const updated:string[] = skippedRaceClasses.slice();
+        if (e.target.checked) {
+            updated.push(e.target.value);
+        } else {
+            const indx = updated.indexOf(e.target.value);
+            if (indx > -1) {
+                updated.splice(indx,1);
+            }
+        }
+        setSkippedRaceClasses(updated);
+    }
+
+    function makeTableDataForClass(racesInClass:Array<StandardRaceClassData|undefined>) {
         return racesInClass.map((raceClass) => {
             if (raceClass === undefined) {
                 return <td>(no results)</td>
@@ -87,8 +106,10 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
                     <SelectableRaceClass 
                         raceClass={raceClass} 
                         checked={selectedRaceClasses.includes(raceClass.id.toString())}
+                        skipChecked={skippedRaceClasses.includes(raceClass.id.toString())}
                         onChange={handleRaceClassClick}
-                        />
+                        onSkipChange={handleRaceClassSkipClick}
+                    />
                     </td>
             }
         });
@@ -111,7 +132,12 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
         [...props.raceResultsData].forEach((race) =>
         [...race.raceClasses].forEach(([shortName,raceClass]) => {
             if (selectedRaceClasses.includes(raceClass.id.toString())) {
-                res.push(raceClass)
+                res.push(new StandardRaceClassData(
+                    {id: raceClass.race_id, name: raceClass.race_name},
+                    raceClass.class,
+                    skippedRaceClasses.includes(raceClass.id.toString()) ? [] : raceClass.results,
+                    raceClass.course
+                ))
             }
         }));
         if (res.length === 0) {
@@ -190,6 +216,7 @@ export function CompetitionClassComposer(props:CompetitionClassComposerProps) {
         };
         // clear selection after adding class
         setSelectedRaceClasses([])
+        setSkippedRaceClasses([])
     }
 
     const icon = props.raceResultsData.length > 0 ? 
