@@ -16,7 +16,7 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
     constructor(competitionClassId:Guid, name:string, r: ManyRaceSoloResult[]) {
         super(competitionClassId, name, r);
         this.results = r
-        this.totalEvents = this.results[0].raceResults.length
+        this.totalEvents = this.results[0] ? this.results[0].raceResults.length : 0
     }
     
     render(style:RenderStyles): string {
