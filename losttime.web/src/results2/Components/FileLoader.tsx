@@ -12,6 +12,7 @@ import { faArrowDown, faArrowUp, faPlus, faRotateLeft, faTrashAlt } from "@forta
 import { OESco0012, OEScoCsvToLtScoreOResult } from "../../shared/orienteeringtypes/OESco0012";
 import { LtRaceClass } from "../../shared/orienteeringtypes/LtRaceClass";
 import { LtCourse } from "../../shared/orienteeringtypes/LtCourse";
+import { PlaceholderRaceClassAdder } from "./PlaceholderRaceClassAdder";
 
 export type RaceResultsData = {
     id:Guid,
@@ -121,6 +122,18 @@ export function FileLoader(props: FileLoaderProps) {
 
     function handleResultFileDelete(id:Guid) {
         props.setRaceResultsData([...props.raceResultsData.filter((x)=>x.id !== id)])
+    }
+
+    function handleAddClass(id:Guid, classCode:string) {
+        const indx = props.raceResultsData.findIndex((x) => x.id === id)
+        if (indx > -1) {
+            props.raceResultsData[indx].raceClasses.set(classCode, new StandardRaceClassData(
+                {id: props.raceResultsData[indx].id, name: props.raceResultsData[indx].name},
+                {name: `Placeholder`, code: classCode},
+                []
+            ));
+            props.setRaceResultsData([...props.raceResultsData])
+        }
     }
 
     function removeFilesClick() {
@@ -248,11 +261,18 @@ export function FileLoader(props: FileLoaderProps) {
             <td>{idx+1}</td>
             <td>{x.name}</td>
             <td style={{wordBreak:"break-all"}}>{x.filename}</td>
-            <td>{classes}</td>
-            <td valign="middle">
+            <td>
+                {classes}&nbsp;
+                <PlaceholderRaceClassAdder
+                    classCode=""
+                    onSave={(value:string) => handleAddClass(x.id, value)}
+                />
+            </td>
+            <td valign="middle" style={{whiteSpace:"nowrap"}}>
                 <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileUp(x.id)} title="move up"><FontAwesomeIcon icon={faArrowUp}/></Button>&nbsp;
                 <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileDown(x.id)} title="move down"><FontAwesomeIcon icon={faArrowDown}/></Button>&nbsp;
                 <Button variant='outline-danger' size='sm' onClick={()=>handleResultFileDelete(x.id)} title="remove"><FontAwesomeIcon icon={faTrashAlt}/></Button>
+                
             </td>
         </tr>
     })
