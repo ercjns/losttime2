@@ -14,8 +14,15 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
         }
     }
 
-    const tablebodyowned: any[][] = [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
-    const tablebodyrented: any[][] = [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
+    // Determine if ANY entries have a start time - if all are null, don't include the start time column.
+    const haveStartTimes = entries.filter(entry => (entry.StartTime)).length > 0
+
+    const tablebodyowned: any[][] = haveStartTimes ? 
+        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Start', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']] :
+        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
+    const tablebodyrented: any[][] = haveStartTimes ?
+        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Start', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']] :
+        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
 
     const GroupLeaders = entries.filter(entry => entry.GroupLeader === true);
 
@@ -29,13 +36,13 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
         let groupmembers = entries.filter(entry => entry.GroupId === leader.GroupId && entry.GroupLeader === false)
         ownedepunchentries.splice(ownedepunchentries.indexOf(leader) + 1, 0, ...groupmembers)
     }
-    tablebodyowned.push(...(ownedepunchentries.map(buildRegPdfRow)))
+    tablebodyowned.push(...(ownedepunchentries.map((x) => buildRegPdfRow(x,haveStartTimes))))
 
     for (let leader of rentalepunchentries.filter(entry => entry.GroupId !== null)) {
         let groupmembers = entries.filter(entry => entry.GroupId === leader.GroupId && entry.GroupLeader === false)
         rentalepunchentries.splice(rentalepunchentries.indexOf(leader) + 1, 0, ...groupmembers)
     }
-    tablebodyrented.push(...(rentalepunchentries.map(buildRegPdfRow)))
+    tablebodyrented.push(...(rentalepunchentries.map((x) => buildRegPdfRow(x,haveStartTimes))))
 
 
     function header(pageTitle: string): any {
@@ -228,7 +235,7 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
 }
 
 
-function buildRegPdfRow(entry: LtEntry): any[] {
+function buildRegPdfRow(entry: LtEntry, startTimes: boolean): any[] {
     const row = [
         // checkbox
         entry.GroupLeader === true ? {
@@ -313,8 +320,10 @@ function buildRegPdfRow(entry: LtEntry): any[] {
             // Group Leader or Solo Owned Punch
                 { text: entry.Epunch, fontSize: 11, alignment: 'right' },
 
-        // Club
-        { text: entry.Club, fontSize: 11 },
+        // Club OR Start Time
+        startTimes ?
+            { text: entry.StartTime, fontSize: 10, noWrap: true } :
+            { text: entry.Club, fontSize: 10 },
         // Phone
         { text: formatPhoneNumber(entry.Phone), fontSize: 10, noWrap: true },
         // Emergency Phone

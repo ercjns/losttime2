@@ -20,6 +20,7 @@ export class LtEntry {
     Club!: string;
     Course!: string;
     ClassId!: string;
+    StartTime!: string | null;
     NonCompetitive!: true | false;
     Sex!: "F" | "M";
     Phone!: string;
@@ -71,8 +72,9 @@ export class LtEntry {
         this.Course= '';
         this.ClassId= entry.Class;
         this.NonCompetitive= false;
-        this.Sex= entry.Sex
-        this.Phone= entry.Phone
+        this.Sex= entry.Sex;
+        this.Phone= entry.Phone;
+        this.StartTime = entry.StartTime;
         this.EmergencyPhone= entry.EmergencyPhone;
         this.CarLicense= entry.CarLicense
         this.Newcomer= (entry.Newcomer.toUpperCase() === 'TRUE') ? true:false;
