@@ -92,7 +92,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
         return
       }
   
-      const forexport = SS.fromLtEntries(this.state.entries)
+      const forExport = SS.fromLtEntries(this.state.entries)
   
       // export assigns start numbers to the LtEntry, so update state here
       this.setState({entries: this.state.entries});
@@ -111,7 +111,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
         columns: cols
       }
   
-      const csvstring:string = Papa.unparse(forexport, unparseconfig);
+      const csvstring:string = Papa.unparse(forExport, unparseconfig);
       const nowstring:string = this.nowtimestring();
       const el = document.createElement('a');
       el.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvstring);

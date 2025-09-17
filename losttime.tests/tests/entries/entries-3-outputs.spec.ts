@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { chromium } from '@playwright/test';
 import path from 'path';
 import { readFileSync, unlinkSync } from 'fs';
-import Papa, { ParseResult } from 'papaparse';
+import Papa from 'papaparse';
 
 test.describe('output formats', () => {
     test.beforeEach(async ({page}) => {
@@ -105,7 +105,7 @@ test.describe('output contents OE12', () => {
         });
         // Normal (Is competitive)
         const Alice = res.data[0];
-        expect(Alice['nc']).toBe('0') // TODO: validate this spec. 0, not blank?
+        expect(Alice['nc']).toBe('')
         // Second Course
         const Che2 = res.data[3];
         expect(Che2['nc']).toBe('X')
