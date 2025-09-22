@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
+import { addEntriesTestFile } from '../utilities/files';
+
+test.beforeEach(async ({page}) => {
+    await page.goto('/entries');
+});
 
 test('xlsx', async ({ page }) => {
     // WHEN: 
     //   a random xlsx file
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','invalid.xlsx'));
+    await addEntriesTestFile('invalid.xlsx', page);
     // THEN: 
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -21,11 +21,7 @@ test('xlsx', async ({ page }) => {
 test('xml', async ({ page }) => {
     // WHEN: 
     //   a random xml file
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','invalid.xml'));
+    await addEntriesTestFile('invalid.xml', page);
     // THEN: 
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -38,11 +34,7 @@ test('xml', async ({ page }) => {
 test('unrecognized txt', async ({ page }) => {
     // WHEN: 
     //   a random text file
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','invalid.txt'));
+    await addEntriesTestFile('invalid.txt', page);
     // THEN: 
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -55,11 +47,7 @@ test('unrecognized txt', async ({ page }) => {
 test('unrecognized csv', async ({ page }) => {
     // WHEN: 
     //   upload csv file that doesn't match an existing supported spec
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','invalid.csv'));
+    await addEntriesTestFile('invalid.csv', page);
     // THEN: 
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -74,11 +62,7 @@ test('unrecognized csv', async ({ page }) => {
 test('COC csv - empty', async ({ page }) => {
     // WHEN: 
     //   upload a COC format csv file with headers only
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','COC_HeaderOnly.csv'));
+    await addEntriesTestFile('COC_HeaderOnly.csv', page);
     // THEN: 
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -91,11 +75,7 @@ test('COC csv - empty', async ({ page }) => {
 test('COC csv - single record', async ({ page }) => {
     // WHEN:
     //   upload a COC format csv file with only one record
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','COC_1.csv'));
+    await addEntriesTestFile('COC_1.csv', page);
     // THEN:
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -120,11 +100,9 @@ test('COC csv - single record', async ({ page }) => {
 });
 
 test('WIOL csv - empty', async ({ page }) => {
-    await page.goto('/entries');
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','WIOL_HeaderOnly.csv'));
+    // WHEN:
+    //   upload a WIOL format csv file with only headers
+    await addEntriesTestFile('WIOL_HeaderOnly.csv', page);
     // THEN: 
     //   Uploaded file name is listed
     //   Uploaded file count is 1
@@ -135,13 +113,9 @@ test('WIOL csv - empty', async ({ page }) => {
 });
 
 test('WIOL csv - single record', async ({ page }) => {
-    await page.goto('/entries');
-
-    // Click Dropzone and Select File
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByRole('button', {name: "drop"}).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname,'files','WIOL_1.csv'));
+    // WHEN:
+    //   upload a WIOL format csv file with only one record
+    await addEntriesTestFile('WIOL_1.csv', page);
 
     await expect(page.getByText('Files Uploaded:')).toContainText('1');
     await expect(page.getByText('WIOL_1.csv')).toBeVisible();
@@ -166,12 +140,7 @@ test('WIOL csv - single record', async ({ page }) => {
 
 test.describe('WIOL csv variations', () => {
     test.beforeEach(async ({page}) => {
-        // upload WIOL_6.csv
-        await page.goto('/entries');
-        const fileChooserPromise = page.waitForEvent('filechooser');
-        await page.getByRole('button', {name: "drop"}).click();
-        const fileChooser = await fileChooserPromise;
-        await fileChooser.setFiles(path.join(__dirname,'files','WIOL_6.csv'));
+        await addEntriesTestFile('WIOL_6.csv', page);
     });
 
     test('summary', async ({ page }) => {

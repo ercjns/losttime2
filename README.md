@@ -23,6 +23,11 @@ For example, the conductor can be used to support live results in the following 
 1. Conductor uses automation to create a competition result html file, leveraging LostTime.Web.
 1. Conductor moves the html file to a location where it can be served.
 
+### LostTime.Tests
+
+Tests for the project. Uses Playwright, which I'm still learning.
+Using typescript to define tests to match the primary language of the web project.
+
 #### Development Notes:
 
 The development environment is WINDOWS.
@@ -38,6 +43,16 @@ run `npm install`
 run `npm start`
 
 That's it!
+
+##### Run Tests
+
+I'm using the playwright test for vscode extension and that's able to run tests locally.
+
+Likely need to npm install playwright and test dependencies for this to work. 
+The packages are in that module, so:
+
+cd to `LostTime.Tests`
+run `npm install`
 
 ##### Install - Conductor
 

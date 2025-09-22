@@ -3,29 +3,22 @@ import { chromium } from '@playwright/test';
 import path from 'path';
 import { readFileSync, unlinkSync } from 'fs';
 import Papa from 'papaparse';
+import { saveAsSuggested, addEntriesTestFile, getEntriesFilePath } from '../utilities/files';
 
 test.describe('output formats', () => {
     test.beforeEach(async ({page}) => {
-        await page.goto('http://localhost:3000/entries');
-
-        // Click Dropzone and Select File
-        const fileChooserPromise = page.waitForEvent('filechooser');
-        await page.getByRole('button', {name: "drop"}).click();
-        const fileChooser = await fileChooserPromise;
-        await fileChooser.setFiles(path.join(__dirname,'files','COC_1.csv'));
+        await page.goto('/entries');
+        await addEntriesTestFile('COC_1.csv', page)
     });
 
     test('OE11 Entry Format', async ({ page }) => {
         await page.getByRole('button', { name: 'Download OE File' }).click();
         const downloadPromise = page.waitForEvent('download');
         await page.getByRole('button', { name: 'OE11 - Regular' }).click();
-        const download = await downloadPromise;
-        const newFilePath = path.join(__dirname, 'files','temp',download.suggestedFilename());
-        await download.saveAs(newFilePath);
-        // console.log(newFilePath);
+        const newFilePath = await saveAsSuggested(downloadPromise);
 
         // make sure the file contents are what we want
-        const referenceFile = await readFileSync(path.join(__dirname, 'files','OE11_COC_1.csv'));
+        const referenceFile = await readFileSync(getEntriesFilePath('OE11_COC_1.csv'));
         const newFile = await readFileSync(newFilePath);
         expect(newFile.equals(referenceFile)).toBe(true);
 
@@ -37,13 +30,10 @@ test.describe('output formats', () => {
         await page.getByRole('button', { name: 'Download OE File' }).click();
         const downloadPromise = page.waitForEvent('download');
         await page.getByRole('button', { name: 'OE12 - Regular' }).click();
-        const download = await downloadPromise;
-        const newFilePath = path.join(__dirname, 'files','temp',download.suggestedFilename());
-        await download.saveAs(newFilePath);
-        // console.log(newFilePath);
+        const newFilePath = await saveAsSuggested(downloadPromise);
 
         // make sure the file contents are what we want
-        const referenceFile = await readFileSync(path.join(__dirname, 'files','OE12_COC_1.csv'));
+        const referenceFile = await readFileSync(getEntriesFilePath('OE12_COC_1.csv'));
         const newFile = await readFileSync(newFilePath);
         expect(newFile.equals(referenceFile)).toBe(true);
 
@@ -57,14 +47,10 @@ test.describe('output contents OE12', () => {
         const browser = await chromium.launch();
         const context = await browser.newContext();
         const page = await context.newPage();
-        await page.goto('http://localhost:3000/entries');
-
-        // Click Dropzone and Select Files
-        const fileChooserPromise = page.waitForEvent('filechooser');
-        await page.getByRole('button', {name: "drop"}).click();
-        const fileChooser = await fileChooserPromise;
-        await fileChooser.setFiles(path.join(__dirname,'files','COC_1.csv'));
-        await fileChooser.setFiles(path.join(__dirname,'files','WIOL_6.csv'));
+        
+        await page.goto('/entries');
+        await addEntriesTestFile('COC_1.csv', page);
+        await addEntriesTestFile('WIOL_6.csv', page);
 
         // Download in OE12 format
         await page.getByRole('button', { name: 'Download OE File' }).click();
