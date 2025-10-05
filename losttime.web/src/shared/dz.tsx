@@ -20,19 +20,19 @@ export class BasicDz extends Component<{parser:any, helpText:String}, {files:Fil
   baseStyle:any = {
     flex: 1,
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as 'column', // hack fix https://github.com/cssinjs/jss/issues/1344
     alignItems: 'center',
     padding: '20px',
-    borderWidth: 2,
-    borderRadius: 10,
-    borderColor: 'magenta',
-    borderStyle: 'dashed',
-    backgroundColor: 'lightgrey',
-    color: 'black',
+    borderWidth: 3,
+    borderRadius: 20,
+    borderColor: '#0d6efd',
+    borderStyle: 'dotted',
+    backgroundColor: 'white',
+    color: '#0d6efd',
     fontStyle: 'italic',
     outline: 'none',
     transition: 'border .24s ease-in-out'
-  };
+};
 
   activeStyle:any = {
     borderColor: '#2196f3'
