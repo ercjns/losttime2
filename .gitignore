@@ -166,3 +166,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Test result temp files
+losttime.tests/utilities/temp/*

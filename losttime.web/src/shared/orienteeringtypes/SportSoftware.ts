@@ -7,7 +7,7 @@ export type OeEntryCsv = {
     Surname: string | null,
     "First name": string | null
     S: string,
-    nc: "X" | 0,
+    nc: "X" | null,
     Classifier: 0,
     City: string | null,
     Short: string | null,
@@ -44,7 +44,7 @@ function convertFromLtEntry(entry:LtEntry): OeEntryCsv {
     Surname: entry.LastName,
     "First name": entry.FirstName,
     S: entry.Sex,
-    nc: entry.NonCompetitive ? "X":0,
+    nc: entry.NonCompetitive ? "X":null,
     Classifier: 0,
     City: entry.Club,
     Short: entry.ClassId,
