@@ -56,7 +56,7 @@ function handleCsvFile(results:ParseResult<any>, file:File, setFilesState:Functi
     const race_name = file.name
     
     // detect what type of file this is
-    if (results.meta.fields && results.meta.fields[0] === "OESco0012") {
+    if (results.meta.fields && results.meta.fields[0].startsWith("OESco0012")) {
         
         // get all the unique class values
         // TODO: there's probably a better way to do deep compare rather than this string mess
