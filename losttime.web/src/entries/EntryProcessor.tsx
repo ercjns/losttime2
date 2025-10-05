@@ -242,11 +242,9 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
               <Row>
 
                 <p><i>Solo participants and group leaders are counted; additional group members do not count towards total starts.</i></p>
-                <Row>
+                <Row data-testid="starts-by-class-items">
                   <p>Starts by Class:</p>
-                  <span data-testid="starts-by-class-items">
                   {counts}
-                  </span>
                 </Row>
   
               </Row>
