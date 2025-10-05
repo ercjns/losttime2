@@ -3,6 +3,7 @@ import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
 import { raceClassesByRace } from "./CompetitionClassComposer";
+import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
@@ -24,6 +25,16 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
         })
     }
 
+    function onePerClassScoreOClickHandler() {
+        props.raceClassesByClass.forEach((data, name) => {
+            if (data.length === 1 && data[0] !== undefined) {
+                props.setCompetitionClasses((current:CompetitionClass[]) =>
+                    [...current, new Standard_ScoreO(data[0]!.class.name,[data[0]!])]
+                )
+            }
+        })
+    }
+
     return <Row className="mb-2">
         <Col sm={12} md={6}>
         <Button 
@@ -32,7 +43,16 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
             onClick={()=>onePerClassClickHandler()}
             disabled={(props.raceClassesByRace.size !== 1)}
             >
-        One Competition Class For Each Race Class</Button>
+        Standard O Competition Classes</Button>
+        </Col>
+        <Col sm={12} md={6}>
+        <Button 
+            id="one-comp-class-per-race-class-score-o"
+            variant="outline-primary"
+            onClick={()=>onePerClassScoreOClickHandler()}
+            disabled={(props.raceClassesByRace.size !== 1)}
+            >
+        Score O Competition Classes</Button>
         </Col>
     </Row>
 }

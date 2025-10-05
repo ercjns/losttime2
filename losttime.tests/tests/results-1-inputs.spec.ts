@@ -46,4 +46,16 @@ test.describe("Valid results file types", () => {
         await expect(page.getByText('loaded file')).toContainText("1");
         await expect(page.getByText('ResultsByClassX3_FromOE11.xml')).toBeVisible;
     })
+
+    test('OEScore V11 csv', async({page}) => {
+        await addResultsTestFile('OEScore_V11.csv', page);
+        await expect(page.getByText('loaded file')).toContainText("1");
+        await expect(page.getByText('OEScore_V11.csv')).toBeVisible;
+    })
+
+    test('OEScore V12 csv', async({page}) => {
+        await addResultsTestFile('OEScore_V12.csv', page);
+        await expect(page.getByText('loaded file')).toContainText("1");
+        await expect(page.getByText('OEScore_V12.csv')).toBeVisible;
+    })
 })
