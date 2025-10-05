@@ -39,11 +39,11 @@ test.describe("Valid results file types", () => {
     });
 
     test('ResultList xml v3 splits', async ({page}) => {
-        await addResultsTestFile('ResultsByClassX3.xml', page);
+        await addResultsTestFile('ResultsByClassX3_FromOE11.xml', page);
         // THEN:
         //   1 Loaded file
         //   File Name displayed
         await expect(page.getByText('loaded file')).toContainText("1");
-        await expect(page.getByText('ResultsByClassX3.xml')).toBeVisible;
+        await expect(page.getByText('ResultsByClassX3_FromOE11.xml')).toBeVisible;
     })
 })

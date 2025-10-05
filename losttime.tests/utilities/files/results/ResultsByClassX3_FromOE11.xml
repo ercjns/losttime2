@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="windows-1252"?>
+ <ResultList xmlns="http://www.orienteering.org/datastandard/3.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ iofVersion="3.0"
+ createTime="2025-02-08T19:17:53.049"
+ creator="SportSoftware OE2010 (M) V.11.0">
+<Event>
+<Name>Example Event Name</Name>
+</Event>
+<ClassResult>
+<Class resultListMode="Default" sex="M">
+<Id>1</Id>
+<Name>Beginner</Name>
+<ShortName>1</ShortName>
+<Fee>
+<Name>Default</Name>
+<Amount>0.00</Amount>
+</Fee>
+</Class>
+<Course>
+<Id>9001</Id>
+<Name>1-Beginner / Elem</Name>
+<Length>1400</Length>
+<Climb>5</Climb>
+<NumberOfControls>9</NumberOfControls>
+</Course>
+<PersonResult>
+<Person sex="M">
+<Name>
+<Family>Group</Family>
+<Given>S</Given>
+</Name>
+</Person>
+<Organisation>
+<Id>99</Id>
+<Name>None</Name>
+<ShortName>None</ShortName>
+</Organisation>
+<Result raceNumber="1">
+<BibNumber>1092</BibNumber>
+<StartTime>2025-02-08T10:02:06.000</StartTime>
+<FinishTime>2025-02-08T10:26:33.000</FinishTime>
+<Time>1467</Time>
+<TimeBehind>0</TimeBehind>
+<Position>1</Position>
+<Status>OK</Status>
+<ControlCard>333447</ControlCard>
+<AssignedFee>
+<Fee type="Normal">
+<Name>Actual</Name>
+<Amount>0.00</Amount>
+</Fee>
+</AssignedFee>
+</Result>
+</PersonResult>
+</ClassResult>
+<ClassResult>
+<Class resultListMode="Default" sex="M">
+<Id>2</Id>
+<Name>Adv Beginner</Name>
+<ShortName>3</ShortName>
+<Fee>
+<Name>Default</Name>
+<Amount>0.00</Amount>
+</Fee>
+</Class>
+<Course>
+<Id>9003</Id>
+<Name>3-Adv Beg / Rookie Female</Name>
+<Length>2300</Length>
+<Climb>50</Climb>
+<NumberOfControls>10</NumberOfControls>
+</Course>
+<PersonResult>
+<Person sex="F">
+<Name>
+<Family>Dill</Family>
+<Given>Sal</Given>
+</Name>
+</Person>
+<Organisation>
+<Id>90003</Id>
+<Name>BBBB</Name>
+<ShortName>BBBB</ShortName>
+</Organisation>
+<Result raceNumber="1">
+<BibNumber>1141</BibNumber>
+<StartTime>2025-02-08T12:06:05.000</StartTime>
+<FinishTime>2025-02-08T12:59:30.000</FinishTime>
+<Time>3205</Time>
+<TimeBehind>0</TimeBehind>
+<Position>1</Position>
+<Status>OK</Status>
+<ControlCard>222333</ControlCard>
+<AssignedFee>
+<Fee type="Normal">
+<Name>Actual</Name>
+<Amount>0.00</Amount>
+</Fee>
+</AssignedFee>
+</Result>
+</PersonResult>
+<PersonResult>
+<Person sex="M">
+<Name>
+<Family>Goff</Family>
+<Given>Kris</Given>
+</Name>
+</Person>
+<Organisation>
+<Id>1</Id>
+<Name>COC</Name>
+<ShortName>COC</ShortName>
+</Organisation>
+<Result raceNumber="1">
+<BibNumber>1061</BibNumber>
+<StartTime>2025-02-08T10:48:09.000</StartTime>
+<FinishTime>2025-02-08T11:48:18.000</FinishTime>
+<Time>3609</Time>
+<TimeBehind>404</TimeBehind>
+<Position>2</Position>
+<Status>OK</Status>
+<ControlCard>221334</ControlCard>
+<AssignedFee>
+<Fee type="Normal">
+<Name>Actual</Name>
+<Amount>0.00</Amount>
+</Fee>
+</AssignedFee>
+</Result>
+</PersonResult>
+<PersonResult>
+<Person sex="F">
+<Name>
+<Family>Rees</Family>
+<Given>Penelope</Given>
+</Name>
+</Person>
+<Organisation>
+<Id>99</Id>
+<Name>None</Name>
+<ShortName>None</ShortName>
+</Organisation>
+<Result raceNumber="1">
+<BibNumber>1050</BibNumber>
+<StartTime>2025-02-08T11:44:09.000</StartTime>
+<FinishTime>2025-02-08T12:57:04.000</FinishTime>
+<Time>4375</Time>
+<TimeBehind>1170</TimeBehind>
+<Position>3</Position>
+<Status>OK</Status>
+<ControlCard>8441234</ControlCard>
+<AssignedFee>
+<Fee type="Normal">
+<Name>Actual</Name>
+<Amount>0.00</Amount>
+</Fee>
+</AssignedFee>
+</Result>
+</PersonResult>
+</ClassResult>
+</ResultList>
