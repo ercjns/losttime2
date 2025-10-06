@@ -1,7 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
-import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { parse as PapaParse, RECORD_SEP, UNIT_SEP, ParseResult, ParseLocalConfig, LocalFile } from "papaparse"
+import { useState } from "react";
+import { parse as PapaParse, RECORD_SEP, UNIT_SEP, ParseResult } from "papaparse"
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult, IofXml3ToLtResult } from "../../shared/orienteeringtypes/IofResultXml";
@@ -12,6 +11,7 @@ import { faArrowDown, faArrowUp, faPlus, faRotateLeft, faTrashAlt } from "@forta
 import { OESco0012, OEScoCsvToLtScoreOResult } from "../../shared/orienteeringtypes/OESco0012";
 import { LtRaceClass } from "../../shared/orienteeringtypes/LtRaceClass";
 import { LtCourse } from "../../shared/orienteeringtypes/LtCourse";
+import { BasicDz } from "../../shared/dz";
 import { PlaceholderRaceClassAdder } from "./PlaceholderRaceClassAdder";
 
 export type RaceResultsData = {
@@ -27,38 +27,41 @@ interface FileLoaderProps {
     setCompetitionClasses: Function;
 }
 
-const baseStyle = {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column' as 'column', // hack fix https://github.com/cssinjs/jss/issues/1344
-    alignItems: 'center',
-    marginBottom: '1rem',
-    padding: '20px',
-    borderWidth: 3,
-    borderRadius: 20,
-    borderColor: '#0d6efd',
-    borderStyle: 'dotted',
-    backgroundColor: 'white',
-    color: '#0d6efd',
-    fontStyle: 'italic',
-    outline: 'none',
-    transition: 'border .24s ease-in-out'
-};
+interface loadedFile {
+    filename: string
+    data: StandardRaceClassData[]
+    race_id: Guid
+}
 
-function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:FileLoaderProps) {
+function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], race_id:Guid, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
+    setFilesState((existing:loadedFile[]) => 
+        [...existing, {filename:file.name, data:raceClasses, race_id: race_id}])
+
+    let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
+    raceClasses.forEach((el) =>
+    // without toString() here, a ShortName of 1 ends up as an
+    // integer type key in the map, causing things to break later.
+    raceClassesMap.set(el.class.code.toString(), el))
+    
+    let newRaceResultsData:RaceResultsData = {
+        id: race_id,
+        name: file.name, //FIX THIS, PULL FROM A raceClass??
+        filename: file.name,
+        raceClasses: raceClassesMap
+    }
+
+    fileLoaderProps.setRaceResultsData((existing: RaceResultsData[]) => {
+        return [...existing,newRaceResultsData]
+    })
+}
+
+function handleCsvFile(results:ParseResult<any>, file:File, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
     const race_id = Guid.create();
     const race_name = file.name
     
     // detect what type of file this is
-    if (results.meta.fields && results.meta.fields[0] === "OESco0012") {
+    if (results.meta.fields && results.meta.fields[0].startsWith("OESco0012")) {
         
-        let newRaceResultsData:RaceResultsData = {
-            id: race_id,
-            name: race_name,
-            filename: file.name,
-            raceClasses: new Map()
-        }
-
         // get all the unique class values
         // TODO: there's probably a better way to do deep compare rather than this string mess
         //       or I could just not care and look only at codes and join back to the first 
@@ -78,20 +81,36 @@ function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:File
                 classInfo,
                 results.data.filter((x:OESco0012) => x.Short===classInfo.code).map(OEScoCsvToLtScoreOResult)
         ))
-
-        raceClasses.forEach((el) =>
-            // without toString() here, a ShortName of 1 ends up as an
-            // integer type key in the map, causing things to break later.
-            newRaceResultsData.raceClasses.set(el.class.code.toString(), el)
-        )
-
-        fileLoaderProps.setRaceResultsData((existing: RaceResultsData[]) => {
-            return [...existing,newRaceResultsData]
-        })
+        setFilesAndRaceClasses(file, raceClasses, race_id, setFilesState, fileLoaderProps);
     } else {
         alert("Sorry, don't support generic CSV files yet. Only OEScore csv files.")
         return
     }
+}
+
+function handleXmlfile(file:File, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
+    const parser = new XMLParser({
+        ignoreAttributes: false,
+    });
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        if ((e) && (e.target) && (e.target.result)) {
+            const resultsObj = parser.parse(e.target.result as string);
+            const race_id = Guid.create();
+            const race_name = resultsObj.ResultList.Event.Name
+
+            const raceClasses: StandardRaceClassData[] = resultsObj.ResultList.ClassResult.map((el: ClassResult) =>
+            new StandardRaceClassData(
+                { id: race_id, name: race_name },
+                new LtRaceClass(el.Class.Name, el.Class.ShortName),
+                [el.PersonResult].flat().map(IofXml3ToLtResult),
+                el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+                )
+            )
+            setFilesAndRaceClasses(file, raceClasses, race_id, setFilesState, fileLoaderProps);
+        }
+    }
+    reader.readAsText(file)
 }
 
 export function FileLoader(props: FileLoaderProps) {
@@ -163,95 +182,7 @@ export function FileLoader(props: FileLoaderProps) {
         }])
     }
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        acceptedFiles.forEach((file) => {
-            setFileLoaderAlert({isVisible:false, body:""});
-            console.log(`got ${file.name}`);
-            const reader = new FileReader()
 
-            reader.onabort = () => console.log("file reading aborted");
-            reader.onerror = () => console.log("file reader error");
-            reader.onload = () => {
-
-                if (file.name.slice(-4) === ".xml") {
-                    const parserOptions: any = {
-                        ignoreAttributes: false,
-                    }
-                    const parser = new XMLParser(parserOptions);
-                    const resultsObj = parser.parse(reader.result as string);
-    
-                    const race_id = Guid.create();
-
-                    if (!resultsObj.ResultList) {
-                        setFileLoaderAlert({isVisible:true, body:"No ResultsList in this xml file."})
-                        return;
-                    }
-
-                    if (!resultsObj.ResultList.Event) {
-                        setFileLoaderAlert({isVisible:true, body:"No Event in this ResultList xml file."})
-                        return;
-                    }
-
-                    const race_name = resultsObj.ResultList.Event.Name
-
-                    // init empty - allows for files with no results
-                    let raceClasses: StandardRaceClassData[] = []
-                    if (resultsObj.ResultList.ClassResult !== undefined) {
-                        // uses [possibly-not-an-array].flat() to ensure we have an array here so we can map()
-                        raceClasses = [resultsObj.ResultList.ClassResult].flat().map((el: ClassResult) =>
-                            new StandardRaceClassData(
-                                { id: race_id, name: race_name},
-                                new LtRaceClass(el.Class.Name, el.Class.ShortName ?? el.Class.Name),
-                                [el.PersonResult].flat().map(IofXml3ToLtResult),
-                                el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
-                            )
-                        )
-                    }
-    
-                    let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
-                    raceClasses.forEach((el) => {
-                        // without toString() here, a ShortName of 1 ends up as an
-                        // integer type key in the map, causing things to break later.
-                        
-                        // code (ShortName) does not exist if this is splits by course. Fallback to class name.
-                        if (el.class.code === undefined) {
-                            return raceClassesMap.set(el.class.name.toString(), el)
-                        }
-                        return raceClassesMap.set(el.class.code.toString(), el)
-                    });
-                        
-
-                    const newRaceResultsData:RaceResultsData = {
-                        id: race_id,
-                        name: race_name,
-                        filename: file.name,
-                        raceClasses: raceClassesMap
-                    }
-    
-                    props.setRaceResultsData((existing: RaceResultsData[]) => {
-                        return [...existing,newRaceResultsData]
-                    })
-                    
-                } else if (file.name.slice(-4) === ".csv") {
-                    const config:ParseLocalConfig<any, LocalFile> = {
-                        header: true,
-                        dynamicTyping: false,
-                        complete: (r) => handleCsvFile(r,file,props),
-                        skipEmptyLines: "greedy",
-                        transform: (value:any, col:any) => {return(value.replace(/\0/g, '').trim())},
-                        delimitersToGuess: [',', '\t', '|', ';', RECORD_SEP, UNIT_SEP]
-                    }
-                    PapaParse<any>(file, config);
-                } else {
-                    alert(`Sorry, ${file.name} is not a supported file type.`);
-                    console.log(`${file.name} is not supported.`);
-                }
-            }
-            reader.readAsText(file);
-        })
-    }, [props]);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
     const loadedFileRows = props.raceResultsData.map((x, idx) => {
         let classes = "";
@@ -277,6 +208,24 @@ export function FileLoader(props: FileLoaderProps) {
         </tr>
     })
 
+    function resultsFileParser(file:File) {
+        if (file.name.slice(-4) === ".xml") {
+            handleXmlfile(file, setFilesAndRaceClasses, props)
+        } else if (file.name.slice(-4) === ".csv") {
+            PapaParse<any>(file, {
+                header: true,
+                dynamicTyping: false,
+                complete: (r) => handleCsvFile(r, file, setFilesAndRaceClasses, props),
+                skipEmptyLines: "greedy",
+                transform: (value:any, col:any) => {return(value.replace(/\0/g, '').trim())},
+                delimitersToGuess: [',', '\t', '|', ';', RECORD_SEP, UNIT_SEP]
+            });
+        } else {
+            alert(`Sorry, ${file.name} is not a supported file type.`);
+            console.log(`${file.name} is not supported.`);
+        }
+    }
+
     const icon = props.raceResultsData.length > 0 ? "check" : "arrow"
 
     return (
@@ -289,14 +238,8 @@ export function FileLoader(props: FileLoaderProps) {
                 <p style={{marginBottom:'0'}}>{fileLoaderAlert.body}</p>
             </Alert>
             <p>Add Orienteering Results or Splits files in the <strong>IOF XML v3</strong> format.<br/>Add ScoreO results from Sport Software OE Score in <strong>OESco0012 csv</strong> format.</p>
-            <div {...getRootProps({ className: 'dropzone', style: baseStyle })}>
-                <input id="dz-file-input" {...getInputProps()} />
-                {
-                    isDragActive ?
-                        <p>Drop files here...</p> :
-                        <p>Drag and drop files here, or click to open a file browser and select files</p>
-                }
-            </div>
+
+            <BasicDz parser={resultsFileParser} helpText="Drag and drop files here, or click to open a file browser."/>
             <Button onClick={()=>addPlaceholderWithClassesClick()}
                 variant="outline-secondary">
                 <FontAwesomeIcon icon={faPlus}/> Add a placeholder file
