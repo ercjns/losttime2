@@ -1,4 +1,4 @@
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../shared/orienteeringtypes/RaceStatuses";
 import { LtPerson } from "../../shared/orienteeringtypes/LtPerson";
 import { LtResult } from "../../shared/orienteeringtypes/LtResult";
 

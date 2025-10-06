@@ -1,18 +1,11 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { Computed_Standard_Time } from "../../ComputedCompetitionClass/Computed_Standard_Time";
 import { compareSingleSoloByTime, SingleRaceSoloResult } from "../SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../shared/orienteeringtypes/RaceStatuses";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 
 export class Standard_Time extends CompetitionClass {
-    constructor(
-        name: string,
-        contributingResults: StandardRaceClassData[]
-    ) {
-        super(name, contributingResults)
-    }
 
     competitionClassType = CompetitionClassType.SingleEventSolo
     scoreMethod = Results2ScoreMethod.SingleSolo_Time

@@ -1,4 +1,4 @@
-import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../shared/orienteeringtypes/RaceStatuses";
 import { LtScoreOResult } from "../../../shared/orienteeringtypes/LtScoreOResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 import { Computed_Cascade_SingleSoloScoreOScottish1k } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloScoreOScottish1k";

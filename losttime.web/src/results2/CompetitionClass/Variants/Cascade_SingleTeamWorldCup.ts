@@ -3,9 +3,9 @@ import { CompetitionClass } from "../CompetitionClass";
 import { SingleRaceTeamResult } from "../SingleRaceTeamResult";
 import { compareSingleSoloPointedByPointsHighestFirst, SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { Cascade_SingleSoloWorldCup } from "./Cascade_SingleSoloWorldCup";
-import { CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { CompetitiveStatus } from "../../../shared/orienteeringtypes/RaceStatuses";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
-import _ClubCodes from '../../../results/competitionpresets/ClubCodes.json'
+import { getClubNameForClubCode } from "../../../shared/ClubCodes";
 
 export class Cascade_SingleTeamWorldCup extends CompetitionClass {
 
@@ -36,7 +36,7 @@ export class Cascade_SingleTeamWorldCup extends CompetitionClass {
             const members = solos.filter((x) => x.person.clubCode === t 
                 && x.competitive !== CompetitiveStatus.NC);
             if (members.length > 1) {
-                teams.push(new SingleRaceTeamResult(members, getClubNameString(t), t))
+                teams.push(new SingleRaceTeamResult(members, getClubNameForClubCode(t), t))
             }
         })
 
@@ -84,32 +84,6 @@ export class Cascade_SingleTeamWorldCup extends CompetitionClass {
     }
 
 
-}
-
-type ClubCodeLookup = {
-    Namespace: string
-    Code: string
-    Name: string
-}
-const ClubCodes = _ClubCodes as ClubCodeLookup[]
-
-function getClubNameString(clubcode:string, checkAllNamespaces:boolean=true, preferredNamspace:string|null=null) {
-    if (clubcode.trim().length === 0) {return "None"}
-    const clubs1:ClubCodeLookup[] = []
-    const clubs2:ClubCodeLookup[] = []
-    if (preferredNamspace !== null) {
-        clubs1.push(...ClubCodes.filter(x => x.Namespace === preferredNamspace))
-        if (checkAllNamespaces) {
-            clubs2.push(...ClubCodes.filter(x => x.Namespace !== preferredNamspace))
-        }
-    } else {
-        clubs1.push(...ClubCodes)
-    }
-
-    let res = clubs1.find(x => x.Code === clubcode)
-    if (res !== undefined) {return res.Name}
-    res = clubs2.find(x => x.Code === clubcode)
-    return res ? res.Name : clubcode
 }
 
 function compareSingleTeamHighestFirst(a:SingleRaceTeamResult, b:SingleRaceTeamResult) {

@@ -7,7 +7,7 @@ import { PlaintextTable } from "../Styles/PlaintextTable";
 import { HtmlColumn } from "../Styles/HtmlColumn";
 import { HtmlTable } from "../Styles/HtmlTable";
 import { SingleRaceTeamResult } from "../CompetitionClass/SingleRaceTeamResult";
-import { CodeCheckingStatus } from "../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus } from "../../shared/orienteeringtypes/RaceStatuses";
 
 export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass {
 

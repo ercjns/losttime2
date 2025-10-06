@@ -1,15 +1,17 @@
-import { Cascade_SingleSoloWorldCup } from "../Variants/Cascade_SingleSoloWorldCup";
-import { Standard_Time } from "../Variants/Standard_Time";
-import { StandardRaceClassData } from "../../StandardRaceClassData";
-import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
-import { Cascade_SingleSoloScottish1k } from "../Variants/Cascade_SingleSoloScottish1k";
-import { Cascade_SingleTeamWorldCup } from "../Variants/Cascade_SingleTeamWorldCup";
-import { Cascade_SingleSoloScoreOScottish1k } from "../Variants/Cascade_SingleSoloScoreOScottish1k";
-import { Standard_ScoreO } from "../Variants/Standard_ScoreO";
-import { Cascade_ManySoloWorldCup } from "../Variants/Cascade_ManySoloWorldCup";
-import { RaceResultsData } from "../../Components/FileLoader";
-import { LtRaceClass } from "../../../shared/orienteeringtypes/LtRaceClass";
 import { Guid } from "guid-typescript";
+import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
+import { StandardRaceClassData } from "../../../StandardRaceClassData";
+import { RaceResultsData } from "../../FileLoader";
+import { LtRaceClass } from "../../../../shared/orienteeringtypes/LtRaceClass";
+
+import { Cascade_SingleSoloWorldCup } from "../../../CompetitionClass/Variants/Cascade_SingleSoloWorldCup"
+import { Standard_Time } from "../../../CompetitionClass/Variants/Standard_Time";
+import { Cascade_SingleSoloScottish1k } from "../../../CompetitionClass/Variants/Cascade_SingleSoloScottish1k";
+import { Cascade_SingleTeamWorldCup } from "../../../CompetitionClass/Variants/Cascade_SingleTeamWorldCup";
+import { Cascade_SingleSoloScoreOScottish1k } from "../../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
+import { Standard_ScoreO } from "../../../CompetitionClass/Variants/Standard_ScoreO";
+import { Cascade_ManySoloWorldCup } from "../../../CompetitionClass/Variants/Cascade_ManySoloWorldCup";
+
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 

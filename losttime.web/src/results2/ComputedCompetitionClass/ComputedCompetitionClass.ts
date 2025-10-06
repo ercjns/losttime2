@@ -1,6 +1,6 @@
 import { Guid } from "guid-typescript";
 import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../shared/orienteeringtypes/RaceStatuses";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { html_beautify } from "js-beautify";
 import { SingleRaceTeamResult } from "../CompetitionClass/SingleRaceTeamResult";
