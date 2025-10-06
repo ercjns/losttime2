@@ -27,15 +27,7 @@ interface FileLoaderProps {
     setCompetitionClasses: Function;
 }
 
-interface loadedFile {
-    filename: string
-    data: StandardRaceClassData[]
-    race_id: Guid
-}
-
-function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], race_id:Guid, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
-    setFilesState((existing:loadedFile[]) => 
-        [...existing, {filename:file.name, data:raceClasses, race_id: race_id}])
+function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], race_id:Guid, fileLoaderProps:FileLoaderProps) {
 
     let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
     raceClasses.forEach((el) =>
@@ -55,7 +47,7 @@ function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], 
     })
 }
 
-function handleCsvFile(results:ParseResult<any>, file:File, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
+function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:FileLoaderProps) {
     const race_id = Guid.create();
     const race_name = file.name
     
@@ -81,14 +73,14 @@ function handleCsvFile(results:ParseResult<any>, file:File, setFilesState:Functi
                 classInfo,
                 results.data.filter((x:OESco0012) => x.Short===classInfo.code).map(OEScoCsvToLtScoreOResult)
         ))
-        setFilesAndRaceClasses(file, raceClasses, race_id, setFilesState, fileLoaderProps);
+        setFilesAndRaceClasses(file, raceClasses, race_id, fileLoaderProps);
     } else {
         alert("Sorry, don't support generic CSV files yet. Only OEScore csv files.")
         return
     }
 }
 
-function handleXmlfile(file:File, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
+function handleXmlfile(file:File, fileLoaderProps:FileLoaderProps) {
     const parser = new XMLParser({
         ignoreAttributes: false,
     });
@@ -107,7 +99,7 @@ function handleXmlfile(file:File, setFilesState:Function, fileLoaderProps:FileLo
                 el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
                 )
             )
-            setFilesAndRaceClasses(file, raceClasses, race_id, setFilesState, fileLoaderProps);
+            setFilesAndRaceClasses(file, raceClasses, race_id, fileLoaderProps);
         }
     }
     reader.readAsText(file)
@@ -210,12 +202,12 @@ export function FileLoader(props: FileLoaderProps) {
 
     function resultsFileParser(file:File) {
         if (file.name.slice(-4) === ".xml") {
-            handleXmlfile(file, setFilesAndRaceClasses, props)
+            handleXmlfile(file, props)
         } else if (file.name.slice(-4) === ".csv") {
             PapaParse<any>(file, {
                 header: true,
                 dynamicTyping: false,
-                complete: (r) => handleCsvFile(r, file, setFilesAndRaceClasses, props),
+                complete: (r) => handleCsvFile(r, file, props),
                 skipEmptyLines: "greedy",
                 transform: (value:any, col:any) => {return(value.replace(/\0/g, '').trim())},
                 delimitersToGuess: [',', '\t', '|', ';', RECORD_SEP, UNIT_SEP]
