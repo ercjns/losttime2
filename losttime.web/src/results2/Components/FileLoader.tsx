@@ -27,7 +27,7 @@ interface FileLoaderProps {
     setCompetitionClasses: Function;
 }
 
-function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], race_id:Guid, fileLoaderProps:FileLoaderProps) {
+function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], raceInfo:{id:Guid,name:string}, fileLoaderProps:FileLoaderProps) {
 
     let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
     raceClasses.forEach((el) =>
@@ -36,8 +36,8 @@ function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], 
     raceClassesMap.set(el.class.code.toString(), el))
     
     let newRaceResultsData:RaceResultsData = {
-        id: race_id,
-        name: file.name, //FIX THIS, PULL FROM A raceClass??
+        id: raceInfo.id,
+        name: raceInfo.name,
         filename: file.name,
         raceClasses: raceClassesMap
     }
@@ -48,8 +48,10 @@ function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], 
 }
 
 function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:FileLoaderProps) {
-    const race_id = Guid.create();
-    const race_name = file.name
+    const raceInfo = {
+        id: Guid.create(),
+        name: file.name
+    }
     
     // detect what type of file this is
     if (results.meta.fields && results.meta.fields[0].startsWith("OESco0012")) {
@@ -69,11 +71,11 @@ function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:File
         // iterate through those to create StandardRaceClassData for each class
         const raceClasses: StandardRaceClassData[] = uniqueLtClasses.map((classInfo:LtRaceClass) =>
             new StandardRaceClassData(
-                {id:race_id, name:race_name},
+                raceInfo,
                 classInfo,
                 results.data.filter((x:OESco0012) => x.Short===classInfo.code).map(OEScoCsvToLtScoreOResult)
         ))
-        setFilesAndRaceClasses(file, raceClasses, race_id, fileLoaderProps);
+        setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
     } else {
         alert("Sorry, don't support generic CSV files yet. Only OEScore csv files.")
         return
@@ -88,18 +90,20 @@ function handleXmlfile(file:File, fileLoaderProps:FileLoaderProps) {
     reader.onload = (e) => {
         if ((e) && (e.target) && (e.target.result)) {
             const resultsObj = parser.parse(e.target.result as string);
-            const race_id = Guid.create();
-            const race_name = resultsObj.ResultList.Event.Name
+            const raceInfo = {
+                id: Guid.create(),
+                name: resultsObj.ResultList.Event.Name
+            }
 
             const raceClasses: StandardRaceClassData[] = resultsObj.ResultList.ClassResult.map((el: ClassResult) =>
             new StandardRaceClassData(
-                { id: race_id, name: race_name },
+                raceInfo,
                 new LtRaceClass(el.Class.Name, el.Class.ShortName),
                 [el.PersonResult].flat().map(IofXml3ToLtResult),
                 el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
                 )
             )
-            setFilesAndRaceClasses(file, raceClasses, race_id, fileLoaderProps);
+            setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
         }
     }
     reader.readAsText(file)
