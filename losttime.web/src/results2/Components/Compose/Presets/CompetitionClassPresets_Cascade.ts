@@ -11,6 +11,7 @@ import { Cascade_SingleTeamWorldCup } from "../../../CompetitionClass/Variants/C
 import { Cascade_SingleSoloScoreOScottish1k } from "../../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
 import { Standard_ScoreO } from "../../../CompetitionClass/Variants/Standard_ScoreO";
 import { Cascade_ManySoloWorldCup } from "../../../CompetitionClass/Variants/Cascade_ManySoloWorldCup";
+import { Cascade_ManyTeamWorldCup } from "../../../CompetitionClass/Variants/Cascade_ManyTeamWorldCup";
 
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
@@ -60,41 +61,6 @@ function requireExactlyOneRace(raceData:CompetitionClassPresetsProps):boolean {
 
 function requireAtLeastTwoRaces(raceData:CompetitionClassPresetsProps):boolean {
     return raceData.raceResultsData.length > 1;
-}
-
-function COC_WIOL2425_Single(raceData:CompetitionClassPresetsProps) {
-    raceData.setCompetitionClasses([
-    new Standard_Time('Beginner', getRaceDataByClassCode(raceData,"1",true)),
-    new Standard_Time('Advanced Beginner', getRaceDataByClassCode(raceData,"3",true)),
-    new Standard_Time('Intermediate', getRaceDataByClassCode(raceData,"5",true)),
-    new Cascade_SingleSoloWorldCup('Short Advanced Female', getRaceDataByClassCode(raceData,"8F",true)),
-    new Cascade_SingleSoloWorldCup('Short Advanced Open', getRaceDataByClassCode(raceData,"8O",true)),
-    new Standard_Time('Short Advanced Groups', getRaceDataByClassCode(raceData,"8G",true)),
-    new Cascade_SingleSoloWorldCup('Long Advanced Female', getRaceDataByClassCode(raceData,"9F",true)),
-    new Cascade_SingleSoloWorldCup('Long Advanced Open', getRaceDataByClassCode(raceData,"9O",true)),
-    new Standard_Time('Long Advanced Groups', getRaceDataByClassCode(raceData,"9G",true)),
-    new Cascade_SingleSoloWorldCup('Elementary Female', getRaceDataByClassCode(raceData,"W1F",true)),
-    new Cascade_SingleSoloWorldCup('Elementary Male', getRaceDataByClassCode(raceData,"W1M",true)),
-    new Cascade_SingleTeamWorldCup('Elementary Teams', getRaceDataByClassCodes(raceData,["W1F","W1M"],true)),
-    new Cascade_SingleSoloWorldCup('Middle School Female', getRaceDataByClassCode(raceData,"W2F",true)),
-    new Cascade_SingleSoloWorldCup('Middle School Male', getRaceDataByClassCode(raceData,"W2M",true)),
-    new Cascade_SingleTeamWorldCup('Middle School Teams', getRaceDataByClassCodes(raceData,["W2F","W2M"],true)),
-    new Cascade_SingleSoloWorldCup('High School Rookie Female', getRaceDataByClassCode(raceData,"W3F",true)),
-    new Cascade_SingleSoloWorldCup('High School Rookie Male', getRaceDataByClassCode(raceData,"W4M",true)),
-    new Cascade_SingleTeamWorldCup('High School Rookie Teams', getRaceDataByClassCodes(raceData,["W3F","W4M"],true)),
-    new Cascade_SingleSoloWorldCup('High School JV Female', getRaceDataByClassCode(raceData,"W5F",true)),
-    new Cascade_SingleTeamWorldCup('High School JV Female Teams', getRaceDataByClassCode(raceData,"W5F",true)),
-    new Cascade_SingleSoloWorldCup('High School JV Male', getRaceDataByClassCode(raceData,"W6M",true)),
-    new Cascade_SingleTeamWorldCup('High School JV Male Teams', getRaceDataByClassCode(raceData,"W6M",true)),
-    new Cascade_SingleSoloWorldCup('High School Varsity Female', getRaceDataByClassCode(raceData,"W7F",true)),
-    new Cascade_SingleSoloWorldCup('High School Varsity Male', getRaceDataByClassCode(raceData,"W7M",true)),
-    new Cascade_SingleTeamWorldCup('High School Varsity Teams', getRaceDataByClassCodes(raceData,["W7F","W7M"],true)),
-    new Cascade_SingleSoloWorldCup('Collegiate JV Female', getRaceDataByClassCode(raceData,"WICJVF",true)),
-    new Cascade_SingleSoloWorldCup('Collegiate JV Male', getRaceDataByClassCode(raceData,"WICJVM",true)),
-    new Cascade_SingleSoloWorldCup('Collegiate Varsity Female', getRaceDataByClassCode(raceData,"W9F",true)),
-    new Cascade_SingleSoloWorldCup('Collegiate Varsity Male', getRaceDataByClassCode(raceData,"W9M",true)),
-    new Cascade_SingleTeamWorldCup('Collegiate Varsity Teams', getRaceDataByClassCodes(raceData,["W9F","W9M"],true))
-    ])
 }
 
 function COC_UO25_Single(raceData:CompetitionClassPresetsProps) {
@@ -185,23 +151,25 @@ function COC_WL2526_WiolSeries(raceData:CompetitionClassPresetsProps) {
     raceData.setCompetitionClasses([
     new Cascade_ManySoloWorldCup('Elementary Female', getRaceDataByClassCode(raceData,"W1F")),
     new Cascade_ManySoloWorldCup('Elementary Male', getRaceDataByClassCode(raceData,"W1M")),
-    // new Cascade_SingleTeamWorldCup('Elementary Teams', getRaceDataByClassCodes(raceData,["W1F","W1M"],true)),
+    new Cascade_ManyTeamWorldCup('Elementary Teams', getRaceDataByClassCodes(raceData,["W1F","W1M"])),
     new Cascade_ManySoloWorldCup('Middle School Female', getRaceDataByClassCode(raceData,"W2F")),
     new Cascade_ManySoloWorldCup('Middle School Male', getRaceDataByClassCode(raceData,"W2M")),
-    // new Cascade_SingleTeamWorldCup('Middle School Teams', getRaceDataByClassCodes(raceData,["W2F","W2M"],true)),
+    new Cascade_ManyTeamWorldCup('Middle School Teams', getRaceDataByClassCodes(raceData,["W2F","W2M"])),
     new Cascade_ManySoloWorldCup('High School Rookie Female', getRaceDataByClassCode(raceData,"W3F")),
     new Cascade_ManySoloWorldCup('High School Rookie Male', getRaceDataByClassCode(raceData,"W4M")),
-    // new Cascade_SingleTeamWorldCup('High School Rookie Teams', getRaceDataByClassCodes(raceData,["W3F","W4M"],true)),
+    new Cascade_ManyTeamWorldCup('High School Rookie Teams', getRaceDataByClassCodes(raceData,["W3F","W4M"])),
     new Cascade_ManySoloWorldCup('High School JV Female', getRaceDataByClassCode(raceData,"W5F")),
-    // new Cascade_SingleTeamWorldCup('High School JV Female Teams', getRaceDataByClassCode(raceData,"W5F",true)),
+    new Cascade_ManyTeamWorldCup('High School JV Female Teams', getRaceDataByClassCode(raceData,"W5F")),
     new Cascade_ManySoloWorldCup('High School JV Male', getRaceDataByClassCode(raceData,"W6M")),
-    // new Cascade_SingleTeamWorldCup('High School JV Male Teams', getRaceDataByClassCode(raceData,"W6M",true)),
+    new Cascade_ManyTeamWorldCup('High School JV Male Teams', getRaceDataByClassCode(raceData,"W6M")),
     new Cascade_ManySoloWorldCup('High School Varsity Female', getRaceDataByClassCode(raceData,"W7F")),
     new Cascade_ManySoloWorldCup('High School Varsity Male', getRaceDataByClassCode(raceData,"W7M")),
-    // new Cascade_SingleTeamWorldCup('High School Varsity Teams', getRaceDataByClassCodes(raceData,["W7F","W7M"],true)),
+    new Cascade_ManyTeamWorldCup('High School Varsity Teams', getRaceDataByClassCodes(raceData,["W7F","W7M"])),
+    new Cascade_ManySoloWorldCup('Collegiate JV Female', getRaceDataByClassCode(raceData,"WICJVF")),
+    new Cascade_ManySoloWorldCup('Collegiate JV Male', getRaceDataByClassCode(raceData,"WICJVM")),
     new Cascade_ManySoloWorldCup('Collegiate Varsity Female', getRaceDataByClassCode(raceData,"W9F")),
     new Cascade_ManySoloWorldCup('Collegiate Varsity Male', getRaceDataByClassCode(raceData,"W9M")),
-    // new Cascade_SingleTeamWorldCup('Collegiate Varsity Teams', getRaceDataByClassCodes(raceData,["W9F","W9M"],true))
+    new Cascade_ManyTeamWorldCup('Collegiate Varsity Teams', getRaceDataByClassCodes(raceData,["W9F","W9M"]))
     ])
 }
 
@@ -218,13 +186,6 @@ export const presets = [
         "cascade-UO25-singleScoreO",
         "2025 Ultimate: Single ScoreO Event",
         COC_UO25_SingleScoreO,
-        requireExactlyOneRace
-    ),
-    new CompetitionClassPresetButton(
-        "COC",
-        "cascade-WIOL2425-single",
-        "2024-25 WIOL: Single Event",
-        COC_WIOL2425_Single,
         requireExactlyOneRace
     ),
     new CompetitionClassPresetButton(

@@ -107,6 +107,11 @@ function compareManySoloHighestFirst(a:ManyRaceSoloResult, b:ManyRaceSoloResult)
     // Zero is a falsy value, but zero is a valid score! Check explicitly for undefined.
     // Do NOT simply check for existence `if (a.points)` returns false when a.points === 0.
     // But a score of zero MUST rank ahead of a score of undefined or things break.
+
+    // NOTE: this exact same algo is in Cascade_ManyTeamWorldCup!
+    // There's maybe an argument for both to exist if tiebreak rules diverge.
+    // Likely if making updates here, make updates there too!
+
     if (a.points !== undefined && b.points !== undefined) {
         if (a.points !== b.points) {
             return b.points - a.points;

@@ -1,19 +1,19 @@
 import { Guid } from "guid-typescript";
-import { ManyRaceSoloResult } from "../CompetitionClass/ManyRaceSoloResult";
 import { HtmlColumn } from "../Styles/HtmlColumn";
 import { HtmlTable } from "../Styles/HtmlTable";
 import { PlaintextColumn } from "../Styles/PlaintextColumn";
 import { PlaintextTable } from "../Styles/PlaintextTable";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { ComputedCompetitionClass } from "./ComputedCompetitionClass";
+import { ManyRaceTeamResult } from "../CompetitionClass/ManyRaceTeamResult";
 
 
-export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
+export class Computed_Cascade_ManyTeamPointed extends ComputedCompetitionClass {
 
-    results:ManyRaceSoloResult[]
+    results:ManyRaceTeamResult[]
     totalEvents:number
 
-    constructor(competitionClassId:Guid, name:string, r: ManyRaceSoloResult[]) {
+    constructor(competitionClassId:Guid, name:string, r: ManyRaceTeamResult[]) {
         super(competitionClassId, name, r);
         this.results = r
         this.totalEvents = this.results[0] ? this.results[0].raceResults.length : 0
@@ -31,7 +31,7 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
     }
 
     private getEventPoints = (eventNumber:number) => {
-        return (r:ManyRaceSoloResult):string => {
+        return (r:ManyRaceTeamResult):string => {
             if (r.resultsSummary[eventNumber].hasResult === false) {
                 return "";
             } else if (r.resultsSummary[eventNumber].points === undefined) {
@@ -43,11 +43,11 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
     }
 
     private getSeasonDecoratorClasses = (eventNumber:number) => {
-        return (r?:ManyRaceSoloResult):string => {
-            if (r===undefined) {return ""}
+        return (r?:ManyRaceTeamResult):string|undefined => {
+            if (r===undefined) {return}
             let res = "";
             if (r.resultsSummary[eventNumber].hasResult === false) {
-                return ""
+                return undefined
             } else {
                 if (r.resultsSummary[eventNumber].isContributing === true) {
                     res += "season-contributing "
@@ -76,13 +76,13 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
         
         const PL = new PlaintextColumn(
             "Pl",
-            ManyRaceSoloResult.getPlace,
+            ManyRaceTeamResult.getPlace,
             this.results,
             "start")
 
         const NAME = new PlaintextColumn(
             "Name",
-            ManyRaceSoloResult.getNameClub,
+            ManyRaceTeamResult.getTeamClub,
             this.results)
 
         let RaceColumns:PlaintextColumn[] = [];
@@ -98,7 +98,7 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
 
         const PTS = new PlaintextColumn(
             "Pts",
-            ManyRaceSoloResult.getPoints,
+            ManyRaceTeamResult.getPoints,
             this.results,
             "start")
         
@@ -121,11 +121,11 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
 
         const PL = new HtmlColumn(
             "Place",
-            ManyRaceSoloResult.getPlace
+            ManyRaceTeamResult.getPlace
         )
         const NAME = new HtmlColumn(
             "Name",
-            ManyRaceSoloResult.getNameClub
+            ManyRaceTeamResult.getTeamClub
         )
         let RaceColumns:HtmlColumn[] = [];
         for (let i = 0; i < this.totalEvents; i++) {
@@ -138,7 +138,7 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
         }
         const PTS = new HtmlColumn(
             "Points",
-            ManyRaceSoloResult.getPoints,
+            ManyRaceTeamResult.getPoints,
             ()=>"text-right"
         )
 

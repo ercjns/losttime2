@@ -5,6 +5,7 @@ import { RenderStyles } from "../Styles/RenderStyles";
 import { html_beautify } from "js-beautify";
 import { SingleRaceTeamResult } from "../CompetitionClass/SingleRaceTeamResult";
 import { ManyRaceSoloResult } from "../CompetitionClass/ManyRaceSoloResult";
+import { ManyRaceTeamResult } from "../CompetitionClass/ManyRaceTeamResult";
 
 
 export abstract class ComputedCompetitionClass {
@@ -12,7 +13,7 @@ export abstract class ComputedCompetitionClass {
     competitionClassId: Guid;
     name: string;
     createdAt: Date;
-    results: SingleRaceSoloResult[] | SingleRaceTeamResult[] | ManyRaceSoloResult[];
+    results: SingleRaceSoloResult[] | SingleRaceTeamResult[] | ManyRaceSoloResult[] | ManyRaceTeamResult[];
 
     constructor(
         competitionClassId: Guid,

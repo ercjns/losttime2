@@ -61,7 +61,6 @@ export class Cascade_SingleTeamWorldCup extends CompetitionClass {
             .slice(0,size) // only top 3 max
             .filter((r) => !(r.points===null || r.points===undefined))
         if (team.soloResults.length === 0) {
-            team.points = null;
             return;
         }
         team.points = team.soloResults.reduce((score:number, r) => score + r.points!, 0)
