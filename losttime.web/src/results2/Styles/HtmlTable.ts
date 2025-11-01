@@ -27,7 +27,7 @@ export class HtmlTable {
         const thead = document.createElement("thead");
         const trhead = document.createElement("tr");
         this.columns.forEach((col:HtmlColumn) => {
-            trhead.appendChild(_docElement("th", col.header))
+            trhead.appendChild(_docElement("th", col.header, col.classNames ? col.classNames() : undefined))
         })
         thead.appendChild(trhead);
         table.appendChild(thead)
@@ -36,7 +36,7 @@ export class HtmlTable {
         for (const r of this.data) {
             const trdata = document.createElement("tr");
             this.columns.forEach((col:HtmlColumn) => {
-                trdata.appendChild(_docElement("td", col.renderer(r), col.classNames))
+                trdata.appendChild(_docElement("td", col.renderer(r), col.classNames ? col.classNames(r) : undefined))
             })
             tbody.appendChild(trdata)
         }

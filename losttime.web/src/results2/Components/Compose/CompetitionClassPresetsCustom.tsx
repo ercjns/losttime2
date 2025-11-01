@@ -1,21 +1,20 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
-import { raceClassesByRace } from "./CompetitionClassComposer";
 import { useState } from "react";
-import { CompetitionClassPresetButton } from "../../CompetitionClass/Templates/CompetitionClassPresetButton";
-
-import { presets as presets_Cascade } from "../../CompetitionClass/Templates/CompetitionClassPresets_Cascade";
+import { RaceResultsData } from "../FileLoader";
+import { CompetitionClassPresetButton } from "./Presets/CompetitionClassPresetButton";
+import { presets as presets_cascade } from "./Presets/CompetitionClassPresets_Cascade";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
 interface CompetitionClassPresetsProps {
-    raceClassesByRace: raceClassesByRace
+    raceResultsData: RaceResultsData[]
     raceClassesByClass: raceClassesByClass,
     setCompetitionClasses: Function
 }
 
 let buttons:CompetitionClassPresetButton[] = []
-buttons.push(...presets_Cascade)
+buttons.push(...presets_cascade)
 
 export function CompetitionClassPresetsCustom(props:CompetitionClassPresetsProps) {
 

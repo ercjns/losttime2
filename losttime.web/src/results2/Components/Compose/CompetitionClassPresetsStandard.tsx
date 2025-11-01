@@ -2,13 +2,13 @@ import { Button, Col, Row } from "react-bootstrap";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { CompetitionClass } from "../../CompetitionClass/CompetitionClass";
 import { Standard_Time } from "../../CompetitionClass/Variants/Standard_Time";
-import { raceClassesByRace } from "./CompetitionClassComposer";
 import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
+import { RaceResultsData } from "../FileLoader";
 
 type raceClassesByClass = Map<string, (StandardRaceClassData|undefined)[]>
 
 interface CompetitionClassPresetsProps {
-    raceClassesByRace: raceClassesByRace
+    raceResultsData: RaceResultsData[]
     raceClassesByClass: raceClassesByClass,
     setCompetitionClasses: Function
 }
@@ -41,7 +41,7 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
             id="one-comp-class-per-race-class"
             variant="outline-primary"
             onClick={()=>onePerClassClickHandler()}
-            disabled={(props.raceClassesByRace.size !== 1)}
+            disabled={(props.raceResultsData.length !== 1)}
             >
         Standard O Competition Classes</Button>
         </Col>
@@ -50,7 +50,7 @@ export function CompetitionClassPresetsStandard(props:CompetitionClassPresetsPro
             id="one-comp-class-per-race-class-score-o"
             variant="outline-primary"
             onClick={()=>onePerClassScoreOClickHandler()}
-            disabled={(props.raceClassesByRace.size !== 1)}
+            disabled={(props.raceResultsData.length !== 1)}
             >
         Score O Competition Classes</Button>
         </Col>

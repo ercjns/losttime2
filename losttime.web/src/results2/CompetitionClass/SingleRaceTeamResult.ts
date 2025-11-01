@@ -1,21 +1,35 @@
+import { TeamInfo } from "../../shared/orienteeringtypes/TeamInfo"
 import { SingleRaceSoloResult } from "./SingleRaceSoloResult"
 
 export class SingleRaceTeamResult {
-    teamName: string
-    club?: string
+    teamInfo: TeamInfo
     soloResultsAll: SingleRaceSoloResult[]
     soloResults: SingleRaceSoloResult[]
-    place: number | null | undefined
-    points: number | null | undefined
+    place?: number
+    points?: number
 
-    constructor(results:SingleRaceSoloResult[], name:string, club?:string, ) {
-        this.teamName = name;
-        this.club = club;
+    constructor(results:SingleRaceSoloResult[], name:string, clubCode?:string) {
+        // refactor team info further upstream?
+        this.teamInfo = new TeamInfo(name, clubCode)
         this.soloResultsAll = results
 
         this.soloResults = []
     }
 
-    static getPoints = (r:SingleRaceTeamResult):string =>`${r.place ?? ""}`
-    static getTeamClub = (r:SingleRaceTeamResult):string => `${r.teamName} (${r.club})`
+    static getTeamClub = (r:SingleRaceTeamResult):string => `${r.teamInfo.teamName} (${r.teamInfo.clubCode})`
+}
+
+export const isSingleRaceTeamResult = (x: SingleRaceTeamResult | undefined): x is SingleRaceTeamResult => !!x;
+
+export function compareSingleTeamByPointsHighestFirst(a:SingleRaceTeamResult, b:SingleRaceTeamResult) {
+    if (a.points && b.points) {
+        return b.points - a.points;
+    }
+    if (a.points) {
+        return -1;
+    } else if (b.points) {
+        return 1;
+    } else {
+        return 0;
+    }
 }

@@ -1,4 +1,4 @@
-import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "../../results/scoremethods/IofStatusParser"
+import { CodeCheckingStatus, CompetitiveStatus, iofStatusParser } from "./RaceStatuses"
 import { LtPerson } from "./LtPerson"
 
 interface LtResultParams {

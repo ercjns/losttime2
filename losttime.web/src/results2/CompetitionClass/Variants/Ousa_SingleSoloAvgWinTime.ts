@@ -1,6 +1,6 @@
 import { CompetitionClass } from "../CompetitionClass";
 import { StandardRaceClassData } from "../../StandardRaceClassData";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../shared/orienteeringtypes/RaceStatuses";
 import { Computed_Ousa_SingleSoloAvgWinTime } from "../../ComputedCompetitionClass/Computed_Ousa_SingleSoloAvgWinTime";
 import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";

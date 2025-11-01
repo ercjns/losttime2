@@ -36,16 +36,4 @@ export abstract class CompetitionClass {
         return results
     }
 
-    contributingNames(): {race:string, class:string}[] {
-        let names:{race:string, class:string}[] = []
-        this.contributingResults.forEach(raceClass => {
-            names.push({race:raceClass.race_name, class:raceClass.class.name})
-        });
-        return names;
-    }
-
-
-    //contributingresultsbyrace()
-    //
-
 }

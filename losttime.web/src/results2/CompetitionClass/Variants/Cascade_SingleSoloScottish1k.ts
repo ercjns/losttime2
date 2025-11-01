@@ -1,7 +1,7 @@
 import { CompetitionClass } from "../CompetitionClass";
 import { Computed_Cascade_SingleSoloPointed } from "../../ComputedCompetitionClass/Computed_Cascade_SingleSoloPointed";
 import { compareSingleSoloByTime } from "../SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../shared/orienteeringtypes/RaceStatuses";
 import { SingleRaceSoloResult } from "../SingleRaceSoloResult";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
@@ -66,10 +66,10 @@ export class Cascade_SingleSoloScottish1k extends CompetitionClass {
     ): void {
         // no place for NC/DSQ/SPW/
         if (item.competitive !== CompetitiveStatus.COMP) {
-            item.place = null;
+            item.place = undefined;
         // no place for MSP/DNF/UNK 
         } else if (item.codeChecking !== CodeCheckingStatus.FIN) {
-            item.place = null;
+            item.place = undefined;
         // COMP and FIN
         } else {
             if (index === 0) {

@@ -1,18 +1,11 @@
 import { CompetitionClass } from "../CompetitionClass";
-import { StandardRaceClassData } from "../../StandardRaceClassData";
 import { Computed_Standard_Time } from "../../ComputedCompetitionClass/Computed_Standard_Time";
 import { compareSingleSoloByTime, SingleRaceSoloResult } from "../SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../../shared/orienteeringtypes/RaceStatuses";
 import { CompetitionClassType, Results2ScoreMethod } from "../../CompetitionClassType";
 
 
 export class Standard_Time extends CompetitionClass {
-    constructor(
-        name: string,
-        contributingResults: StandardRaceClassData[]
-    ) {
-        super(name, contributingResults)
-    }
 
     competitionClassType = CompetitionClassType.SingleEventSolo
     scoreMethod = Results2ScoreMethod.SingleSolo_Time
@@ -42,10 +35,10 @@ export class Standard_Time extends CompetitionClass {
     ): void {
         // no place for NC/DSQ/SPW/
         if (item.competitive !== CompetitiveStatus.COMP) {
-            item.place = null;
+            item.place = undefined;
         // no place for MSP/DNF/UNK 
         } else if (item.codeChecking !== CodeCheckingStatus.FIN) {
-            item.place = null;
+            item.place = undefined;
         // COMP and FIN
         } else {
             if (index === 0) {

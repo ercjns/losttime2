@@ -1,4 +1,4 @@
-import { getClubNameString } from "../../results/outputstyles/stylehelpers"
+import { getClubNameForClubCode } from "../ClubCodes"
 
 export class LtPerson {
     first: string
@@ -11,11 +11,19 @@ export class LtPerson {
         this.last = last
         this.clubCode = clubCode
         if (club === undefined) {
-            this.club = getClubNameString(clubCode) ?? "None"
+            this.club = getClubNameForClubCode(clubCode) ?? "None"
         } else if (club === clubCode) {
-            this.club = getClubNameString(clubCode) ?? club
+            this.club = getClubNameForClubCode(clubCode) ?? club
         } else {
             this.club = club
         }
+    }
+
+    sameNameAndClubCode = (other:LtPerson):boolean => {
+        if (this.first === other.first &&
+            this.last === other.last &&
+            this.clubCode === other.clubCode
+        ) { return true}
+        return false
     }
 }

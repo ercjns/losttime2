@@ -1,11 +1,11 @@
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../shared/orienteeringtypes/RaceStatuses";
 import { LtPerson } from "../../shared/orienteeringtypes/LtPerson";
 import { LtResult } from "../../shared/orienteeringtypes/LtResult";
 
 export class SingleRaceSoloResult {
     person: LtPerson
     time: number; // TODO: HANDLE UNDEFINED TIME??
-    place: number | null | undefined;
+    place?: number;
     codeChecking: CodeCheckingStatus;
     competitive: CompetitiveStatus;
     points?: number
@@ -59,6 +59,21 @@ export function compareSingleSoloByTime(a:SingleRaceSoloResult, b:SingleRaceSolo
     if (a.time) {
         return -1;
     } else if (b.time) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+export const isSingleRaceSoloResult = (x: SingleRaceSoloResult | undefined): x is SingleRaceSoloResult => !!x;
+
+export function compareSingleSoloPointedByPointsHighestFirst(a:SingleRaceSoloResult, b:SingleRaceSoloResult) {
+    if (a.points && b.points) {
+        return b.points - a.points;
+    }
+    if (a.points) {
+        return -1;
+    } else if (b.points) {
         return 1;
     } else {
         return 0;

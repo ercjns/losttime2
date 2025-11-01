@@ -11,5 +11,7 @@ export enum Results2ScoreMethod {
     SingleSolo_Cascade_Scottish1k,
     SingleSolo_ScoreO,
     SingleSolo_ScoreO_Cascade_Scottish1k,
-    SingleTeam_Cascade_WorldCup
+    SingleTeam_Cascade_WorldCup,
+    ManySolo_Cascade_WorldCup,
+    ManyTeam_Cascade_WorldCup
 }
