@@ -90,12 +90,12 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         const TIME = new HtmlColumn(
             "Time",
             SingleRaceSoloResult.getTimeWithStatus,
-            "text-right"
+            ()=>"text-right"
         )
         const PTS = new HtmlColumn(
             "Points",
             SingleRaceSoloResult.getPoints,
-            "text-right"
+            ()=>"text-right"
         )
         const table = new HtmlTable([PL,NAME,TIME,PTS],this,this.results).doc
         doc.appendChild(table)
@@ -132,12 +132,12 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         const TIME = new HtmlColumn(
             "Time",
             SingleRaceSoloResult.getTimeWithStatus,
-            "text-right"
+            ()=>"text-right"
         )
         const PTS = new HtmlColumn(
             "Score",
             SingleRaceSoloResult.getPoints,
-            "text-right"
+            ()=>"text-right"
         )
         const table = new HtmlTable([PL,NAME,CLUB,TIME,PTS],this,this.results).doc
         doc.appendChild(table)

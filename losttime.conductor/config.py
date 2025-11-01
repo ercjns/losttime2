@@ -4,6 +4,11 @@
 #### ALWAYS REQUIRED, ALWAYS REVIEW: ####
 #########################################
 
+#### LOSTTIME_URL
+# Location to find losttime. Can be localhost or on the web depending on setup.
+# LOSTTIME_URL='https://losttimeorienteering.com/results'
+LOSTTIME_URL='http://localhost:3000/results'
+
 #### SOURCE_DIR
 # Directory Where OE automatic export saves new XML Results Files
 # This is windows so use \\ for directory separators.
@@ -19,7 +24,7 @@ LOSTTIME_OUT_DIR = "C:\\Path\\to\\intermediate\\location"
 #### COPY_TO_FOLDER
 # True to copy output to a filesystem location via `copy2`
 # Configure folder and filename below
-COPY_TO_FOLDER = False
+COPY_TO_FOLDER = True
 
 #### COPY_TO_FTP
 # True to copy output to a FTP location via `copy2`
@@ -33,11 +38,12 @@ COPY_TO_SFTP = False
 
 #### DEST_DIR
 # Directory in which to place the output
-# DEST_DIR = os.path.join(os.path.dirname(__file__), "web-public\\")
+import os
+DEST_DIR = os.path.join(os.path.dirname(__file__), "web-public\\")
 
 #### DEST_FILENAME
 # Filename to use in DEST_DIR
-# DEST_FILENAME = "index.html"
+DEST_FILENAME = "index.html"
 
 
 ################################
@@ -60,13 +66,11 @@ COPY_TO_SFTP = False
 # Length of time to pause before checking SOURCE_DIR for a new file to process
 NEW_FILE_WAIT_SECONDS = 10
 
-# LOSTTIME_URL
-# Location to find losttime. Can be localhost or on the web depending on setup.
-LOSTTIME_URL='https://losttimeorienteering.com/results'
-# LOSTTIME_URL='http://localhost:3000/results'
+# Click IDs
+LOSTTIME_SCORING_PRESET_ID='cascade-WL2526-single'
+LOSTTIME_DOWNLOAD_STYLE_SELECT_ID='output-style-select'
+LOSTTIME_DOWNLOAD_STYLE_VALUE='0' # 0:Plaintext | 1:HTML | 2:COCHTML
+LOSTTIME_DOWNLOAD_BUTTON_ID='output-download-button'
 
-LOSTTIME_SCORING_PRESET_ID='scoring-preset-cascade-winter-2024-single'
-LOSTTIME_DOWNLOAD_RESULTS_GROUP_ID='download-results-group'
-LOSTTIME_DOWNLOAD_STYLE_ID='Download-Results-Coc-Html'
 
 

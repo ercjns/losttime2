@@ -35,7 +35,12 @@ export function EditableTableData(props:editableTableDataProps) {
         return <td>
             <InputGroup>
             <Form>
-                <Form.Control size="sm" type="text" value={value} onChange={({target:{value}}) => setValue(value)} />
+                <Form.Control 
+                    size="sm" 
+                    type="text" 
+                    value={value} 
+                    onChange={({target:{value}}) => setValue(value)} 
+                />
             </Form>
             <Button
             size='sm'

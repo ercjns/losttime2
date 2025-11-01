@@ -77,7 +77,7 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         const TIME = new HtmlColumn(
             "Time",
             SingleRaceSoloResult.getTimeWithStatus,
-            "text-right"
+            ()=>"text-right"
         )
         const table = new HtmlTable([PL,NAME,TIME],this,this.results).doc
         doc.appendChild(table)
@@ -114,7 +114,7 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         const TIME = new HtmlColumn(
             "Time",
             SingleRaceSoloResult.getTimeWithStatus,
-            "text-right"
+            ()=>"text-right"
         )
         const table = new HtmlTable([PL,NAME,CLUB,TIME],this,this.results).doc
         doc.appendChild(table)

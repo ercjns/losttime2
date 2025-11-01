@@ -27,6 +27,7 @@ export class BasicDz extends Component<{parser:any, helpText:String}, {files:Fil
     borderRadius: 20,
     borderColor: '#0d6efd',
     borderStyle: 'dotted',
+    marginBottom: '16px',
     backgroundColor: 'white',
     color: '#0d6efd',
     fontStyle: 'italic',

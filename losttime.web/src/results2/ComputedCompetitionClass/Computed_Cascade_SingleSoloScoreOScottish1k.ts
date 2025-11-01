@@ -108,27 +108,27 @@ export class Computed_Cascade_SingleSoloScoreOScottish1k extends ComputedCompeti
         const RAW = new HtmlColumn(
             "Points",
             SingleRaceSoloScoreOResult.getRawScore,
-            "text-right"
+            ()=>"text-right"
         )
         const PEN = new HtmlColumn(
             "Penalty",
             SingleRaceSoloScoreOResult.getPenalty,
-            "text-right"
+            ()=>"text-right"
         )
         const SCORE = new HtmlColumn(
             "Score",
             SingleRaceSoloScoreOResult.getFinalScore,
-            "text-right"
+            ()=>"text-right"
         )
         const TIME = new HtmlColumn(
             "Time",
             SingleRaceSoloScoreOResult.getTimeWithStatus,
-            "text-right"
+            ()=>"text-right"
         )
         const PTS = new HtmlColumn(
             "Score",
             SingleRaceSoloScoreOResult.getPoints,
-            "text-right"
+            ()=>"text-right"
         )
         const table = new HtmlTable([PL,NAME,RAW,PEN,SCORE,TIME,PTS],this,this.results).doc
         doc.appendChild(table)
@@ -165,27 +165,27 @@ export class Computed_Cascade_SingleSoloScoreOScottish1k extends ComputedCompeti
         const RAW = new HtmlColumn(
             "Points",
             SingleRaceSoloScoreOResult.getRawScore,
-            "text-right"
+            ()=>"text-right"
         )
         const PEN = new HtmlColumn(
             "Penalty",
             SingleRaceSoloScoreOResult.getPenalty,
-            "text-right"
+            ()=>"text-right"
         )
         const SCORE = new HtmlColumn(
             "Score",
             SingleRaceSoloScoreOResult.getFinalScore,
-            "text-right"
+            ()=>"text-right"
         )
         const TIME = new HtmlColumn(
             "Time",
             SingleRaceSoloScoreOResult.getTimeMMMSS,
-            "text-right"
+            ()=>"text-right"
         )
         const PTS = new HtmlColumn(
             "Score",
             SingleRaceSoloScoreOResult.getPoints,
-            "text-right"
+            ()=>"text-right"
         )
         const table = new HtmlTable([PL,NAME,CLUB,RAW,PEN,SCORE,TIME,PTS],this,this.results).doc
         doc.appendChild(table)

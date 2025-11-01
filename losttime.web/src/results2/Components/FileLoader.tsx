@@ -4,32 +4,30 @@ import { parse as PapaParse, RECORD_SEP, UNIT_SEP, ParseResult } from "papaparse
 import { StandardRaceClassData } from "../StandardRaceClassData";
 import { Guid } from "guid-typescript";
 import { ClassResult, IofXml3ToLtResult } from "../../shared/orienteeringtypes/IofResultXml";
-import { Button, Col, Row } from "react-bootstrap";
+import { Alert, Button, Col, Row, Table } from "react-bootstrap";
 import { WizardSectionTitle } from "../../shared/WizardSectionTitle";
-import { raceClassesByRace } from "./Compose/CompetitionClassComposer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faPlus, faRotateLeft, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { OESco0012, OEScoCsvToLtScoreOResult } from "../../shared/orienteeringtypes/OESco0012";
 import { LtRaceClass } from "../../shared/orienteeringtypes/LtRaceClass";
 import { LtCourse } from "../../shared/orienteeringtypes/LtCourse";
 import { BasicDz } from "../../shared/dz";
+import { PlaceholderRaceClassAdder } from "./PlaceholderRaceClassAdder";
 
+export type RaceResultsData = {
+    id:Guid,
+    name:string
+    filename:string
+    raceClasses:Map<string,StandardRaceClassData>
+}
 
 interface FileLoaderProps {
-    raceClassesByRace: raceClassesByRace
-    setRaceClasses: Function;
+    raceResultsData: RaceResultsData[]
+    setRaceResultsData: Function;
     setCompetitionClasses: Function;
 }
 
-interface loadedFile {
-    filename: string
-    data: StandardRaceClassData[]
-    race_id: Guid
-}
-
-function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], race_id:Guid, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
-    setFilesState((existing:loadedFile[]) => 
-        [...existing, {filename:file.name, data:raceClasses, race_id: race_id}])
+function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], raceInfo:{id:Guid,name:string}, fileLoaderProps:FileLoaderProps) {
 
     let raceClassesMap:Map<string,StandardRaceClassData> = new Map()
     raceClasses.forEach((el) =>
@@ -37,23 +35,23 @@ function setFilesAndRaceClasses(file:File, raceClasses:StandardRaceClassData[], 
     // integer type key in the map, causing things to break later.
     raceClassesMap.set(el.class.code.toString(), el))
     
-    fileLoaderProps.setRaceClasses((existing: Map<Guid,Map<string,StandardRaceClassData>>) => {
-    // https://expertbeacon.com/re-render-react-component-when-its-props-changes-a-comprehensive-guide/
-    // if an array prop is passed from parent -> child and mutated in place, the child will not re-render
-    // so to add to the map, I can't just Map.set(key,value) - have to build a new Map.
-    // this forces the component that gets passed this state as a prop to re-render.
-        var updated = new Map()
-        existing.forEach((value, key) =>
-            updated.set(key, value)
-        )
-        updated.set(race_id, raceClassesMap);
-        return updated;
+    let newRaceResultsData:RaceResultsData = {
+        id: raceInfo.id,
+        name: raceInfo.name,
+        filename: file.name,
+        raceClasses: raceClassesMap
+    }
+
+    fileLoaderProps.setRaceResultsData((existing: RaceResultsData[]) => {
+        return [...existing,newRaceResultsData]
     })
 }
 
-function handleCsvFile(results:ParseResult<any>, file:File, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
-    const race_id = Guid.create();
-    const race_name = file.name
+function handleCsvFile(results:ParseResult<any>, file:File, fileLoaderProps:FileLoaderProps) {
+    const raceInfo = {
+        id: Guid.create(),
+        name: file.name
+    }
     
     // detect what type of file this is
     if (results.meta.fields && results.meta.fields[0].startsWith("OESco0012")) {
@@ -73,18 +71,18 @@ function handleCsvFile(results:ParseResult<any>, file:File, setFilesState:Functi
         // iterate through those to create StandardRaceClassData for each class
         const raceClasses: StandardRaceClassData[] = uniqueLtClasses.map((classInfo:LtRaceClass) =>
             new StandardRaceClassData(
-                {id:race_id,name:race_name},
+                raceInfo,
                 classInfo,
                 results.data.filter((x:OESco0012) => x.Short===classInfo.code).map(OEScoCsvToLtScoreOResult)
         ))
-        setFilesAndRaceClasses(file, raceClasses, race_id, setFilesState, fileLoaderProps);
+        setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
     } else {
         alert("Sorry, don't support generic CSV files yet. Only OEScore csv files.")
         return
     }
 }
 
-function handleXmlfile(file:File, setFilesState:Function, fileLoaderProps:FileLoaderProps) {
+function handleXmlfile(file:File, fileLoaderProps:FileLoaderProps) {
     const parser = new XMLParser({
         ignoreAttributes: false,
     });
@@ -92,18 +90,26 @@ function handleXmlfile(file:File, setFilesState:Function, fileLoaderProps:FileLo
     reader.onload = (e) => {
         if ((e) && (e.target) && (e.target.result)) {
             const resultsObj = parser.parse(e.target.result as string);
-            const race_id = Guid.create();
-            const race_name = resultsObj.ResultList.Event.Name
+            const raceInfo = {
+                id: Guid.create(),
+                name: resultsObj.ResultList.Event.Name
+            }
 
-            const raceClasses: StandardRaceClassData[] = resultsObj.ResultList.ClassResult.map((el: ClassResult) =>
-            new StandardRaceClassData(
-                { id: race_id, name: race_name },
-                new LtRaceClass(el.Class.Name, el.Class.ShortName),
-                [el.PersonResult].flat().map(IofXml3ToLtResult),
-                el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+            if ('ClassResult' in resultsObj.ResultList) {
+                const raceClasses: StandardRaceClassData[] = [resultsObj.ResultList.ClassResult].flat().map((el: ClassResult) =>
+                    new StandardRaceClassData(
+                        raceInfo,
+                        new LtRaceClass(el.Class.Name, el.Class.ShortName),
+                        [el.PersonResult].flat().map(IofXml3ToLtResult),
+                        el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+                    )
                 )
-            )
-            setFilesAndRaceClasses(file, raceClasses, race_id, setFilesState, fileLoaderProps);
+                setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
+            } else {
+                // If adding an alert here, need to conditionally handle it in Conductor
+                // alert("Selected file does not contain any results. Adding anyways.");
+                setFilesAndRaceClasses(file, [], raceInfo, fileLoaderProps)
+            }
         }
     }
     reader.readAsText(file)
@@ -111,29 +117,107 @@ function handleXmlfile(file:File, setFilesState:Function, fileLoaderProps:FileLo
 
 export function FileLoader(props: FileLoaderProps) {
 
-    const [files, setFiles] = useState<loadedFile[]>([])
+    const [fileLoaderAlert, setFileLoaderAlert] = useState({isVisible:false, body:""})
 
-    const fileItems = files.map((x) => {
-        let classes = "";
-        x.data.forEach((c) => {classes += `${c.class.code}, `})
-        classes = classes.slice(0,-2);
-        return <li key={x.race_id.toString()}><strong>{x.filename}</strong> with <strong>{x.data.length.toString()}</strong> classes: {classes}</li>
-    });
+    function handleResultFileUp(id:Guid) {
+        const idx = props.raceResultsData.findIndex((x) => x.id === id)
+        const swapWith = idx - 1;
+        if (idx > -1 && idx < props.raceResultsData.length && swapWith > -1) {
+            const A = props.raceResultsData.at(idx)!
+            const B = props.raceResultsData.at(swapWith)!
+            props.raceResultsData.splice(swapWith, 2, A, B)
+            props.setRaceResultsData([...props.raceResultsData])
+        }
+    }
+
+    function handleResultFileDown(id:Guid) {
+        const idx = props.raceResultsData.findIndex((x) => x.id === id)
+        const swapWith = idx + 1;
+        if (idx > -1 && swapWith < props.raceResultsData.length && swapWith > -1) {
+            const A = props.raceResultsData.at(idx)!
+            const B = props.raceResultsData.at(swapWith)!
+            props.raceResultsData.splice(idx, 2, B, A)
+            props.setRaceResultsData([...props.raceResultsData])
+        }
+    }
+
+    function handleResultFileDelete(id:Guid) {
+        props.setRaceResultsData([...props.raceResultsData.filter((x)=>x.id !== id)])
+    }
+
+    function handleAddClass(id:Guid, classCode:string) {
+        const indx = props.raceResultsData.findIndex((x) => x.id === id)
+        if (indx > -1) {
+            props.raceResultsData[indx].raceClasses.set(classCode, new StandardRaceClassData(
+                {id: props.raceResultsData[indx].id, name: props.raceResultsData[indx].name},
+                {name: `Placeholder`, code: classCode},
+                []
+            ));
+            props.setRaceResultsData([...props.raceResultsData])
+        }
+    }
 
     function removeFilesClick() {
-        setFiles([]);
-        props.setRaceClasses(new Map());
+        props.setRaceResultsData([]);
         props.setCompetitionClasses([]);
     }
 
+    function addPlaceholderWithClassesClick() {
+        const race_id = Guid.create()
+        const race_name = 'placeholder'
+        const knownRaceClasses = props.raceResultsData[props.raceResultsData.length-1].raceClasses
+        const newRaceClasses: Map<string,StandardRaceClassData> = new Map()
+        knownRaceClasses.forEach((v,k) => {
+            newRaceClasses.set(v.class.code.toString(), {
+                id: Guid.create(),
+                race_id: race_id,
+                race_name: race_name,
+                class: v.class,
+                results: []
+            });
+        });
+        props.setRaceResultsData([...props.raceResultsData, {
+            id: race_id,
+            name: race_name,
+            filename: race_name,
+            raceClasses: newRaceClasses
+        }])
+    }
+
+
+
+    const loadedFileRows = props.raceResultsData.map((x, idx) => {
+        let classes = "";
+        x.raceClasses.forEach((c) => {classes += `${c.class.code}, `})
+        classes = classes.slice(0,-2);
+        return <tr key={x.id.toString()}>
+            <td>{idx+1}</td>
+            <td>{x.name}</td>
+            <td style={{wordBreak:"break-all"}}>{x.filename}</td>
+            <td>
+                {classes}&nbsp;
+                <PlaceholderRaceClassAdder
+                    classCode=""
+                    onSave={(value:string) => handleAddClass(x.id, value)}
+                />
+            </td>
+            <td valign="middle" style={{whiteSpace:"nowrap"}}>
+                <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileUp(x.id)} title="move up"><FontAwesomeIcon icon={faArrowUp}/></Button>&nbsp;
+                <Button variant='outline-dark' size='sm' onClick={()=>handleResultFileDown(x.id)} title="move down"><FontAwesomeIcon icon={faArrowDown}/></Button>&nbsp;
+                <Button variant='outline-danger' size='sm' onClick={()=>handleResultFileDelete(x.id)} title="remove"><FontAwesomeIcon icon={faTrashAlt}/></Button>
+                
+            </td>
+        </tr>
+    })
+
     function resultsFileParser(file:File) {
         if (file.name.slice(-4) === ".xml") {
-            handleXmlfile(file, setFiles, props)
+            handleXmlfile(file, props)
         } else if (file.name.slice(-4) === ".csv") {
             PapaParse<any>(file, {
                 header: true,
                 dynamicTyping: false,
-                complete: (r) => handleCsvFile(r, file, setFiles, props),
+                complete: (r) => handleCsvFile(r, file, props),
                 skipEmptyLines: "greedy",
                 transform: (value:any, col:any) => {return(value.replace(/\0/g, '').trim())},
                 delimitersToGuess: [',', '\t', '|', ';', RECORD_SEP, UNIT_SEP]
@@ -144,30 +228,51 @@ export function FileLoader(props: FileLoaderProps) {
         }
     }
 
-    const icon = files.length > 0 ? "check" : "arrow"
+    const icon = props.raceResultsData.length > 0 ? "check" : "arrow"
 
     return (
         <Row className="mb-4">
             <WizardSectionTitle title="Load Results File(s)" showLine={false} icon={icon}/>
             
-            <Col md={12} lg={5}>
+            <Col md={12} lg={4}>
+            <Alert variant="danger" show={fileLoaderAlert.isVisible} onClose={() => setFileLoaderAlert({isVisible:false, body:""})} dismissible>
+                <Alert.Heading as='h5'>File not loaded.</Alert.Heading>
+                <p style={{marginBottom:'0'}}>{fileLoaderAlert.body}</p>
+            </Alert>
             <p>Add Orienteering Results or Splits files in the <strong>IOF XML v3</strong> format.<br/>Add ScoreO results from Sport Software OE Score in <strong>OESco0012 csv</strong> format.</p>
 
             <BasicDz parser={resultsFileParser} helpText="Drag and drop files here, or click to open a file browser."/>
+            <Button onClick={()=>addPlaceholderWithClassesClick()}
+                variant="outline-secondary">
+                <FontAwesomeIcon icon={faPlus}/> Add a placeholder file
+            </Button>
             </Col>
 
-            <Col md={12} lg={7}>
-            <p><strong>{fileItems.length.toString()}</strong> Loaded file{`${fileItems.length === 1 ? "" : "s"}`}:</p>
-            <ul>
-                {fileItems}
-            </ul>
-            {(props.raceClassesByRace.size > 0 ? 
+            <Col md={12} lg={8}>
+            <p><strong>{loadedFileRows.length.toString()}</strong> Loaded file{`${loadedFileRows.length === 1 ? "" : "s"}`}.
+            &nbsp;
+            {(props.raceResultsData.length > 0 ? 
             <Button onClick={()=>removeFilesClick()}
                 variant="outline-danger"
-                disabled={(props.raceClassesByRace.size > 0 ? false : true)}>
+                disabled={(props.raceResultsData.length > 0 ? false : true)}>
                 <FontAwesomeIcon icon={faRotateLeft}/> Start Over - Remove all files and competition classes
             </Button>
             : "" )}
+            </p>
+            <Table striped size="sm">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Event Name</th>
+                        <th>File Name</th>
+                        <th>Classes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loadedFileRows}
+                </tbody>
+            </Table>
             </Col>
         </Row>
     )

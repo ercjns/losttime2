@@ -125,9 +125,10 @@ export function OutputBuilder(props:outputBuilderProps) {
     ];
 
     const rows = props.competitionClasses.map((x) => {
-        let contributingNames = x.contributingNames()
-            .map(n => `${n.class} (${n.race})`)
-            .join(`, `)
+
+        const dataFromInfo = x.contributingResults
+            .map(data => `${data.race_name} (${data.class.code}): ${data.results.length}`)
+            .join(` | `)
 
         const scoreMethod = <EditableTableData 
             data={x.scoreMethodFriendly()}
@@ -148,7 +149,7 @@ export function OutputBuilder(props:outputBuilderProps) {
                 <Button variant='outline-danger' size='sm' onClick={()=>handleCompetitionClassDelete(x.id)} title="remove"><FontAwesomeIcon icon={faTrashAlt}/></Button>
             </td>
             <td valign="middle">{x.contributingResultsFlat().length.toString()}</td>
-            <td valign="middle">{contributingNames}</td>
+            <td valign="middle">{dataFromInfo}</td>
         </tr>
     })
 
@@ -196,6 +197,7 @@ export function OutputBuilder(props:outputBuilderProps) {
             <p>
             <Form.Label>Output Style</Form.Label>
             <Form.Select
+                id="output-style-select"
                 aria-label="output style"
                 onChange={({target:{value}}) => setStyle(value)}
                 defaultValue={style}>
@@ -203,7 +205,7 @@ export function OutputBuilder(props:outputBuilderProps) {
             </Form.Select>
             </p>
             <p>
-            <Button onClick={()=>computeAndDownloadClick()}
+            <Button id="output-download-button" onClick={()=>computeAndDownloadClick()}
                 disabled={(props.competitionClasses.length > 0 ? false : true)}>
                 <FontAwesomeIcon icon={faDownload}/> Compute and Download
             </Button>
@@ -229,7 +231,7 @@ export function OutputBuilder(props:outputBuilderProps) {
                     <th>Name</th>
                     <th>Score Method</th>
                     <th>Actions</th>
-                    <th>Participants</th>
+                    <th>Results</th>
                     <th>Contributing Data</th>
                 </tr>
             </thead>

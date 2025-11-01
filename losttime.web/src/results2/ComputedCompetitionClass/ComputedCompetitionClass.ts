@@ -1,9 +1,11 @@
 import { Guid } from "guid-typescript";
 import { SingleRaceSoloResult } from "../CompetitionClass/SingleRaceSoloResult";
-import { CodeCheckingStatus, CompetitiveStatus } from "../../results/scoremethods/IofStatusParser";
+import { CodeCheckingStatus, CompetitiveStatus } from "../../shared/orienteeringtypes/RaceStatuses";
 import { RenderStyles } from "../Styles/RenderStyles";
 import { html_beautify } from "js-beautify";
 import { SingleRaceTeamResult } from "../CompetitionClass/SingleRaceTeamResult";
+import { ManyRaceSoloResult } from "../CompetitionClass/ManyRaceSoloResult";
+import { ManyRaceTeamResult } from "../CompetitionClass/ManyRaceTeamResult";
 
 
 export abstract class ComputedCompetitionClass {
@@ -11,7 +13,7 @@ export abstract class ComputedCompetitionClass {
     competitionClassId: Guid;
     name: string;
     createdAt: Date;
-    results: SingleRaceSoloResult[] | SingleRaceTeamResult[];
+    results: SingleRaceSoloResult[] | SingleRaceTeamResult[] | ManyRaceSoloResult[] | ManyRaceTeamResult[];
 
     constructor(
         competitionClassId: Guid,
