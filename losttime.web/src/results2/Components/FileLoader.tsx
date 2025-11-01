@@ -95,15 +95,19 @@ function handleXmlfile(file:File, fileLoaderProps:FileLoaderProps) {
                 name: resultsObj.ResultList.Event.Name
             }
 
-            const raceClasses: StandardRaceClassData[] = resultsObj.ResultList.ClassResult.map((el: ClassResult) =>
-            new StandardRaceClassData(
-                raceInfo,
-                new LtRaceClass(el.Class.Name, el.Class.ShortName),
-                [el.PersonResult].flat().map(IofXml3ToLtResult),
-                el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+            if ('ClassResult' in resultsObj.ResultList) {
+                const raceClasses: StandardRaceClassData[] = [resultsObj.ResultList.ClassResult].flat().map((el: ClassResult) =>
+                    new StandardRaceClassData(
+                        raceInfo,
+                        new LtRaceClass(el.Class.Name, el.Class.ShortName),
+                        [el.PersonResult].flat().map(IofXml3ToLtResult),
+                        el.Course ? new LtCourse(el.Course.Name, el.Course.NumberOfControls, el.Course.Length, el.Course.Climb) : undefined
+                    )
                 )
-            )
-            setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
+                setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
+            } else {
+                setFilesAndRaceClasses(file, [], raceInfo, fileLoaderProps)
+            }
         }
     }
     reader.readAsText(file)
