@@ -9,6 +9,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.expected_conditions import element_to_be_clickable
 
 import requests
@@ -26,6 +27,8 @@ def GetLatestFileInFolder(dir):
     wd = os.getcwd()
     os.chdir(dir)
     files = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime, reverse=True)
+    if len(files) == 0:
+        return False
     fn = files[0]
     os.chdir(wd)
     return os.path.join(dir, fn)
@@ -99,10 +102,11 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
 
         errors = [NoSuchElementException, ElementNotInteractableException]
         wait = WebDriverWait(driver, timeout=5, poll_frequency=.5, ignored_exceptions=errors)
-        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_RESULTS_GROUP_ID)))
-        clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_RESULTS_GROUP_ID)
-        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_STYLE_ID)))
-        clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_STYLE_ID)
+        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_STYLE_SELECT_ID)))
+        select = Select(driver.find_element(By.ID, LOSTTIME_DOWNLOAD_STYLE_SELECT_ID))
+        select.select_by_value(LOSTTIME_DOWNLOAD_STYLE_VALUE)
+        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_BUTTON_ID)))
+        clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_BUTTON_ID)
 
         sleep(2) ## this is here to make sure the the file downloads and firefox doesn't block on pending download.
         print("Created file from LostTime")
@@ -186,8 +190,11 @@ def main():
         # detect new file from OE now in SFTP drop point
         # grab new file
         XmlResults_fn = GetLatestResultsXml()
-        print('Found file: ' + XmlResults_fn)
+        if XmlResults_fn is False:
+            print('No files in directory')
+            continue
 
+        print('Found file: ' + XmlResults_fn)
         if XmlResults_fn != processed_file:
             print('This is new! processing')
             

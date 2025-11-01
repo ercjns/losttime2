@@ -197,6 +197,7 @@ export function OutputBuilder(props:outputBuilderProps) {
             <p>
             <Form.Label>Output Style</Form.Label>
             <Form.Select
+                id="output-style-select"
                 aria-label="output style"
                 onChange={({target:{value}}) => setStyle(value)}
                 defaultValue={style}>
@@ -204,7 +205,7 @@ export function OutputBuilder(props:outputBuilderProps) {
             </Form.Select>
             </p>
             <p>
-            <Button onClick={()=>computeAndDownloadClick()}
+            <Button id="output-download-button" onClick={()=>computeAndDownloadClick()}
                 disabled={(props.competitionClasses.length > 0 ? false : true)}>
                 <FontAwesomeIcon icon={faDownload}/> Compute and Download
             </Button>
