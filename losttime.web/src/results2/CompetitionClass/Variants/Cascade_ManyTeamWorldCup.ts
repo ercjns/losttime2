@@ -24,7 +24,7 @@ export class Cascade_ManyTeamWorldCup extends CompetitionClass {
         const raceIds = [...new Set(this.contributingResults.map((x) => x.race_id))]
         raceIds.forEach((raceId) => {
             const classes = this.contributingResults.filter((x) => x.race_id.equals(raceId))
-            const scored = new Cascade_SingleTeamWorldCup('Edit Me', classes)
+            const scored = new Cascade_SingleTeamWorldCup('', classes)
                 .compute();
             scoredRaceClasses.push(scored);
         })

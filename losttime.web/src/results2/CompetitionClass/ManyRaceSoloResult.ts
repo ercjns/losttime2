@@ -1,7 +1,9 @@
 import { LtPerson } from "../../shared/orienteeringtypes/LtPerson";
 import { SingleRaceSoloResult } from "./SingleRaceSoloResult";
 
-class SoloManyResultsSummary {
+class ManyRaceSoloResultsSummaryItem {
+    // TODO: Make a common ManyRaceResultsSummaryItem parent across
+    // solo and team series results
     hasResult:boolean
     isContributing:boolean
     time?:number
@@ -24,7 +26,7 @@ class SoloManyResultsSummary {
 
 export class ManyRaceSoloResult {
     raceResults: (SingleRaceSoloResult|undefined)[];
-    resultsSummary: SoloManyResultsSummary[];
+    resultsSummary: ManyRaceSoloResultsSummaryItem[];
     person: LtPerson;
     place?: number;
     time?: number;
@@ -33,7 +35,7 @@ export class ManyRaceSoloResult {
 
     constructor(singleRaceResults: (SingleRaceSoloResult|undefined)[]) {
         this.raceResults = singleRaceResults
-        this.resultsSummary = this.raceResults.map((x)=>new SoloManyResultsSummary(x))
+        this.resultsSummary = this.raceResults.map((x)=>new ManyRaceSoloResultsSummaryItem(x))
         this.person = this.getPerson()
     }
 

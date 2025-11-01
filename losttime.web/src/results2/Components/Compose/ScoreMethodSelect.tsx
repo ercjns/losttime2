@@ -16,7 +16,8 @@ export const scoreMethodOptions = [
     <option key="list-sep-team">-- Team Scoring --</option>,
     <option key={`score-option-${Results2ScoreMethod.SingleTeam_Cascade_WorldCup}`} value={Results2ScoreMethod.SingleTeam_Cascade_WorldCup}>Team - Cascade - Winter</option>,
     <option key="list-sep-series">-- Multi-Event and Series Scoring --</option>,
-    <option key={`score-option-${Results2ScoreMethod.ManySolo_Cascade_WorldCup}`} value={Results2ScoreMethod.ManySolo_Cascade_WorldCup}>Series - Solo - Cascade - Winter</option>
+    <option key={`score-option-${Results2ScoreMethod.ManySolo_Cascade_WorldCup}`} value={Results2ScoreMethod.ManySolo_Cascade_WorldCup}>Series - Solo - Cascade - Winter</option>,
+    <option key={`score-option-${Results2ScoreMethod.ManyTeam_Cascade_WorldCup}`} value={Results2ScoreMethod.ManyTeam_Cascade_WorldCup}>Series - Team - Cascade - Winter</option>
 ];
 
 export function ScoreMethodSelect(props:ScoreMethodSelectProps) {

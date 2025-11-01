@@ -25,6 +25,8 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
                 return this.render_txt();
             case RenderStyles.standard_html: 
                 return this.render_html();
+            case RenderStyles.cascade_wordpresshtml:
+                return this.cascade_wordpresshtml();
             default: 
                 return this.render_html();
         }
@@ -144,6 +146,60 @@ export class Computed_Cascade_ManySoloPointed extends ComputedCompetitionClass {
 
         const table = new HtmlTable([PL,NAME,...RaceColumns,PTS],this,this.results).doc;
         doc.appendChild(table);
+        return this.stringify_html(doc);
+    }
+
+    cascade_wordpresshtml():string {
+        let doc = document.createElement("div")
+        doc.setAttribute("class", "lg-mrg-bottom")
+        const h3 = document.createElement("h3")
+        h3.textContent = `${this.name}`
+        h3.setAttribute("id", `competition-class-${this.id.toString()}`)
+        doc.appendChild(h3);
+        
+        if (this.totalFinishers() === 0) {
+            const p = document.createElement("p")
+            p.textContent = "(No participants for this class)"
+            doc.appendChild(p)
+            return this.stringify_html(doc)
+        }
+
+        const PL = new HtmlColumn(
+            "Place",
+            ManyRaceSoloResult.getPlace
+        )
+        const NAME = new HtmlColumn(
+            "Name",
+            ManyRaceSoloResult.getNameClub
+        )
+        let RaceColumns:HtmlColumn[] = [];
+        for (let i = 0; i < this.totalEvents; i++) {
+            const COL = new HtmlColumn(
+                '#'.concat((i+1).toString()),
+                this.getEventPoints(i),
+                this.getSeasonDecoratorClasses(i)
+            )
+            RaceColumns.push(COL)
+        }
+        const PTS = new HtmlColumn(
+            "Points",
+            ManyRaceSoloResult.getPoints,
+            ()=>"text-right"
+        )
+
+        const table = new HtmlTable([PL,NAME,...RaceColumns,PTS],this,this.results).doc;
+        doc.appendChild(table);
+
+        const menudiv = document.createElement("div")
+        const p = document.createElement("p")
+        p.setAttribute("class", "lg-mrg-bottom text-center");
+        const a = document.createElement("a")
+        a.setAttribute("href", "#lt-menu")
+        a.textContent = `Menu`
+        p.appendChild(a)
+        menudiv.appendChild(p)
+        doc.appendChild(menudiv)
+
         return this.stringify_html(doc);
     }
 };

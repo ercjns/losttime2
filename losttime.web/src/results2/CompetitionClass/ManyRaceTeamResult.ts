@@ -1,7 +1,9 @@
 import { TeamInfo } from "../../shared/orienteeringtypes/TeamInfo";
 import { SingleRaceTeamResult } from "./SingleRaceTeamResult";
 
-class TeamManyResultsSummary {
+class ManyRaceTeamResultsSummaryItem {
+    // TODO: Make a common ManyRaceResultsSummaryItem parent across
+    // solo and team series results
     hasResult:boolean
     isContributing:boolean
     points?:number
@@ -22,7 +24,7 @@ class TeamManyResultsSummary {
 
 export class ManyRaceTeamResult {
     raceResults: (SingleRaceTeamResult|undefined)[];
-    resultsSummary: TeamManyResultsSummary[];
+    resultsSummary: ManyRaceTeamResultsSummaryItem[];
     teamInfo: TeamInfo
     place?: number;
     points?: number;
@@ -30,7 +32,7 @@ export class ManyRaceTeamResult {
 
     constructor(singleRaceResults: (SingleRaceTeamResult|undefined)[]) {
         this.raceResults = singleRaceResults
-        this.resultsSummary = this.raceResults.map((x)=>new TeamManyResultsSummary(x))
+        this.resultsSummary = this.raceResults.map((x)=>new ManyRaceTeamResultsSummaryItem(x))
         this.teamInfo = this.getTeamInfo()
     }
 

@@ -106,6 +106,8 @@ function handleXmlfile(file:File, fileLoaderProps:FileLoaderProps) {
                 )
                 setFilesAndRaceClasses(file, raceClasses, raceInfo, fileLoaderProps);
             } else {
+                // If adding an alert here, need to conditionally handle it in Conductor
+                // alert("Selected file does not contain any results. Adding anyways.");
                 setFilesAndRaceClasses(file, [], raceInfo, fileLoaderProps)
             }
         }
