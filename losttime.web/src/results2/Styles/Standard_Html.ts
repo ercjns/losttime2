@@ -36,6 +36,11 @@ export class Standard_Html extends RenderStyleWrapper {
         const h2 = document.createElement("h2")
         h2.textContent = "Competition Classes"
         div.appendChild(h2)
+        if (this.isSingleRace()) {
+            const p = document.createElement("p")
+            p.textContent = `Total Starts: ${this.totalCompetitionStarts()}`
+            div.appendChild(p)
+        }
         const ul = document.createElement("ul")
         this.data.forEach((x) => {
             const li = document.createElement("li")

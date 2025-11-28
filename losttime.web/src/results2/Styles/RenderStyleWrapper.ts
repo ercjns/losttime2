@@ -19,4 +19,18 @@ export abstract class RenderStyleWrapper {
         return html_beautify(wrap.innerHTML);
     }
 
+    isSingleRace():boolean {
+        return this.data.every(x => x.isSingleRace())
+    }
+
+    totalCompetitionStarts():number {
+        let ans = 0;
+        this.data.forEach((x) => {
+            if(x.isIndividuals()) {
+                ans += x.totalClassStarts()
+            }
+        })
+        return ans
+    }
+
 }

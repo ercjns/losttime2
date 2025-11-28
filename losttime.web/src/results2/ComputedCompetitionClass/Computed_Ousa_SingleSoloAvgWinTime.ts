@@ -20,7 +20,7 @@ export class Computed_Ousa_SingleSoloAvgWinTime extends ComputedCompetitionClass
     }
 
     render_txt():string {
-        if (this.totalFinishers() === 0) {
+        if (this.totalClassStarts() === 0) {
             return "";
         }
         let doc = "";
