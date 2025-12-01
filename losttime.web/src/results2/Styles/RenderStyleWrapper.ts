@@ -25,9 +25,9 @@ export abstract class RenderStyleWrapper {
 
     totalCompetitionStarts():number {
         let ans = 0;
-        this.data.forEach((x) => {
-            if(x.isIndividuals()) {
-                ans += x.totalClassStarts()
+        this.data.forEach((competitionClass) => {
+            if(competitionClass.isIndividuals()) {
+                ans += competitionClass.totalClassStarts()
             }
         })
         return ans

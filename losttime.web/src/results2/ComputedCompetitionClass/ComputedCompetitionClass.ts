@@ -36,11 +36,7 @@ export abstract class ComputedCompetitionClass {
     // generally, they'll have one or more renderers that are the reason 
     // this specific result type exists
 
-    // helpers for render actions
-    totalClassStarts():number {
-        return this.results.length;
-    }
-
+    // competition class type info
     isIndividuals():boolean {
         return (this.results.every((x) => x instanceof SingleRaceSoloResult)
             || this.results.every((x) => x instanceof ManyRaceSoloResult))
@@ -54,6 +50,11 @@ export abstract class ComputedCompetitionClass {
     isSingleRace():boolean {
         return (this.results.every(item => item instanceof SingleRaceSoloResult)
             || this.results.every(item => item instanceof SingleRaceTeamResult))
+    }
+
+    // helpers for render actions
+    totalClassStarts():number {
+        return this.results.length;
     }
 
     timeNumberAsMMMSS(time:number|undefined) {
