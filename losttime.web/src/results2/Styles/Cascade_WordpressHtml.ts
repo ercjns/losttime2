@@ -29,6 +29,11 @@ export class Cascade_WordpressHtml extends RenderStyleWrapper {
         h2.textContent = "Competition Classes"
         h2.setAttribute("id", "lt-menu")
         div.appendChild(h2)
+        if (this.isSingleRace()) {
+            const p = document.createElement("p")
+            p.textContent = `Total Starts: ${this.totalCompetitionStarts()}`
+            div.appendChild(p)
+        }
         this.data.forEach((x) => {
             const h4 = document.createElement("h4")
             const a = document.createElement("a")
