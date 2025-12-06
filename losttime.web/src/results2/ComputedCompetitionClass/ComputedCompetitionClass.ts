@@ -13,7 +13,7 @@ export abstract class ComputedCompetitionClass {
     competitionClassId: Guid;
     name: string;
     createdAt: Date;
-    results: SingleRaceSoloResult[] | SingleRaceTeamResult[] | ManyRaceSoloResult[] | ManyRaceTeamResult[];
+    results: (SingleRaceSoloResult | SingleRaceTeamResult | ManyRaceSoloResult | ManyRaceTeamResult)[];
 
     constructor(
         competitionClassId: Guid,
@@ -36,8 +36,24 @@ export abstract class ComputedCompetitionClass {
     // generally, they'll have one or more renderers that are the reason 
     // this specific result type exists
 
+    // competition class type info
+    isIndividuals():boolean {
+        return (this.results.every((x) => x instanceof SingleRaceSoloResult)
+            || this.results.every((x) => x instanceof ManyRaceSoloResult))
+    }
+
+    isTeams():boolean {
+        return (this.results.every(item => item instanceof SingleRaceTeamResult)
+            || this.results.every(item => item instanceof ManyRaceTeamResult))
+    }
+
+    isSingleRace():boolean {
+        return (this.results.every(item => item instanceof SingleRaceSoloResult)
+            || this.results.every(item => item instanceof SingleRaceTeamResult))
+    }
+
     // helpers for render actions
-    totalFinishers() {
+    totalClassStarts():number {
         return this.results.length;
     }
 

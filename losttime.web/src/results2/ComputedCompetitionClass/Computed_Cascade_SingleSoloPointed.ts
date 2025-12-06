@@ -34,7 +34,7 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         doc += `${this.name}`
         doc += "\r\n";
 
-        if (this.totalFinishers() === 0) {
+        if (this.totalClassStarts() === 0) {
             doc += `(No participants for this class)\r\n\r\n`
             return doc;
         }
@@ -72,7 +72,7 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         h2.setAttribute("id", `competition-class-${this.id.toString()}`)
         doc.appendChild(h2);
         
-        if (this.totalFinishers() === 0) {
+        if (this.totalClassStarts() === 0) {
             const p = document.createElement("p")
             p.textContent = "(No participants for this class)"
             doc.appendChild(p)
@@ -110,7 +110,7 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         h3.setAttribute("id", `competition-class-${this.id.toString()}`)
         doc.appendChild(h3);
         
-        if (this.totalFinishers() === 0) {
+        if (this.totalClassStarts() === 0) {
             const p = document.createElement("p")
             p.textContent = "(No participants for this class)"
             doc.appendChild(p)
