@@ -18,8 +18,46 @@ import os
 from shutil import copy2
 
 import paramiko
+import webbrowser
+
+from serveLostTimeWeb import ServeInBackground
 
 from config import *
+global LOSTTIME_URL
+LOSTTIME_URL = None
+
+#### Section: Check LostTime
+
+def setLostTimeUrl(version, ui=None):
+    global LOSTTIME_URL
+    if version == 'INTERNAL':
+        if LOSTTIME_URL is None:
+            address = ServeInBackground()
+            LOSTTIME_URL = address + '/results'
+    elif version == 'PUBLIC':
+        LOSTTIME_URL = 'https://losttimeorienteering.com/results'
+    else:
+        LOSTTIME_URL = version
+    sendVirtualEventToUi(ui, '<<lostTimeWebUrlSet>>')
+    return
+
+def LiveConnectionToLostTime(url):
+    if url is None:
+        print("No url set for LostTime.Web")
+        return False
+    try:
+        resp = requests.get(
+            url=url,
+            timeout=5
+            )
+        resp.raise_for_status()
+    except:
+        print("Unable to reach LostTime - is it running at {}?".format(url))
+        return False
+    print('Using LostTime at {}'.format(url))
+    return True
+
+#### Section: Check the file
 
 def GetLatestFileInFolder(dir,extension=None):
     wd = os.getcwd()
@@ -32,23 +70,6 @@ def GetLatestFileInFolder(dir,extension=None):
 
 def GetLatestResultsXml(dir=SOURCE_DIR):
     return GetLatestFileInFolder(dir,'.xml')
-
-#### Section: Check LostTime
-
-def LiveConnectionToLostTime():
-    try:
-        resp = requests.get(
-            url=LOSTTIME_URL,
-            timeout=5
-            )
-        resp.raise_for_status()
-    except:
-        print("Unable to reach LostTime - is it running at {}?".format(LOSTTIME_URL))
-        return False
-    print('Using LostTime at {}'.format(LOSTTIME_URL))
-    return True
-
-#### Section: Check the file
 
 # From: https://stackoverflow.com/questions/46258499/how-to-read-the-last-line-of-a-file-in-python
 def LastLineOfXmlIsPresent(file):
@@ -80,6 +101,7 @@ def clickViaJS(driver, selector):
     return
 
 def CreateNewHtmlFromSplits(xmlresults_fn):
+    global LOSTTIME_URL
     options = Options()
     options.add_argument("--headless")
     options.set_preference("browser.download.folderList", 2)
@@ -88,6 +110,9 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
     options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/html")
 
     driver = webdriver.Firefox(options=options)
+    if LOSTTIME_URL is None:
+        print("No url set for LostTime.Web")
+        return False
     try:
         driver.get(LOSTTIME_URL)
 
@@ -128,8 +153,8 @@ def CopyOutputToPublicFolder():
     try:
         src = GetLostTimeOutputFile()
         dest = os.path.join(DEST_DIR, DEST_FILENAME)
-        print("from here: " + src)
-        print("to here: " + dest)
+        print("from here: ", src)
+        print("to here: ", dest)
         copy2(src, dest)
     except:
         print("issue copying file to public folder")
@@ -176,24 +201,27 @@ def _SftpPut(client:paramiko.SSHClient, local, remote):
     print("Closed SFTP")
     return
 
-def sendEvent(ui, event):
+#### Section: Main Program and UI Actions
+
+def sendVirtualEventToUi(ui, event):
     if ui != None:
         ui.event_generate(event, when='tail')
         print("SENT EVENT: ", event)
     return
 
 def runOnce(ui=None, stop=lambda:False, processed_file=''):
+    global LOSTTIME_URL
+    if LOSTTIME_URL is None:
+        setLostTimeUrl(LOSTTIME_WEB_VERSION, ui)
     if stop():
-        sendEvent(ui, '<<status-stopped>>')
+        sendVirtualEventToUi(ui, '<<status-stopped>>')
         return False
-    
-    sendEvent(ui, '<<status-working>>')
-    # detect new file from OE now in SFTP drop point
-    # grab new file
+    sendVirtualEventToUi(ui, '<<status-working>>')
+
     XmlResults_fn = GetLatestResultsXml()
     if XmlResults_fn is False:
         print('No files in directory')
-        sendEvent(ui, '<<status-stopped>>')
+        sendVirtualEventToUi(ui, '<<status-stopped>>')
         return False
 
     print('Found file: ' + XmlResults_fn)
@@ -201,56 +229,70 @@ def runOnce(ui=None, stop=lambda:False, processed_file=''):
         print('This is new! processing')
         
         if not LastLineOfXmlIsPresent(XmlResults_fn) or stop():
-            sendEvent(ui, '<<status-stopped>>')
+            sendVirtualEventToUi(ui, '<<status-stopped>>')
             return False
 
         # make sure react app is running locally
-        if not LiveConnectionToLostTime() or stop():
-            sendEvent(ui, '<<status-stopped>>')
+        if not LiveConnectionToLostTime(LOSTTIME_URL) or stop():
+            sendVirtualEventToUi(ui, '<<status-stopped>>')
             return False
         
         # call react app to process through scoring algo
         if not CreateNewHtmlFromSplits(XmlResults_fn) or stop():
-            sendEvent(ui, '<<status-stopped>>')
+            sendVirtualEventToUi(ui, '<<status-stopped>>')
             return False
 
         # get new html file
         if COPY_TO_FOLDER:
             if not CopyOutputToPublicFolder() or stop():
-                sendEvent(ui, '<<status-stopped>>')
+                sendVirtualEventToUi(ui, '<<status-stopped>>')
                 return False
 
         # put file on sftp server
         if COPY_TO_SFTP:
             if not CopyOutputToSftpLocation() or stop():
-                sendEvent(ui, '<<status-stopped>>')
+                sendVirtualEventToUi(ui, '<<status-stopped>>')
                 return False
 
         # set this file as processed
         processed_file = XmlResults_fn
-        sendEvent(ui, '<<status-complete>>')
+        sendVirtualEventToUi(ui, '<<status-complete>>')
         return processed_file
     else:
         print('Already processed that file')
-        sendEvent(ui, '<<status-stopped>>')
+        sendVirtualEventToUi(ui, '<<status-stopped>>')
         return processed_file
     
 def runForever(ui=None, stop=lambda:False):
+    global LOSTTIME_URL
+    if LOSTTIME_URL is None:
+        setLostTimeUrl(LOSTTIME_WEB_VERSION, ui)
+
     processed_file=''
-    sendEvent(ui, '<<status-working>>')
+    sendVirtualEventToUi(ui, '<<status-working>>')
     while not stop():
-        LiveConnectionToLostTime()
         if processed_file == False:
             # something broke last time, stop.
-            sendEvent(ui, '<<status-stopped>>')
+            sendVirtualEventToUi(ui, '<<status-stopped>>')
             break
         print('Sleeping for {} seconds'.format(NEW_FILE_WAIT_SECONDS))
-        sendEvent(ui, '<<status-waiting>>')
+        sendVirtualEventToUi(ui, '<<status-waiting>>')
         sleep(NEW_FILE_WAIT_SECONDS)
         processed_file = runOnce(ui, stop, processed_file)
     print('STOP FLAG')
     return
 
+def launchBrowser():
+    global LOSTTIME_URL
+    if LOSTTIME_URL is None:
+        setLostTimeUrl(LOSTTIME_WEB_VERSION)
+    if LOSTTIME_URL is not None:
+        webbrowser.open_new_tab(LOSTTIME_URL)
+
+def getLostTimeWebUrl():
+    global LOSTTIME_URL
+    return LOSTTIME_URL
 
 if __name__ == "__main__":
-    runForever()
+    LOSTTIME_URL = setLostTimeUrl(LOSTTIME_WEB_VERSION)
+    runForever(LOSTTIME_URL)

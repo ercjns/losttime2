@@ -4,12 +4,13 @@
 #### ALWAYS REQUIRED, ALWAYS REVIEW: ####
 #########################################
 
-#### LOSTTIME_URL
-# Location to find losttime. Can be localhost or on the web depending on setup.
-# Also supports magic value "INTERNAL" which will start and use the version from conductor/losttime.web.built
-# LOSTTIME_URL='https://losttimeorienteering.com/results'
-# LOSTTIME_URL='http://localhost:3000/results'
-LOSTTIME_URL='INTERNAL'
+#### LOSTTIME_WEB_VERSION
+# Specify which instance of LostTime.Web that LostTime.Local should 
+# use for creating results. Valid options are:
+# INTERNAL: the default, uses a version bundled with LostTime.Local, no internet required
+# PUBLIC: uses the public version of losttime at losttimeorienteering.com
+# https://example.com/results: full url. must end in /results. primarily exists for testing
+LOSTTIME_WEB_VERSION="INTERNAL"
 
 #### SOURCE_DIR
 # Directory Where OE automatic export saves new XML Results Files
@@ -73,11 +74,3 @@ LOSTTIME_SCORING_PRESET_ID='cascade-WL2526-single'
 LOSTTIME_DOWNLOAD_STYLE_SELECT_ID='output-style-select'
 LOSTTIME_DOWNLOAD_STYLE_VALUE='1' # 0:Plaintext | 1:HTML | 2:COCHTML
 LOSTTIME_DOWNLOAD_BUTTON_ID='output-download-button'
-
-# Start the server and get it's address??
-if LOSTTIME_URL == 'INTERNAL':
-    from serveLostTimeWeb import ServeInBackground
-    address = ServeInBackground()
-    LOSTTIME_URL= address + '/results'
-
-

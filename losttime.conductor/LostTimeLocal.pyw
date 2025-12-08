@@ -7,7 +7,7 @@ from tkinter import ttk
 from threading import Thread
 from datetime import datetime
 
-from conductor import runOnce, runForever
+from conductor import runOnce, runForever, launchBrowser, getLostTimeWebUrl
 
 class LostTimeLocalApp:
     def __init__(self):
@@ -29,6 +29,7 @@ class LostTimeLocalApp:
         self.root.bind('<<status-stopping>>', lambda e: self.homeTab.onStatus('Stopping'))
         self.root.bind('<<status-stopped>>', lambda e: self.homeTab.onStatus('Stopped'))
         self.root.bind('<<status-complete>>', lambda e: self.homeTab.onStatus('Complete'))
+        self.root.bind('<<lostTimeWebUrlSet>>', self.homeTab.onNewUrl)
 
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
@@ -50,6 +51,7 @@ class HomeTab(ttk.Frame):
             'stop': self.handleStop
             }
         self.frm_actions = ActionsFrame(self, actionHandlers)
+        self.frm_settings = SettingsFrame(self)
 
     def onStatus(self, status):
         self.frm_status.lbl_statusValue.config(text=status)
@@ -87,6 +89,9 @@ class HomeTab(ttk.Frame):
             self._setStatusDotColor('pink')
 
         return
+    
+    def onNewUrl(self, e):
+        self.frm_settings.lbl_urlValue.config(text=str(getLostTimeWebUrl()))
 
     ## onStatus Helpers
     
@@ -146,7 +151,7 @@ class StatusFrame(ttk.LabelFrame):
         self.lbl_successTime.grid(column=1, row=2, columnspan=2, sticky=W)
 
         # Place this Frame
-        self.grid(column=0, columnspan=2, row=1, sticky=(W,E), padx=3, pady=(3,6))
+        self.grid(column=0, row=1, sticky=(W,E), padx=3, pady=(3,6))
 
 class ActionsFrame(ttk.LabelFrame):
     def __init__(self, container, handlers):
@@ -161,8 +166,27 @@ class ActionsFrame(ttk.LabelFrame):
         self.bt_runForever.grid(column=2, row=0)
         self.bt_stop = ttk.Button(self, text="Stop", state='disabled', command=handlers['stop'])
         self.bt_stop.grid(column=3, row=0)
+  
+        self.bt_openBroswer = ttk.Button(self, text="Launch LostTime Web", command=self.handleLaunchBrowser)
+        self.bt_openBroswer.grid(column=1, columnspan=3, row=3)
 
         # Place this Frame
-        self.grid(column=0, columnspan=2, row=2, padx=3, pady=(3,6))
+        self.grid(column=0, row=2, sticky=(W,E), padx=3, pady=(3,6))
+    
+    def handleLaunchBrowser(self):
+        launchBrowser()
+
+class SettingsFrame(ttk.LabelFrame):
+    def __init__(self, container):
+        super().__init__(container)
+        self.config(text="Settings")
+        self.config(padding=8)
+        self.lbl_url = ttk.Label(self, text="Web Instance: ")
+        self.lbl_url.grid(column=1, row=1)
+        self.lbl_urlValue = ttk.Label(self, text=str(getLostTimeWebUrl()))
+        self.lbl_urlValue.grid(column=2, row=1)
+
+        # Place this Frame
+        self.grid(column=0, row=3, sticky=(W,E), padx=3, pady=(3,6))
 
 app = LostTimeLocalApp()
