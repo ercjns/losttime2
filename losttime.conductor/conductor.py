@@ -24,7 +24,6 @@ from config import *
 def GetLatestFileInFolder(dir,extension=None):
     wd = os.getcwd()
     os.chdir(dir)
-    # files = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime, reverse=True)
     files = sorted(filter(lambda x: os.path.isfile(x) and (x.endswith(extension) if extension else True), os.listdir('.')))
     if len(files) == 0:
         return False
