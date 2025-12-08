@@ -6,8 +6,10 @@
 
 #### LOSTTIME_URL
 # Location to find losttime. Can be localhost or on the web depending on setup.
+# Also supports magic value "INTERNAL" which will start and use the version from conductor/losttime.web.built
 # LOSTTIME_URL='https://losttimeorienteering.com/results'
-LOSTTIME_URL='http://localhost:3000/results'
+# LOSTTIME_URL='http://localhost:3000/results'
+LOSTTIME_URL='INTERNAL'
 
 #### SOURCE_DIR
 # Directory Where OE automatic export saves new XML Results Files
@@ -69,8 +71,13 @@ NEW_FILE_WAIT_SECONDS = 10
 # Click IDs
 LOSTTIME_SCORING_PRESET_ID='cascade-WL2526-single'
 LOSTTIME_DOWNLOAD_STYLE_SELECT_ID='output-style-select'
-LOSTTIME_DOWNLOAD_STYLE_VALUE='0' # 0:Plaintext | 1:HTML | 2:COCHTML
+LOSTTIME_DOWNLOAD_STYLE_VALUE='1' # 0:Plaintext | 1:HTML | 2:COCHTML
 LOSTTIME_DOWNLOAD_BUTTON_ID='output-download-button'
 
+# Start the server and get it's address??
+if LOSTTIME_URL == 'INTERNAL':
+    from serveLostTimeWeb import ServeInBackground
+    address = ServeInBackground()
+    LOSTTIME_URL= address + '/results'
 
 

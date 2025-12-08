@@ -21,8 +21,6 @@ import paramiko
 
 from config import *
 
-
-
 def GetLatestFileInFolder(dir):
     wd = os.getcwd()
     os.chdir(dir)
@@ -48,6 +46,7 @@ def LiveConnectionToLostTime():
     except:
         print("Unable to reach LostTime - is it running at {}?".format(LOSTTIME_URL))
         return False
+    print('Using LostTime at {}'.format(LOSTTIME_URL))
     return True
 
 #### Section: Check the file
@@ -175,54 +174,80 @@ def _SftpPut(client:paramiko.SSHClient, local, remote):
     print("Closed SFTP")
     return
 
+def sendEvent(ui, event):
+    if ui != None:
+        ui.event_generate(event, when='tail')
+    return
 
+def runOnce(ui=None, stop=lambda:False, processed_file=''):
+    if stop():
+        sendEvent(ui, '<<status-stopped>>')
+        return False
+    
+    sendEvent(ui, '<<status-working>>')
+    # detect new file from OE now in SFTP drop point
+    # grab new file
+    XmlResults_fn = GetLatestResultsXml()
+    if XmlResults_fn is False:
+        print('No files in directory')
+        sendEvent(ui, '<<status-stopped>>')
+        return False
 
-#### Section: MAIN
+    print('Found file: ' + XmlResults_fn)
+    if XmlResults_fn != processed_file:
+        print('This is new! processing')
+        
+        if not LastLineOfXmlIsPresent(XmlResults_fn) or stop():
+            sendEvent(ui, '<<status-stopped>>')
+            return False
 
-def main():
+        # make sure react app is running locally
+        if not LiveConnectionToLostTime() or stop():
+            sendEvent(ui, '<<status-stopped>>')
+            return False
+        
+        # call react app to process through scoring algo
+        if not CreateNewHtmlFromSplits(XmlResults_fn) or stop():
+            sendEvent(ui, '<<status-stopped>>')
+            return False
+
+        # get new html file
+        if COPY_TO_FOLDER:
+            if not CopyOutputToPublicFolder() or stop():
+                sendEvent(ui, '<<status-stopped>>')
+                return False
+
+        # put file on sftp server
+        if COPY_TO_SFTP:
+            if not CopyOutputToSftpLocation() or stop():
+                sendEvent(ui, '<<status-stopped>>')
+                return False
+
+        # set this file as processed
+        processed_file = XmlResults_fn
+        sendEvent(ui, '<<status-complete>>')
+        return processed_file
+    else:
+        print('Already processed that file')
+        sendEvent(ui, '<<status-stopped>>')
+        return processed_file
+    
+def runForever(ui=None, stop=lambda:False):
     processed_file=''
-
-    while True:
-        # always sleep
+    sendEvent(ui, '<<status-working>>')
+    LiveConnectionToLostTime()
+    while not stop():
+        if processed_file == False:
+            # something broke last time, stop.
+            sendEvent(ui, '<<status-stopped>>')
+            break
         print('Sleeping for {} seconds'.format(NEW_FILE_WAIT_SECONDS))
+        sendEvent(ui, '<<status-waiting>>')
         sleep(NEW_FILE_WAIT_SECONDS)
+        processed_file = runOnce(ui, stop, processed_file)
+    print('STOP FLAG')
+    return
 
-        # detect new file from OE now in SFTP drop point
-        # grab new file
-        XmlResults_fn = GetLatestResultsXml()
-        if XmlResults_fn is False:
-            print('No files in directory')
-            continue
-
-        print('Found file: ' + XmlResults_fn)
-        if XmlResults_fn != processed_file:
-            print('This is new! processing')
-            
-            if not LastLineOfXmlIsPresent(XmlResults_fn):
-                continue
-
-            # make sure react app is running locally
-            if not LiveConnectionToLostTime():
-                continue
-            
-            # call react app to process through scoring algo
-            if not CreateNewHtmlFromSplits(XmlResults_fn):
-                continue
-
-            # get new html file
-            if COPY_TO_FOLDER:
-                if not CopyOutputToPublicFolder():
-                    continue
-
-            # put file on sftp server
-            if COPY_TO_SFTP:
-                if not CopyOutputToSftpLocation():
-                    continue
-
-            # set this file as processed
-            processed_file = XmlResults_fn
-        else:
-            print('Already processed that file')
 
 if __name__ == "__main__":
-    main()
+    runForever()
