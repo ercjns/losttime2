@@ -21,18 +21,18 @@ import paramiko
 
 from config import *
 
-def GetLatestFileInFolder(dir):
+def GetLatestFileInFolder(dir,extension=None):
     wd = os.getcwd()
     os.chdir(dir)
-    files = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime, reverse=True)
+    # files = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime, reverse=True)
+    files = sorted(filter(lambda x: os.path.isfile(x) and (x.endswith(extension) if extension else True), os.listdir('.')))
     if len(files) == 0:
         return False
-    fn = files[0]
     os.chdir(wd)
-    return os.path.join(dir, fn)
+    return os.path.join(dir, files[0])
 
 def GetLatestResultsXml(dir=SOURCE_DIR):
-    return GetLatestFileInFolder(dir)
+    return GetLatestFileInFolder(dir,'.xml')
 
 #### Section: Check LostTime
 
@@ -53,16 +53,19 @@ def LiveConnectionToLostTime():
 
 # From: https://stackoverflow.com/questions/46258499/how-to-read-the-last-line-of-a-file-in-python
 def LastLineOfXmlIsPresent(file):
-    with open(file, 'rb') as f:
-        try:  # catch OSError in case of a one line file 
-            f.seek(-2, os.SEEK_END)
-            while f.read(1) != b'\n':
-                f.seek(-2, os.SEEK_CUR)
-        except OSError:
-            f.seek(0)
-        last_line = f.readline().decode()
-    if last_line == "</ResultList>\r\n":
-        return True
+    try:
+        with open(file, 'rb') as f:
+            try:  # catch OSError in case of a one line file 
+                f.seek(-2, os.SEEK_END)
+                while f.read(1) != b'\n':
+                    f.seek(-2, os.SEEK_CUR)
+            except OSError:
+                f.seek(0)
+            last_line = f.readline().decode()
+        if last_line == "</ResultList>\r\n":
+            return True
+    except PermissionError:
+        print('Permission denied trying to read: {}'.format(file))
     return False
 
 #### Section: Call LostTime with File
