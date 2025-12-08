@@ -179,6 +179,7 @@ def _SftpPut(client:paramiko.SSHClient, local, remote):
 def sendEvent(ui, event):
     if ui != None:
         ui.event_generate(event, when='tail')
+        print("SENT EVENT: ", event)
     return
 
 def runOnce(ui=None, stop=lambda:False, processed_file=''):
@@ -237,8 +238,8 @@ def runOnce(ui=None, stop=lambda:False, processed_file=''):
 def runForever(ui=None, stop=lambda:False):
     processed_file=''
     sendEvent(ui, '<<status-working>>')
-    LiveConnectionToLostTime()
     while not stop():
+        LiveConnectionToLostTime()
         if processed_file == False:
             # something broke last time, stop.
             sendEvent(ui, '<<status-stopped>>')
