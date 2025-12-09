@@ -48,7 +48,8 @@ class HomeTab(ttk.Frame):
         actionHandlers = {
             'runOnce': self.handleRunOnce,
             'runForever': self.handleRunForever,
-            'stop': self.handleStop
+            'stop': self.handleStop,
+            'launchBrowser': self.handleLaunchBrowser
             }
         self.frm_actions = ActionsFrame(self, actionHandlers)
         self.frm_settings = SettingsFrame(self)
@@ -126,6 +127,10 @@ class HomeTab(ttk.Frame):
         self.onStatus('Stopping')
         return
 
+    def handleLaunchBrowser(self):
+        launchBrowser()
+        self.onNewUrl(None)
+
 class StatusFrame(ttk.LabelFrame):
     def __init__(self, container):
         super().__init__(container)
@@ -167,14 +172,11 @@ class ActionsFrame(ttk.LabelFrame):
         self.bt_stop = ttk.Button(self, text="Stop", state='disabled', command=handlers['stop'])
         self.bt_stop.grid(column=3, row=0)
   
-        self.bt_openBroswer = ttk.Button(self, text="Launch LostTime Web", command=self.handleLaunchBrowser)
+        self.bt_openBroswer = ttk.Button(self, text="Launch LostTime Web", command=handlers['launchBrowser'])
         self.bt_openBroswer.grid(column=1, columnspan=3, row=3)
 
         # Place this Frame
         self.grid(column=0, row=2, sticky=(W,E), padx=3, pady=(3,6))
-    
-    def handleLaunchBrowser(self):
-        launchBrowser()
 
 class SettingsFrame(ttk.LabelFrame):
     def __init__(self, container):
