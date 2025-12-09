@@ -169,3 +169,9 @@ cython_debug/
 
 # Test result temp files
 losttime.tests/utilities/temp/*
+
+# Conductor temp output
+losttime.conductor/web-public/*
+
+# Conductor Actual Config
+losttime.conductor/config.py
