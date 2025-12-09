@@ -51,6 +51,7 @@ test.describe('output contents OE12', () => {
         await page.goto('/entries');
         await addEntriesTestFile('COC_1.csv', page);
         await addEntriesTestFile('WIOL_6.csv', page);
+        await addEntriesTestFile('COC_SpecialCharANSI.csv', page);
 
         // Download in OE12 format
         await page.getByRole('button', { name: 'Download OE File' }).click();
@@ -98,6 +99,16 @@ test.describe('output contents OE12', () => {
         // NC Elementary
         const Flo = res.data[6];
         expect(Flo['nc']).toBe('X')
+    });
+
+    test('Special Characters', async ({page}, testInfo) => {
+        const filePath = testInfo.attachments.find((x) => x.name==='OE12')?.path!;
+        const file = readFileSync(filePath).toString();
+        const res = Papa.parse<any>(file, {
+            header: true
+        });
+        const Erlandiel = res.data[7];
+        expect(Erlandiel['First name']).toBe('Ërlandiel')
     });
         
 });
