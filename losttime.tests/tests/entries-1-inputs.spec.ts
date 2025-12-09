@@ -99,6 +99,52 @@ test('COC csv - single record', async ({ page }) => {
     await expect(table.locator('tr:nth-child(1) td:nth-child(6)')).toHaveText('9F'); // Class
 });
 
+test('COC csv - special Characters', async ({ page }) => {
+    // WHEN:
+    //   upload a COC format csv file with only one record
+    await addEntriesTestFile('COC_SpecialChar.csv', page);
+    // THEN:
+    //   Uploaded file name is listed
+    //   Uploaded file count is 1
+    //   Records found in file is 1
+    //   Entries summary starts count is 1
+    //   All participants count is 1
+    await expect(page.getByText('COC_SpecialChar.csv')).toBeVisible();
+    await expect(page.getByText('Files Uploaded:')).toContainText('1');
+    await expect(page.getByText('Found: 1')).toBeVisible();
+    await expect(page.getByText('Summary:')).toContainText('1');
+    await expect(page.getByText('All Entries:')).toContainText('1');
+    //   Class in summary is correct
+    await expect(page.getByTestId('starts-by-class-items')).toContainText('1: 1')
+    //   Participant list information is correct
+    const table = page.getByRole('table');
+    await expect(table.locator('tr:nth-child(1) td:nth-child(1)')).toHaveText('Ërlandiel'); // First
+});
+
+test('COC csv - special Characters ANSI', async ({ page }) => {
+    // WHEN:
+    //   upload a COC format csv file with only one record
+    await addEntriesTestFile('COC_SpecialCharANSI.csv', page);
+    // THEN:
+    //   Uploaded file name is listed
+    //   Uploaded file count is 1
+    //   Records found in file is 1
+    //   Entries summary starts count is 1
+    //   All participants count is 1
+    await expect(page.getByText('COC_SpecialCharANSI.csv')).toBeVisible();
+    await expect(page.getByText('Files Uploaded:')).toContainText('1');
+    await expect(page.getByText('Found: 1')).toBeVisible();
+    await expect(page.getByText('Summary:')).toContainText('1');
+    await expect(page.getByText('All Entries:')).toContainText('1');
+    //   Class in summary is correct
+    await expect(page.getByTestId('starts-by-class-items')).toContainText('1: 1')
+    //   Participant list information is correct
+    const table = page.getByRole('table');
+    await expect(table.locator('tr:nth-child(1) td:nth-child(1)')).toHaveText('Ërlandiel'); // First
+});
+
+
+
 test('WIOL csv - empty', async ({ page }) => {
     // WHEN:
     //   upload a WIOL format csv file with only headers
