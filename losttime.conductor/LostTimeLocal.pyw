@@ -61,10 +61,12 @@ class HomeTab(ttk.Frame):
             self.STOP_REQUESTED = False
             if status == 'Complete':
                 self.frm_status.lbl_successTime.config(text=self._nowString())
+                self._setStatusDotColor('purple')
+            elif status == 'Stopped':
+                self._setStatusDotColor('red')
             self._setRunOnceBtState('normal')
             self._setRunForeverBtState('normal')
             self._setStopBtState('disabled')
-            self._setStatusDotColor('red')
 
         elif status == 'Stopping':
             self._setRunOnceBtState('disabled')
