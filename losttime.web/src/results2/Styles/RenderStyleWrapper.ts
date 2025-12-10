@@ -6,9 +6,13 @@ export abstract class RenderStyleWrapper {
     data: ComputedCompetitionClass[]
     abstract extension:string
     abstract styleEnumValue:number
+    now: Date
+    timeString: string
 
     constructor(data:ComputedCompetitionClass[]) {
         this.data = data
+        this.now = new Date()
+        this.timeString = this.now.toLocaleTimeString()
     }
 
     abstract render():string
