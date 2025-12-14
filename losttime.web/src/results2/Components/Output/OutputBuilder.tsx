@@ -21,6 +21,7 @@ import { WizardSectionTitle } from "../../../shared/WizardSectionTitle";
 import { scoreMethodOptions } from "../Compose/ScoreMethodSelect";
 import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
 import { Cascade_SingleSoloScoreOScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
+import { Cascade_WifiHtml } from "../../Styles/Cascade_WifiHtml";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -121,7 +122,8 @@ export function OutputBuilder(props:outputBuilderProps) {
     const styleOptions = [
         <option key={`style-option-${RenderStyles.standard_txt}`} value={RenderStyles.standard_txt}>Plaintext</option>,
         <option key={`style-option-${RenderStyles.standard_html}`} value={RenderStyles.standard_html}>General HTML</option>,
-        <option key={`style-option-${RenderStyles.cascade_wordpresshtml}`} value={RenderStyles.cascade_wordpresshtml}>Cascade OC: WordPress HTML</option>
+        <option key={`style-option-${RenderStyles.cascade_wordpresshtml}`} value={RenderStyles.cascade_wordpresshtml}>Cascade OC: WordPress HTML</option>,
+        <option key={`style-option-${RenderStyles.cascade_wifihtml}`} value={RenderStyles.cascade_wifihtml}>Cascade OC: WiFi HTML</option>
     ];
 
     const rows = props.competitionClasses.map((x) => {
@@ -172,6 +174,9 @@ export function OutputBuilder(props:outputBuilderProps) {
                 break;
             case RenderStyles.cascade_wordpresshtml.toString():
                 styleHelper = new Cascade_WordpressHtml(computed)
+                break;
+            case RenderStyles.cascade_wifihtml.toString():
+                styleHelper = new Cascade_WifiHtml(computed)
                 break;
             default:
                 console.log(`Missing style helper for ${style}`)
