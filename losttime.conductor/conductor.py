@@ -62,7 +62,10 @@ def LiveConnectionToLostTime(url):
 def GetLatestFileInFolder(dir,extension=None):
     wd = os.getcwd()
     os.chdir(dir)
-    files = sorted(filter(lambda x: os.path.isfile(x) and (x.endswith(extension) if extension else True), os.listdir('.')))
+    files = sorted(filter(lambda x: os.path.isfile(x) and (x.endswith(extension) if extension else True), 
+                          os.listdir('.')),
+                   key=os.path.getmtime,
+                   reverse=True)
     if len(files) == 0:
         return False
     os.chdir(wd)
