@@ -349,5 +349,4 @@ def getLostTimeWebUrl():
     return LOSTTIME_URL
 
 if __name__ == "__main__":
-    LOSTTIME_URL = setLostTimeUrl(LOSTTIME_WEB_VERSION)
-    runForever(LOSTTIME_URL)
+    runForever()
