@@ -2,10 +2,9 @@
 
 This application is responsible for conducting the workflow of files that begins with a result file from an Orienteering Event software and ends with an html file being made available at a specified location.
 
-## Requirements
+This application can also be used to simplify running a local offline version of LostTime.
 
-This application runs on a windows computer.
-This application must be able to access an instance of `LostTime.Web`
+This application runs on Windows.
 
 ## Quickstart
 
@@ -19,7 +18,11 @@ activate the virtual environment: `.\venv-conductor\Scripts\activate`
 
 update values in `config.py`
 
-run the conductor: `py .\conductor.py`
+Once this is complete, there are three options to run the program:
+
+1. Standard: Start the UI without any extra command line windows by double clicking on `_ClickToRun.bat`
+1. Debugging: Start the UI from the command line to see print statements: `(venv-conductor) C:\...\losttime.conductor>py LostTimeLocal.pyw`
+1. Legacy: Run forever from the command line: `(venv-conductor) C:\...\losttime.conductor>py conductor.pyw`
 
 ## Workflow
 
@@ -33,7 +36,6 @@ Specifically, the application finds the file with the most recent modified time.
 ### LostTime Web Processing
 
 Define `LOSTTIME_OUT_DIR`.
-Losttime must be running and accessible at `LOSTTIME_URL`. This application does NOT start an instance of LostTime.Web if one is not found at the specified server.
 
 Conductor uses selenium to:
 - open losttime
