@@ -212,76 +212,128 @@ def sendVirtualEventToUi(ui, event):
         print("SENT EVENT: ", event)
     return
 
+class ConductorRunResult(object):
+
+    def __init__(self, previousXml) -> None:
+        self.previousXml: str = previousXml
+        self.lostTimeUrl: str|None = None
+        self.latestXml: str = ''
+        self.latestIsNew: bool|None = None
+        self.lostTimeConnect: bool|None = None
+        self.createdOutput: bool|None = None
+        self.copiedFile: bool|None = None
+        self.copiedSftp: bool|None = None
+        self.message: str|None = None
+        return
+    
+    def keepRunning(self) -> bool:
+        # keep running if no files ever found
+        if self.previousXml == '' and self.latestXml == '':
+            return True
+        
+        # keep running if file found but not new
+        if self.latestIsNew is not None and self.latestIsNew is False:
+            return True
+        
+        # keep running on success based on configs
+        if COPY_TO_FOLDER and not COPY_TO_SFTP:
+            if self.copiedFile: return True
+        elif COPY_TO_SFTP and not COPY_TO_FOLDER:
+            if self.copiedSftp: return True
+        elif COPY_TO_FOLDER and COPY_TO_SFTP:
+            if self.copiedFile and self.copiedSftp: return True
+        elif not COPY_TO_FOLDER and not COPY_TO_SFTP:
+            if self.createdOutput: return True
+        
+        # otherwise don't keep running
+        return False
+    
+    def setMessage(self, message) -> None:
+        self.message = message
+        print(self.message)
+        return
+
+
 def runOnce(ui=None, stop=lambda:False, processed_file=''):
+    res = ConductorRunResult(processed_file)
     global LOSTTIME_URL
     if LOSTTIME_URL is None:
         setLostTimeUrl(LOSTTIME_WEB_VERSION, ui)
+    res.lostTimeUrl = LOSTTIME_URL
     if stop():
         sendVirtualEventToUi(ui, '<<status-stopped>>')
-        return False
+        return res
     sendVirtualEventToUi(ui, '<<status-working>>')
 
     XmlResults_fn = GetLatestResultsXml()
+    res.latestXml = XmlResults_fn if XmlResults_fn else ''
     if XmlResults_fn is False:
-        print('No files in directory')
+        res.setMessage('No Results XML files found in directory')
         sendVirtualEventToUi(ui, '<<status-stopped>>')
-        return False
-
-    print('Found file: ' + XmlResults_fn)
+        return res
+    res.setMessage('Found file: ' + XmlResults_fn)
+    
     if XmlResults_fn != processed_file:
-        print('This is new! processing')
+        res.latestIsNew = True
         
         if not LastLineOfXmlIsPresent(XmlResults_fn) or stop():
+            res.setMessage('XML file not complete')
             sendVirtualEventToUi(ui, '<<status-stopped>>')
-            return False
+            return res
 
         # make sure react app is running locally
         if not LiveConnectionToLostTime(LOSTTIME_URL) or stop():
+            res.lostTimeConnect = False
             sendVirtualEventToUi(ui, '<<status-stopped>>')
-            return False
-        
+            return res
+        res.lostTimeConnect = True
+
         # call react app to process through scoring algo
         if not CreateNewHtmlFromSplits(XmlResults_fn) or stop():
+            res.createdOutput = False
             sendVirtualEventToUi(ui, '<<status-stopped>>')
-            return False
+            return res
+        res.createdOutput = True
 
         # get new html file
         if COPY_TO_FOLDER:
             if not CopyOutputToPublicFolder() or stop():
+                res.copiedFile = False
                 sendVirtualEventToUi(ui, '<<status-stopped>>')
-                return False
+                return res
+            res.copiedFile = True
 
         # put file on sftp server
         if COPY_TO_SFTP:
             if not CopyOutputToSftpLocation() or stop():
+                res.copiedSftp = False
                 sendVirtualEventToUi(ui, '<<status-stopped>>')
-                return False
+                return res
+            res.copiedSftp = True
 
-        # set this file as processed
-        processed_file = XmlResults_fn
         sendVirtualEventToUi(ui, '<<status-complete>>')
-        return processed_file
+        return res
     else:
-        print('Already processed that file')
+        res.latestIsNew = False
+        res.setMessage('Already processed that file')
         sendVirtualEventToUi(ui, '<<status-stopped>>')
-        return processed_file
+        return res
     
 def runForever(ui=None, stop=lambda:False):
     global LOSTTIME_URL
     if LOSTTIME_URL is None:
         setLostTimeUrl(LOSTTIME_WEB_VERSION, ui)
 
-    processed_file=''
+    result = ConductorRunResult('')
     sendVirtualEventToUi(ui, '<<status-working>>')
     while not stop():
-        if processed_file == False:
-            # something broke last time, stop.
+        if result.keepRunning() is False:
             sendVirtualEventToUi(ui, '<<status-stopped>>')
             break
         print('Sleeping for {} seconds'.format(NEW_FILE_WAIT_SECONDS))
         sendVirtualEventToUi(ui, '<<status-waiting>>')
         sleep(NEW_FILE_WAIT_SECONDS)
-        processed_file = runOnce(ui, stop, processed_file)
+        result = runOnce(ui, stop, result.latestXml)
     print('STOP FLAG')
     return
 
