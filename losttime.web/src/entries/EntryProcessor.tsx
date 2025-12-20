@@ -1,5 +1,6 @@
 import React from 'react';
 import Papa from 'papaparse';
+import * as jschardet from 'jschardet'
 import { Button, ButtonGroup, ButtonToolbar, Col, Dropdown, DropdownButton, Form, FormControl, Row } from 'react-bootstrap';
 import { BasicDz } from '../shared/dz';
 import * as SS from '../shared/orienteeringtypes/SportSoftware'
@@ -131,25 +132,41 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
     }
   
     updateEntries(file:File) {
-      Papa.parse(file, {
-              header: true,
-              transform: (value, col) => {return(value.replace(/\0/g, '').trim())},
-              complete: (results, file:File) => {
-        const parsed = parseEnties(results.data, this.state.nextstartno);
-        const newentries = this.state.entries.concat(parsed.data);
-        this.setState({entries: newentries, nextstartno: parsed.meta.maxstartno})
-  
-        const newfile:entryFileMeta = {
-          name: file.name,
-          success: parsed.meta.success,
-          failed: parsed.meta.failed,
-          empty: parsed.meta.empty
-        };
-        this.setState({
-          filesprocessed: [...this.state.filesprocessed, newfile]
-        });
-    }
-    });
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e !== null && e.target !== null && e.target.result !== null) {
+          console.log(e.target.result);
+          if (e.target.result instanceof ArrayBuffer) {
+            // Detect encoding
+            const binStr = String.fromCharCode(...new Uint8Array(e.target.result))
+            const enc = jschardet.detect(binStr)
+            console.log(enc)
+
+            // parse with that encoding hint
+            Papa.parse(file, {
+                header: true,
+                encoding: enc.encoding,
+                transform: (value, col) => {return(value.replace(/\0/g, '').trim())},
+                complete: (results, file:File) => {
+              const parsed = parseEnties(results.data, this.state.nextstartno);
+              const newentries = this.state.entries.concat(parsed.data);
+              this.setState({entries: newentries, nextstartno: parsed.meta.maxstartno})
+    
+              const newfile:entryFileMeta = {
+                name: file.name,
+                success: parsed.meta.success,
+                failed: parsed.meta.failed,
+                empty: parsed.meta.empty
+              };
+              this.setState({
+                filesprocessed: [...this.state.filesprocessed, newfile]
+              });
+            }
+            });
+          } 
+        }
+      }
+      reader.readAsArrayBuffer(file)      
     }
   
     downloadpdf(headerText:string='') {

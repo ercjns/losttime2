@@ -1091,6 +1091,11 @@
   },
   {
     "Namespace": "WIOL",
+    "Code": "WSU",
+    "Name": "Washington State University"
+  },
+  {
+    "Namespace": "WIOL",
     "Code": "WTM",
     "Name": "Whatcom Middle"
   },
@@ -1098,5 +1103,10 @@
     "Namespace": "WIOL",
     "Code": "WVA",
     "Name": "Washington Virtual Academy"
+  },
+  {
+    "Namespace": "WIOL",
+    "Code": "WWM",
+    "Name": "Woodward Middle"
   }
 ]
