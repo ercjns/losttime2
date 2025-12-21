@@ -33,7 +33,7 @@ export type Course = {
 
 export type PersonResult = {
     Person: Person;
-    Organisation: Organisation;
+    Organisation?: Organisation;
     Result: Result;
     Course?: Course;
 }
@@ -72,7 +72,7 @@ export type SplitTime = {
 }
 
 export function IofXml3ToLtResult(r:PersonResult):LtResult {
-    const person = new LtPerson(r.Person.Name.Given??"", r.Person.Name.Family??"",r.Organisation.ShortName, r.Organisation.Name)
+    const person = new LtPerson(r.Person.Name.Given??"", r.Person.Name.Family??"",r.Organisation?.ShortName??"None", r.Organisation?.Name??"None")
 
     return new LtResult({
         person: person,
