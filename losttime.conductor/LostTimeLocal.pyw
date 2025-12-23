@@ -3,6 +3,7 @@ from tkinter import N,S,E,W
 from tkinter import font as TkFont
 from tkinter import Canvas
 from tkinter import ttk
+from os.path import join, dirname
 
 from threading import Thread
 from datetime import datetime
@@ -13,6 +14,7 @@ class LostTimeLocalApp:
     def __init__(self):
         self.root = Tk()
         self.root.title('LostTime Local')
+        self.root.iconbitmap(join(dirname(__file__),'losttime.web.built','favicon.ico'))
         
         f = TkFont.nametofont('TkDefaultFont')
         f.config(size=18)

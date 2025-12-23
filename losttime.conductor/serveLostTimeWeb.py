@@ -1,7 +1,7 @@
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from threading import Thread
 from functools import partial
-from os.path import abspath, join
+from os.path import abspath, join, dirname
 
 import os
 import urllib
@@ -9,8 +9,7 @@ from http import HTTPStatus
 import email.utils
 import datetime
 
-BUILT_LT_PATH = abspath('./losttime.web.built')
-BUILT_LT_INDEX = join(BUILT_LT_PATH, 'index.html')
+BUILT_LT_PATH = join(abspath(dirname(__file__)), 'losttime.web.built')
 
 class ReactAppHandler(SimpleHTTPRequestHandler):
 

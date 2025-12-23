@@ -8,30 +8,19 @@ This application runs on Windows.
 
 ## Quickstart
 
-from the `losttime.conductor` folder...
+There is now a packaged/built version available for windows!
 
-create a virtual environment: `py -m virtualenv venv-conductor`
+* Download the ZIP file and extract to a folder
+* Review and Update the values in `LostTimeLocal.config` (see below)
+* Double click on `LostTimeLocal.exe`
 
-activate the virtual environment: `.\venv-conductor\Scripts\activate`
-
-(install dependencies as needed): `pip install -r requirements.txt`
-
-update values in `config.py`
-
-Once this is complete, there are three options to run the program:
-
-1. Standard: Start the UI without any extra command line windows by double clicking on `_ClickToRun.bat`
-1. Debugging: Start the UI from the command line to see print statements: `(venv-conductor) C:\...\losttime.conductor>py LostTimeLocal.pyw`
-1. Legacy: Run forever from the command line: `(venv-conductor) C:\...\losttime.conductor>py conductor.pyw`
-
-## Workflow
+## How it works
 
 ### Monitoring
 
 Define a `SOURCE_DIR`. This directory must be accessible from the machine where the application is running. The application will check this directory every `NEW_FILE_WAIT_SECONDS` for a new file.
 
-Specifically, the application finds the file with the most recent modified time. If the file name is the same as the previously processed file, processing stops.
-
+Specifically, the application finds an xml file with the most recent modified time. If the file name is the same as the previously processed file, processing stops.
 
 ### LostTime Web Processing
 
@@ -74,6 +63,7 @@ This firmware adds some basic linux server functionality that makes things easy:
 
 
 ### DNSmasq
+
 This configuration allows us to tell individuals to connect to our WiFi network, type in a normal looking url, and get the page we're serving.
 
 There is just one line of configuraiton added to TomatoUSB's dnsmasq field:
@@ -82,3 +72,21 @@ There is just one line of configuraiton added to TomatoUSB's dnsmasq field:
 
 ### USB / NGINX / Samba
 An old thumb drive provides more than enough storage for a few html files to be served. A folder on this drive is set up as both the NGINX server webroot as well as a samba share. This allows the losttime conductor to use the standard file copy functionality to drop a new results file. NGINX just serves the new file to whoever requests it from a browser.
+
+## For Developers
+
+from the `losttime.conductor` folder...
+
+create a virtual environment: `py -m virtualenv venv-conductor`
+
+activate the virtual environment: `.\venv-conductor\Scripts\activate`
+
+(install dependencies as needed): `pip install -r requirements.txt`
+
+update values in `LostTimeLocal.config`
+
+Once this is complete, there are three options to run the program:
+
+1. Debugging: Start the UI from the command line to see print statements: `(venv-conductor) C:\...\losttime.conductor>py LostTimeLocal.pyw`
+1. Legacy: Run forever from the command line: `(venv-conductor) C:\...\losttime.conductor>py conductor.py`
+1. Build: run `pyinstaller buildExe.spec`, then double click the generated exe in the `dist` folder.

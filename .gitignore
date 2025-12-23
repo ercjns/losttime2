@@ -61,6 +61,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+!losttime.conductor/buildExe.spec
 
 # Installer logs
 pip-log.txt
@@ -174,4 +175,4 @@ losttime.tests/utilities/temp/*
 losttime.conductor/web-public/*
 
 # Conductor Actual Config
-losttime.conductor/config.py
+losttime.conductor/*.config
