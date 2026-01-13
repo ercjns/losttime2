@@ -89,4 +89,4 @@ Once this is complete, there are three options to run the program:
 
 1. Debugging: Start the UI from the command line to see print statements: `(venv-conductor) C:\...\losttime.conductor>py LostTimeLocal.pyw`
 1. Legacy: Run forever from the command line: `(venv-conductor) C:\...\losttime.conductor>py conductor.py`
-1. Build: run `pyinstaller buildExe.spec`, then double click the generated exe in the `dist` folder.
+1. Build: run `pyinstaller buildExe.spec`, then double click the generated exe in the `dist\LostTimeLocal` folder.

@@ -38,6 +38,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=['losttime.web.built/favicon.ico'],
+    version='version.txt',
 )
 coll = COLLECT(
     exe,
