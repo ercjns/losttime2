@@ -1,7 +1,7 @@
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
-from conductor import PUBLIC_DIR
-PUBLIC_PATH = PUBLIC_DIR
+from conductor import conf as SETTINGS
+PUBLIC_PATH = SETTINGS.DEST_DIR
 # PUBLIC_PATH='./web-public/'
 
 class CustomHandler(SimpleHTTPRequestHandler):
