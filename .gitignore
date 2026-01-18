@@ -61,6 +61,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+!losttime.conductor/buildExe.spec
 
 # Installer logs
 pip-log.txt
@@ -142,6 +143,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+!losttime.web/.env
 
 # Spyder project settings
 .spyderproject
@@ -171,7 +173,7 @@ cython_debug/
 losttime.tests/utilities/temp/*
 
 # Conductor temp output
-losttime.conductor/web-public/*
+losttime.conductor/web-public
 
 # Conductor Actual Config
-losttime.conductor/config.py
+losttime.conductor/*.config

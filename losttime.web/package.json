@@ -1,6 +1,6 @@
 {
   "name": "losttime-orienteering",
-  "version": "0.3.0",
+  "version": "2.1.0",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.0",
