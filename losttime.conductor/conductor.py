@@ -1,6 +1,6 @@
 ###
 # LostTime.Conductor
-# Eric Jones 2024
+# Eric Jones 2025
 ###
 
 import posixpath
@@ -22,7 +22,8 @@ import webbrowser
 
 from serveLostTimeWeb import ServeInBackground
 
-from config import *
+from importlib.machinery import SourceFileLoader
+conf = SourceFileLoader( 'conf', './LostTimeLocal.config' ).load_module()
 global LOSTTIME_URL
 LOSTTIME_URL = None
 
@@ -71,7 +72,7 @@ def GetLatestFileInFolder(dir,extension=None):
     os.chdir(wd)
     return os.path.join(dir, files[0])
 
-def GetLatestResultsXml(dir=SOURCE_DIR):
+def GetLatestResultsXml(dir=conf.SOURCE_DIR):
     return GetLatestFileInFolder(dir,'.xml')
 
 # From: https://stackoverflow.com/questions/46258499/how-to-read-the-last-line-of-a-file-in-python
@@ -109,7 +110,7 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
     options.add_argument("--headless")
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.dhowWhenStarting", False)
-    options.set_preference("browser.download.dir", LOSTTIME_OUT_DIR )
+    options.set_preference("browser.download.dir", conf.LOSTTIME_OUT_DIR )
     options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/html")
 
     driver = webdriver.Firefox(options=options)
@@ -126,16 +127,16 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
 
         errors = [NoSuchElementException, ElementNotInteractableException]
         wait = WebDriverWait(driver, timeout=5, ignored_exceptions=errors)
-        wait.until(element_to_be_clickable((By.ID, LOSTTIME_SCORING_PRESET_ID)))
-        clickViaJS(driver, '#'+LOSTTIME_SCORING_PRESET_ID)
+        wait.until(element_to_be_clickable((By.ID, conf.LOSTTIME_SCORING_PRESET_ID)))
+        clickViaJS(driver, '#' + conf.LOSTTIME_SCORING_PRESET_ID)
 
         errors = [NoSuchElementException, ElementNotInteractableException]
         wait = WebDriverWait(driver, timeout=5, poll_frequency=.5, ignored_exceptions=errors)
-        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_STYLE_SELECT_ID)))
-        select = Select(driver.find_element(By.ID, LOSTTIME_DOWNLOAD_STYLE_SELECT_ID))
-        select.select_by_value(LOSTTIME_DOWNLOAD_STYLE_VALUE)
-        wait.until(element_to_be_clickable((By.ID, LOSTTIME_DOWNLOAD_BUTTON_ID)))
-        clickViaJS(driver, '#'+LOSTTIME_DOWNLOAD_BUTTON_ID)
+        wait.until(element_to_be_clickable((By.ID, conf.LOSTTIME_DOWNLOAD_STYLE_SELECT_ID)))
+        select = Select(driver.find_element(By.ID, conf.LOSTTIME_DOWNLOAD_STYLE_SELECT_ID))
+        select.select_by_value(conf.LOSTTIME_DOWNLOAD_STYLE_VALUE)
+        wait.until(element_to_be_clickable((By.ID, conf.LOSTTIME_DOWNLOAD_BUTTON_ID)))
+        clickViaJS(driver, '#' + conf.LOSTTIME_DOWNLOAD_BUTTON_ID)
 
         sleep(2) ## this is here to make sure the the file downloads and firefox doesn't block on pending download.
         print("Created file from LostTime")
@@ -149,13 +150,13 @@ def CreateNewHtmlFromSplits(xmlresults_fn):
 
 #### Section: Move files to server location
 
-def GetLostTimeOutputFile(dir=LOSTTIME_OUT_DIR):
+def GetLostTimeOutputFile(dir=conf.LOSTTIME_OUT_DIR):
     return GetLatestFileInFolder(dir)
 
 def CopyOutputToPublicFolder():
     try:
         src = GetLostTimeOutputFile()
-        dest = os.path.join(DEST_DIR, DEST_FILENAME)
+        dest = os.path.join(conf.DEST_DIR, conf.DEST_FILENAME)
         print("from here: ", src)
         print("to here: ", dest)
         copy2(src, dest)
@@ -166,9 +167,9 @@ def CopyOutputToPublicFolder():
 
 def CopyOutputToSftpLocation():
     src = GetLostTimeOutputFile()
-    dest = posixpath.join(SFTP_DEST_DIR, SFTP_DEST_FILENAME)
+    dest = posixpath.join(conf.SFTP_DEST_DIR, conf.SFTP_DEST_FILENAME)
     print("SFTP Src: {}".format(src))
-    print("SFTP Dest: {} on {}".format(dest, SFTP_HOST_URL))
+    print("SFTP Dest: {} on {}".format(dest, conf.SFTP_HOST_URL))
     try:
         sshclient = _SftpConnect()
     except:
@@ -190,9 +191,9 @@ def _SftpConnect():
     paramiko.util.log_to_file("paramiko.log")
 
     client = paramiko.SSHClient()
-    client.load_host_keys(SFTP_PUBLIC_KEY_FILE)
-    key = paramiko.Ed25519Key.from_private_key_file(SFTP_PRIVATE_KEY_FILE)
-    client.connect(SFTP_HOST_URL, username=SFTP_USER, pkey=key)
+    client.load_host_keys(conf.SFTP_PUBLIC_KEY_FILE)
+    key = paramiko.Ed25519Key.from_private_key_file(conf.SFTP_PRIVATE_KEY_FILE)
+    client.connect(conf.SFTP_HOST_URL, username=conf.SFTP_USER, pkey=key)
     print("connected!")
     return client
 
@@ -236,13 +237,13 @@ class ConductorRunResult(object):
             return True
         
         # keep running on success based on configs
-        if COPY_TO_FOLDER and not COPY_TO_SFTP:
+        if conf.COPY_TO_FOLDER and not conf.COPY_TO_SFTP:
             if self.copiedFile: return True
-        elif COPY_TO_SFTP and not COPY_TO_FOLDER:
+        elif conf.COPY_TO_SFTP and not conf.COPY_TO_FOLDER:
             if self.copiedSftp: return True
-        elif COPY_TO_FOLDER and COPY_TO_SFTP:
+        elif conf.COPY_TO_FOLDER and conf.COPY_TO_SFTP:
             if self.copiedFile and self.copiedSftp: return True
-        elif not COPY_TO_FOLDER and not COPY_TO_SFTP:
+        elif not conf.COPY_TO_FOLDER and not conf.COPY_TO_SFTP:
             if self.createdOutput: return True
         
         # otherwise don't keep running
@@ -258,7 +259,7 @@ def runOnce(ui=None, stop=lambda:False, processed_file=''):
     res = ConductorRunResult(processed_file)
     global LOSTTIME_URL
     if LOSTTIME_URL is None:
-        setLostTimeUrl(LOSTTIME_WEB_VERSION, ui)
+        setLostTimeUrl(conf.LOSTTIME_WEB_VERSION, ui)
     res.lostTimeUrl = LOSTTIME_URL
     if stop():
         sendVirtualEventToUi(ui, '<<status-stopped>>')
@@ -296,7 +297,7 @@ def runOnce(ui=None, stop=lambda:False, processed_file=''):
         res.createdOutput = True
 
         # get new html file
-        if COPY_TO_FOLDER:
+        if conf.COPY_TO_FOLDER:
             if not CopyOutputToPublicFolder() or stop():
                 res.copiedFile = False
                 sendVirtualEventToUi(ui, '<<status-stopped>>')
@@ -304,7 +305,7 @@ def runOnce(ui=None, stop=lambda:False, processed_file=''):
             res.copiedFile = True
 
         # put file on sftp server
-        if COPY_TO_SFTP:
+        if conf.COPY_TO_SFTP:
             if not CopyOutputToSftpLocation() or stop():
                 res.copiedSftp = False
                 sendVirtualEventToUi(ui, '<<status-stopped>>')
@@ -322,7 +323,7 @@ def runOnce(ui=None, stop=lambda:False, processed_file=''):
 def runForever(ui=None, stop=lambda:False):
     global LOSTTIME_URL
     if LOSTTIME_URL is None:
-        setLostTimeUrl(LOSTTIME_WEB_VERSION, ui)
+        setLostTimeUrl(conf.LOSTTIME_WEB_VERSION, ui)
 
     result = ConductorRunResult('')
     sendVirtualEventToUi(ui, '<<status-working>>')
@@ -330,9 +331,9 @@ def runForever(ui=None, stop=lambda:False):
         if result.keepRunning() is False:
             sendVirtualEventToUi(ui, '<<status-stopped>>')
             break
-        print('Sleeping for {} seconds'.format(NEW_FILE_WAIT_SECONDS))
+        print('Sleeping for {} seconds'.format(conf.NEW_FILE_WAIT_SECONDS))
         sendVirtualEventToUi(ui, '<<status-waiting>>')
-        sleep(NEW_FILE_WAIT_SECONDS)
+        sleep(conf.NEW_FILE_WAIT_SECONDS)
         result = runOnce(ui, stop, result.latestXml)
     print('STOP FLAG')
     return
@@ -340,7 +341,7 @@ def runForever(ui=None, stop=lambda:False):
 def launchBrowser():
     global LOSTTIME_URL
     if LOSTTIME_URL is None:
-        setLostTimeUrl(LOSTTIME_WEB_VERSION)
+        setLostTimeUrl(conf.LOSTTIME_WEB_VERSION)
     if LOSTTIME_URL is not None:
         webbrowser.open_new_tab(LOSTTIME_URL)
 

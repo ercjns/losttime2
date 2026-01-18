@@ -14,6 +14,9 @@ export class Footer extends React.Component {
                     <FontAwesomeIcon icon={faMastodon} /> @eric@social.ridetrans.it &nbsp;&nbsp;&nbsp;
                     <FontAwesomeIcon icon={faEnvelope} /> eric (at) ercjns (dot) com
                 </p>
+                <p style={{textAlign:'center'}}>
+                    v{process.env.REACT_APP_VERSION}
+                </p>
                 </Col>
             </Row>
         )
