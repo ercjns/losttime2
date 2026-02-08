@@ -39,12 +39,15 @@ function getRaceDataByClassCode(raceData:CompetitionClassPresetsProps, code:stri
         else {return [classData[0]]}
     } else {
         let validClassData:StandardRaceClassData[] = []
-        classData.forEach((x) => {
+        classData.forEach((x, idx) => {
             if (x !== undefined) {validClassData.push(x)}
             else {
                 // no class data for this class this race, add a placeholder
                 validClassData.push(new StandardRaceClassData(
-                    {id:Guid.create(), name:'Placeholder'},
+                    {
+                        id: raceData.raceResultsData[idx].id, 
+                        name: 'Placeholder'
+                    },
                     new LtRaceClass(code, code),
                     []
                     )
