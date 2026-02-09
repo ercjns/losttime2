@@ -22,6 +22,7 @@ export class SingleRaceSoloResult {
     // computed competition classes that use the same result variants.
     static getPlace = (r:SingleRaceSoloResult):string => `${r.place ?? ""}`
     static getNameClub = (r:SingleRaceSoloResult):string => `${(r.person.first + " " + r.person.last).trim()} (${r.person.clubCode})`
+    static getnameFullClub = (r:SingleRaceSoloResult):string => `${(r.person.first + " " + r.person.last).trim()} (${r.person.club})`
     static getName = (r:SingleRaceSoloResult):string => `${(r.person.first + " " + r.person.last).trim()}`
     static getClubCode = (r:SingleRaceSoloResult):string => `${r.person.clubCode}`
     static getTimeMMMSS = (r:SingleRaceSoloResult):string => `${SingleRaceSoloResult.timeNumberAsMMMSS(r.time)}`
