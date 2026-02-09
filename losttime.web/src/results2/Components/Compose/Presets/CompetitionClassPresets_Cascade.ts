@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
 import { StandardRaceClassData } from "../../../StandardRaceClassData";
 import { RaceResultsData } from "../../FileLoader";
