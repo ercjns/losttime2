@@ -183,7 +183,7 @@ function COC_UO26_SingleScoreO(raceData:CompetitionClassPresetsProps) {
     new Standard_ScoreO('Beginner', getRaceDataByClassCode(raceData,"1",true)),
     new Standard_ScoreO('Short Rec / Groups', getRaceDataByClassCode(raceData,"2",true)),
     new Standard_ScoreO('Medium Rec / Groups', getRaceDataByClassCode(raceData,"3",true)),
-    new Standard_ScoreO('Long Rec / Groups', getRaceDataByClassCode(raceData,"4",true)),
+    new Standard_ScoreO('Long Rec / Groups', getRaceDataByClassCode(raceData,"4G",true)),
     new Cascade_SingleSoloScoreOScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"F-16",true)),
     new Cascade_SingleSoloScoreOScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"O-16",true)),
     new Cascade_SingleSoloScoreOScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"F-20",true)),
