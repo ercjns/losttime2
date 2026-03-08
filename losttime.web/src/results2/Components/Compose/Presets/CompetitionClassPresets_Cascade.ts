@@ -209,7 +209,7 @@ export const presets = [
     ),
     new CompetitionClassPresetButton(
         "COC",
-        "cascade-UO26-single",
+        "cascade-UO26-singleFive",
         "2026 Ultimate: Single Event Five Courses",
         COC_UO26_SingleFiveCourses,
         requireExactlyOneRace
