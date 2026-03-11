@@ -22,6 +22,7 @@ import { scoreMethodOptions } from "../Compose/ScoreMethodSelect";
 import { Standard_ScoreO } from "../../CompetitionClass/Variants/Standard_ScoreO";
 import { Cascade_SingleSoloScoreOScottish1k } from "../../CompetitionClass/Variants/Cascade_SingleSoloScoreOScottish1k";
 import { Cascade_WifiHtml } from "../../Styles/Cascade_WifiHtml";
+import { Cascade_WinterAwards } from "../../Styles/Cascade_WinterAwards";
 
 interface outputBuilderProps {
     competitionClasses:CompetitionClass[]
@@ -123,7 +124,8 @@ export function OutputBuilder(props:outputBuilderProps) {
         <option key={`style-option-${RenderStyles.standard_txt}`} value={RenderStyles.standard_txt}>Plaintext</option>,
         <option key={`style-option-${RenderStyles.standard_html}`} value={RenderStyles.standard_html}>General HTML</option>,
         <option key={`style-option-${RenderStyles.cascade_wordpresshtml}`} value={RenderStyles.cascade_wordpresshtml}>Cascade OC: WordPress HTML</option>,
-        <option key={`style-option-${RenderStyles.cascade_wifihtml}`} value={RenderStyles.cascade_wifihtml}>Cascade OC: WiFi HTML</option>
+        <option key={`style-option-${RenderStyles.cascade_wifihtml}`} value={RenderStyles.cascade_wifihtml}>Cascade OC: WiFi HTML</option>,
+        <option key={`style-option-${RenderStyles.cascade_winterawards}`} value={RenderStyles.cascade_winterawards}>Cascade OC: Winter Awards top 5</option>
     ];
 
     const rows = props.competitionClasses.map((x) => {
@@ -177,6 +179,9 @@ export function OutputBuilder(props:outputBuilderProps) {
                 break;
             case RenderStyles.cascade_wifihtml.toString():
                 styleHelper = new Cascade_WifiHtml(computed)
+                break;
+            case RenderStyles.cascade_winterawards.toString():
+                styleHelper = new Cascade_WinterAwards(computed)
                 break;
             default:
                 console.log(`Missing style helper for ${style}`)

@@ -20,6 +20,8 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
         switch (style) {
             case RenderStyles.standard_txt: 
                 return this.render_txt();
+            case RenderStyles.cascade_winterawards:
+                return this.render_awardsTxt()
             case RenderStyles.standard_html: 
                 return this.render_html();
             case RenderStyles.cascade_wordpresshtml:
@@ -63,6 +65,43 @@ export class Computed_Cascade_SingleSoloPointed extends ComputedCompetitionClass
             "start")
 
         return doc += new PlaintextTable([PL,NAME,TIME,PTS], this.results).tableString
+    }
+
+    render_awardsTxt():string {
+        let doc = "";
+        doc += `${this.name}`
+        doc += "\r\n";
+
+        if (this.totalClassStarts() === 0) {
+            doc += `(No participants for this class)\r\n\r\n`
+            return doc;
+        }
+
+        const PL = new PlaintextColumn(
+            "Pl",
+            SingleRaceSoloResult.getPlace,
+            this.results,
+            "start")
+
+        const NAME = new PlaintextColumn(
+            "Name",
+            SingleRaceSoloResult.getnameFullClub,
+            this.results)
+        
+        const TIME = new PlaintextColumn(
+            "Time",
+            SingleRaceSoloResult.getTimeWithStatus,
+            this.results,
+            "start")
+
+        const PTS = new PlaintextColumn(
+            "Pts",
+            SingleRaceSoloResult.getPoints,
+            this.results,
+            "start")
+        
+        const topFive: SingleRaceSoloResult[] = this.results.filter((x:SingleRaceSoloResult) => (x.place && x.place <=5))
+        return doc += new PlaintextTable([PL,NAME,TIME,PTS], topFive).tableString
     }
 
     render_html():string {

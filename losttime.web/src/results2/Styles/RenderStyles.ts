@@ -6,5 +6,6 @@ export enum RenderStyles {
     standard_txt,
     standard_html,
     cascade_wordpresshtml,
-    cascade_wifihtml
+    cascade_wifihtml,
+    cascade_winterawards
 }
