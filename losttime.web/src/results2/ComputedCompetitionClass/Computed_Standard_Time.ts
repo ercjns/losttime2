@@ -13,6 +13,8 @@ export class Computed_Standard_Time extends ComputedCompetitionClass {
         switch (style) {
             case RenderStyles.standard_txt: 
                 return this.render_txt();
+            case RenderStyles.cascade_winterawards:
+                return "" //No awards for unpointed classes, skip them.
             case RenderStyles.standard_html: 
                 return this.render_html();
             case RenderStyles.cascade_wordpresshtml:

@@ -43,47 +43,31 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
     }
 
     handleFixUltClasses() {
+      // Reg system classes like: 1, 2, 5G, 16O, 16F,20OO,  21F, 60+F, 70+O
+      // Desired Classes like:    1, 2, 5G,O-16,F-16,O-20,F-21+, F60+, O70+
+
       let old = this.state.entries;
+      const regex = /(?<age>\d{2}).*(?<gender>[O|F])/
       this.setState({entries: old.map((x) => {
-        if (x.ClassId.includes("70") && x.ClassId.includes("O")) {
-          x.ClassId = "O70+"
-          return x
-        } else if (x.ClassId.includes("70") && x.ClassId.includes("F")) {
-          x.ClassId = "F70+"
-          return x
-        } else if (x.ClassId.includes("50") && x.ClassId.includes("O")) {
-          x.ClassId = "O50+"
-          return x
-        } else if (x.ClassId.includes("50") && x.ClassId.includes("F")) {
-          x.ClassId = "F50+"
-          return x
-        } else if (x.ClassId.includes("16") && x.ClassId.includes("O")) {
-          x.ClassId = "O-16"
-          return x
-        } else if (x.ClassId.includes("16") && x.ClassId.includes("F")) {
-          x.ClassId = "F-16"
-          return x
-        } else if (x.ClassId.includes("18") && x.ClassId.includes("O")) {
-          x.ClassId = "O-18"
-          return x
-        } else if (x.ClassId.includes("18") && x.ClassId.includes("F")) {
-          x.ClassId = "F-18"
-          return x
-        } else if (x.ClassId.includes("20") && x.ClassId.includes("O")) {
-          x.ClassId = "O-20"
-          return x
-        } else if (x.ClassId.includes("20") && x.ClassId.includes("F")) {
-          x.ClassId = "F-20"
-          return x
-        } else if (x.ClassId.includes("21") && x.ClassId.includes("O")) {
-          x.ClassId = "O-21+"
-          return x
-        } else if (x.ClassId.includes("21") && x.ClassId.includes("F")) {
-          x.ClassId = "F-21+"
-          return x
-      } else {
-         return x
-      }})
+        const match = x.ClassId.match(regex)
+        if (match) {
+          let newClassId = ""
+          if (parseInt(match.groups!.age) < 21) {
+            // O-16, F-20, etc
+            newClassId = match.groups!.gender + "-" + match.groups!.age;
+          } else if (parseInt(match.groups!.age) > 21) {
+            // F50+, O70+, etc
+            newClassId = match.groups!.gender + match.groups!.age + "+";
+          } else {
+            // F-21+, O-21+
+            newClassId = match.groups!.gender + "-" + match.groups!.age + "+";
+          }
+          x.ClassId = newClassId;
+          return x;
+        } else {
+          return x;
+        }
+      })
       })
     }
   

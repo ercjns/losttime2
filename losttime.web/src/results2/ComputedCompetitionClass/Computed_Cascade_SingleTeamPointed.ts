@@ -20,13 +20,15 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         this.mixedResults = this.buildMixedResults()
     }
 
-    private buildMixedResults():(SingleRaceTeamResult|SingleRaceSoloResult)[] {
+    private buildMixedResults(limit:number|undefined=undefined):(SingleRaceTeamResult|SingleRaceSoloResult)[] {
         let res:(SingleRaceTeamResult|SingleRaceSoloResult)[] = []
         this.results.forEach((team) => {
-            res.push(team);
-            team.soloResults.forEach((r) => {
-                res.push(r)
-            })
+            if ((limit && team.place && team.place <= limit) || (limit === undefined)) {
+                res.push(team);
+                team.soloResults.forEach((r) => {
+                    res.push(r)
+                })
+            }
         })
         return res;
     }
@@ -72,6 +74,8 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         switch (style) {
             case RenderStyles.standard_txt: 
                 return this.render_txt();
+            case RenderStyles.cascade_winterawards:
+                return this.render_txt(5);
             case RenderStyles.standard_html: 
                 return this.render_html();
             case RenderStyles.cascade_wordpresshtml:
@@ -81,7 +85,10 @@ export class Computed_Cascade_SingleTeamPointed extends ComputedCompetitionClass
         }
     }
 
-    render_txt():string {
+    render_txt(limit:number|undefined=undefined):string {
+        if (limit) {
+            this.mixedResults = this.buildMixedResults(limit)
+        }
         let doc = "";
         doc += `${this.name}`
         doc += "\r\n";

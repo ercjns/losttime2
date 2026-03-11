@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { CompetitionClassPresetButton } from "./CompetitionClassPresetButton";
 import { StandardRaceClassData } from "../../../StandardRaceClassData";
 import { RaceResultsData } from "../../FileLoader";
@@ -39,12 +38,15 @@ function getRaceDataByClassCode(raceData:CompetitionClassPresetsProps, code:stri
         else {return [classData[0]]}
     } else {
         let validClassData:StandardRaceClassData[] = []
-        classData.forEach((x) => {
+        classData.forEach((x, idx) => {
             if (x !== undefined) {validClassData.push(x)}
             else {
                 // no class data for this class this race, add a placeholder
                 validClassData.push(new StandardRaceClassData(
-                    {id:Guid.create(), name:'Placeholder'},
+                    {
+                        id: raceData.raceResultsData[idx].id, 
+                        name: 'Placeholder'
+                    },
                     new LtRaceClass(code, code),
                     []
                     )
@@ -61,48 +63,6 @@ function requireExactlyOneRace(raceData:CompetitionClassPresetsProps):boolean {
 
 function requireAtLeastTwoRaces(raceData:CompetitionClassPresetsProps):boolean {
     return raceData.raceResultsData.length > 1;
-}
-
-function COC_UO25_Single(raceData:CompetitionClassPresetsProps) {
-    raceData.setCompetitionClasses([
-    new Standard_Time('Beginner', getRaceDataByClassCode(raceData,"1",true)),
-    new Standard_Time('Intermediate', getRaceDataByClassCode(raceData,"2",true)),
-    new Standard_Time('Short Advancecd', getRaceDataByClassCode(raceData,"3",true)),
-    new Standard_Time('Long Advanced Rec / Groups', getRaceDataByClassCode(raceData,"4G",true)),
-    new Cascade_SingleSoloScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"F-16",true)),
-    new Cascade_SingleSoloScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"O-16",true)),
-    new Cascade_SingleSoloScottish1k('18 and Under Female', getRaceDataByClassCode(raceData,"F-18",true)),
-    new Cascade_SingleSoloScottish1k('18 and Under Open', getRaceDataByClassCode(raceData,"O-18",true)),
-    new Cascade_SingleSoloScottish1k('50+ Female', getRaceDataByClassCode(raceData,"F50+",true)),
-    new Cascade_SingleSoloScottish1k('50+ Open', getRaceDataByClassCode(raceData,"O50+",true)),
-    new Cascade_SingleSoloScottish1k('70+ Female', getRaceDataByClassCode(raceData,"F70+",true)),
-    new Cascade_SingleSoloScottish1k('70+ Open', getRaceDataByClassCode(raceData,"O70+",true)),
-    new Cascade_SingleSoloScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"F-20",true)),
-    new Cascade_SingleSoloScottish1k('20 and Under Open', getRaceDataByClassCode(raceData,"O-20",true)),
-    new Cascade_SingleSoloScottish1k('Open (-21+) Female', getRaceDataByClassCode(raceData,"F-21+",true)),
-    new Cascade_SingleSoloScottish1k('Open (-21+)', getRaceDataByClassCode(raceData,"O-21+",true))
-    ])
-}
-
-function COC_UO25_SingleScoreO(raceData:CompetitionClassPresetsProps) {
-    raceData.setCompetitionClasses([
-    new Standard_ScoreO('Beginner', getRaceDataByClassCode(raceData,"1",true)),
-    new Standard_ScoreO('Intermediate', getRaceDataByClassCode(raceData,"2",true)),
-    new Standard_ScoreO('Short Advancecd', getRaceDataByClassCode(raceData,"3",true)),
-    new Standard_ScoreO('Long Advanced Rec / Groups', getRaceDataByClassCode(raceData,"4",true)),
-    new Cascade_SingleSoloScoreOScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"F-16",true)),
-    new Cascade_SingleSoloScoreOScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"O-16",true)),
-    new Cascade_SingleSoloScoreOScottish1k('18 and Under Female', getRaceDataByClassCode(raceData,"F-18",true)),
-    new Cascade_SingleSoloScoreOScottish1k('18 and Under Open', getRaceDataByClassCode(raceData,"O-18",true)),
-    new Cascade_SingleSoloScoreOScottish1k('50+ Female', getRaceDataByClassCode(raceData,"F50+",true)),
-    new Cascade_SingleSoloScoreOScottish1k('50+ Open', getRaceDataByClassCode(raceData,"O50+",true)),
-    new Cascade_SingleSoloScoreOScottish1k('70+ Female', getRaceDataByClassCode(raceData,"F70+",true)),
-    new Cascade_SingleSoloScoreOScottish1k('70+ Open', getRaceDataByClassCode(raceData,"O70+",true)),
-    new Cascade_SingleSoloScoreOScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"F-20",true)),
-    new Cascade_SingleSoloScoreOScottish1k('20 and Under Open', getRaceDataByClassCode(raceData,"O-20",true)),
-    new Cascade_SingleSoloScoreOScottish1k('Open (-21+) Female', getRaceDataByClassCode(raceData,"F-21+",true)),
-    new Cascade_SingleSoloScoreOScottish1k('Open (-21+)', getRaceDataByClassCode(raceData,"O-21+",true))
-    ])
 }
 
 function COC_WL2526_Single(raceData:CompetitionClassPresetsProps) {
@@ -175,19 +135,90 @@ function COC_WL2526_WiolSeries(raceData:CompetitionClassPresetsProps) {
     ])
 }
 
+function COC_UO26_SingleFourCourses(raceData:CompetitionClassPresetsProps) {
+    raceData.setCompetitionClasses([
+    new Standard_Time('Beginner Rec / Groups', getRaceDataByClassCode(raceData,"1",true)),
+    new Standard_Time('Intermediate Rec / Groups', getRaceDataByClassCode(raceData,"2",true)),
+    new Standard_Time('Short Advanced Rec / Groups', getRaceDataByClassCode(raceData,"3",true)),
+    new Standard_Time('Long Advanced Rec / Groups', getRaceDataByClassCode(raceData,"4G",true)),
+    new Cascade_SingleSoloScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"F-16",true)),
+    new Cascade_SingleSoloScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"O-16",true)),
+    new Cascade_SingleSoloScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"F-20",true)),
+    new Cascade_SingleSoloScottish1k('20 and Under Open', getRaceDataByClassCode(raceData,"O-20",true)),
+    new Cascade_SingleSoloScottish1k('Open (-21+) Female', getRaceDataByClassCode(raceData,"F-21+",true)),
+    new Cascade_SingleSoloScottish1k('Open (-21+)', getRaceDataByClassCode(raceData,"O-21+",true)),
+    new Cascade_SingleSoloScottish1k('50+ Female', getRaceDataByClassCode(raceData,"F50+",true)),
+    new Cascade_SingleSoloScottish1k('50+ Open', getRaceDataByClassCode(raceData,"O50+",true)),
+    new Cascade_SingleSoloScottish1k('60+ Female', getRaceDataByClassCode(raceData,"F60+",true)),
+    new Cascade_SingleSoloScottish1k('60+ Open', getRaceDataByClassCode(raceData,"O60+",true)),
+    new Cascade_SingleSoloScottish1k('70+ Female', getRaceDataByClassCode(raceData,"F70+",true)),
+    new Cascade_SingleSoloScottish1k('70+ Open', getRaceDataByClassCode(raceData,"O70+",true))
+    ])
+}
+
+function COC_UO26_SingleFiveCourses(raceData:CompetitionClassPresetsProps) {
+    raceData.setCompetitionClasses([
+    new Standard_Time('Beginner Rec / Groups', getRaceDataByClassCode(raceData,"1",true)),
+    new Standard_Time('Intermediate Rec / Groups', getRaceDataByClassCode(raceData,"2",true)),
+    new Standard_Time('Short Advanced Rec / Groups', getRaceDataByClassCode(raceData,"3",true)),
+    new Standard_Time('Medium Advanced Rec / Groups', getRaceDataByClassCode(raceData,"4",true)),
+    new Standard_Time('Long Advanced Rec / Groups', getRaceDataByClassCode(raceData,"5G",true)),
+    new Cascade_SingleSoloScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"F-16",true)),
+    new Cascade_SingleSoloScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"O-16",true)),
+    new Cascade_SingleSoloScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"F-20",true)),
+    new Cascade_SingleSoloScottish1k('20 and Under Open', getRaceDataByClassCode(raceData,"O-20",true)),
+    new Cascade_SingleSoloScottish1k('Open (-21+) Female', getRaceDataByClassCode(raceData,"F-21+",true)),
+    new Cascade_SingleSoloScottish1k('Open (-21+)', getRaceDataByClassCode(raceData,"O-21+",true)),
+    new Cascade_SingleSoloScottish1k('50+ Female', getRaceDataByClassCode(raceData,"F50+",true)),
+    new Cascade_SingleSoloScottish1k('50+ Open', getRaceDataByClassCode(raceData,"O50+",true)),
+    new Cascade_SingleSoloScottish1k('60+ Female', getRaceDataByClassCode(raceData,"F60+",true)),
+    new Cascade_SingleSoloScottish1k('60+ Open', getRaceDataByClassCode(raceData,"O60+",true)),
+    new Cascade_SingleSoloScottish1k('70+ Female', getRaceDataByClassCode(raceData,"F70+",true)),
+    new Cascade_SingleSoloScottish1k('70+ Open', getRaceDataByClassCode(raceData,"O70+",true))
+    ])
+}
+
+function COC_UO26_SingleScoreO(raceData:CompetitionClassPresetsProps) {
+    raceData.setCompetitionClasses([
+    new Standard_ScoreO('Beginner', getRaceDataByClassCode(raceData,"1",true)),
+    new Standard_ScoreO('Short Rec / Groups', getRaceDataByClassCode(raceData,"2",true)),
+    new Standard_ScoreO('Medium Rec / Groups', getRaceDataByClassCode(raceData,"3",true)),
+    new Standard_ScoreO('Long Rec / Groups', getRaceDataByClassCode(raceData,"4G",true)),
+    new Cascade_SingleSoloScoreOScottish1k('16 and Under Female', getRaceDataByClassCode(raceData,"F-16",true)),
+    new Cascade_SingleSoloScoreOScottish1k('16 and Under Open', getRaceDataByClassCode(raceData,"O-16",true)),
+    new Cascade_SingleSoloScoreOScottish1k('20 and Under Female', getRaceDataByClassCode(raceData,"F-20",true)),
+    new Cascade_SingleSoloScoreOScottish1k('20 and Under Open', getRaceDataByClassCode(raceData,"O-20",true)),
+    new Cascade_SingleSoloScoreOScottish1k('Open (-21+) Female', getRaceDataByClassCode(raceData,"F-21+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('Open (-21+)', getRaceDataByClassCode(raceData,"O-21+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('50+ Female', getRaceDataByClassCode(raceData,"F50+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('50+ Open', getRaceDataByClassCode(raceData,"O50+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('60+ Female', getRaceDataByClassCode(raceData,"F60+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('60+ Open', getRaceDataByClassCode(raceData,"O60+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('70+ Female', getRaceDataByClassCode(raceData,"F70+",true)),
+    new Cascade_SingleSoloScoreOScottish1k('70+ Open', getRaceDataByClassCode(raceData,"O70+",true)),
+    ])
+}
+
 export const presets = [
     new CompetitionClassPresetButton(
         "COC",
-        "cascade-UO25-single",
-        "2025 Ultimate: Single Event",
-        COC_UO25_Single,
+        "cascade-UO26-single",
+        "2026 Ultimate: Single Event",
+        COC_UO26_SingleFourCourses,
         requireExactlyOneRace
     ),
     new CompetitionClassPresetButton(
         "COC",
-        "cascade-UO25-singleScoreO",
-        "2025 Ultimate: Single ScoreO Event",
-        COC_UO25_SingleScoreO,
+        "cascade-UO26-singleFive",
+        "2026 Ultimate: Single Event Five Courses",
+        COC_UO26_SingleFiveCourses,
+        requireExactlyOneRace
+    ),
+    new CompetitionClassPresetButton(
+        "COC",
+        "cascade-UO26-singleScoreO",
+        "2026 Ultimate: Score-O Event",
+        COC_UO26_SingleScoreO,
         requireExactlyOneRace
     ),
     new CompetitionClassPresetButton(
