@@ -1,5 +1,6 @@
 import { isWiolEntryCsv, WiolEntryCsv } from "../shared/orienteeringtypes/CascadeWiolRegisration"
 import { CascadeRegistrationCsv, isCascadeRegistrationCsv } from "../shared/orienteeringtypes/CascadeRegistration"
+import { EventRegCsv, isEventRegEntryCsv } from "../shared/orienteeringtypes/EventRegRegistration";
 
 export type ParseResult = {
     data: LtEntry[],
@@ -24,6 +25,7 @@ export class LtEntry {
     NonCompetitive!: true | false;
     Sex!: "F" | "M";
     Phone!: string;
+    EmergencyName!: string | null;
     EmergencyPhone!: string;
     CarLicense!: string;
     Newcomer!: true | false | "unknown";
@@ -87,6 +89,33 @@ export class LtEntry {
 
         return this;
     }
+    fromEventRegEntryCsv(
+        entry: EventRegCsv
+    ) {
+        this.StartNo = entry["Bib#"]
+        this.Epunch = entry["E-Punch ID"]
+        this.EpunchRented = entry.RentPunch === 'Y' ? true : false
+        this.FirstName = entry.First
+        this.LastName = entry.Last
+        this.Club = entry.Club
+        this.Course = entry["Event Crs"]
+        this.ClassId = entry["Event Class"]
+        this.StartTime = entry["Event Start"].slice(0,-3)
+        this.NonCompetitive = false // not sure if there's a field for this
+        this.Sex = entry.Sex
+        this.Phone = entry.CellPhone
+        this.EmergencyPhone = entry["ECphone--EmergCont"]
+        this.EmergencyName = entry["ECName--EmergCont"]
+        this.Newcomer = false
+        this.Group= 1; // event reg doesn't handle groups well
+        this.GroupId= null;
+        this.GroupLeader= true;
+        this.Paid= "unknown"; 
+        this.Owed= 0; //not reading this value
+        this.SignedWaiver= true; //really Unknown
+
+        return this;
+    }
 }
 
 export function parseEnties(indata:any[], nextbib?:number): ParseResult {
@@ -99,6 +128,10 @@ export function parseEnties(indata:any[], nextbib?:number): ParseResult {
 
         if (isWiolEntryCsv(row)) {
             const e = new LtEntry().fromWiolEntryCsv(row);
+            newentries.push(e);
+            continue;
+        } else if (isEventRegEntryCsv(row)) {
+            const e = new LtEntry().fromEventRegEntryCsv(row);
             newentries.push(e);
             continue;
         } else if (isCascadeRegistrationCsv(row) === "group") {

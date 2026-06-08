@@ -1,7 +1,7 @@
 import React from 'react';
 import Papa from 'papaparse';
 import * as jschardet from 'jschardet'
-import { Button, ButtonGroup, ButtonToolbar, Col, Dropdown, DropdownButton, Form, FormControl, Row } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Col, Dropdown, DropdownButton, Form, FormCheck, FormControl, Row } from 'react-bootstrap';
 import { BasicDz } from '../shared/dz';
 import * as SS from '../shared/orienteeringtypes/SportSoftware'
 import { LtEntry, parseEnties } from './EntryFileParser';
@@ -16,8 +16,26 @@ type myformstate = {
     filesprocessed: entryFileMeta[],
     entries: LtEntry[],
     nextstartno: number,
-    pdftextvalue: string
+    pdftextvalue: string,
+    pdfColumns: string[]
   }
+
+const pdfColumOptions = [
+  {value:'bib', label:'Bib #'},
+  {value:'first', label:'First Name'},
+  {value:'last', label:'Last Name'},
+  {value:'club', label:'Club'},
+  {value:'owed', label:'Owed $'},
+  {value:'waiver', label:'Signed Waiver'},
+  {value:'class', label:'Race Class'},
+  {value:'course', label:'Race Course'},
+  {value:'epunch', label:'Epunch #'},
+  {value:'start', label:'Start Time'},
+  {value:'phone', label:'Phone'},
+  {value:'eContactName', label:'Emergency Contact Name'},
+  {value:'eContactPhone', label:'Emergency Contact Phone'},
+  {value:'vehicle', label:'Vehicle'},
+]
 
 export class EntryProcessor extends React.Component<{}, myformstate, {}> {
     constructor(props:{}) {
@@ -26,7 +44,23 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
         filesprocessed: [],
         entries: [],
         nextstartno: 1000,
-        pdftextvalue: ''
+        pdftextvalue: '',
+        pdfColumns: [
+          // 'bib',
+          'first',
+          'last',
+          // 'club'
+          'owed',
+          'waiver',
+          'class',
+          // 'course',
+          'epunch',
+          'start',
+          'phone',
+          // 'eContactName',
+          'eContactPhone',
+          'vehicle',
+        ]
       }
       
       this.downloadOeRegCsv = this.downloadOeRegCsv.bind(this);
@@ -35,7 +69,9 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
       this.nowtimestring = this.nowtimestring.bind(this);
       this.downloadpdf = this.downloadpdf.bind(this);
       this.onpdftextchange = this.onpdftextchange.bind(this);
+      this.onPdfColumnChange = this.onPdfColumnChange.bind(this);
       this.handleFixUltClasses = this.handleFixUltClasses.bind(this);
+      
     }
   
     handleClearEntries() {
@@ -154,10 +190,14 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
     }
   
     downloadpdf(headerText:string='') {
-      const checkInPdfs = buildCheckInPdf(this.state.entries, this.state.filesprocessed.map((x) => x.name), headerText);
+      const checkInPdfs = buildCheckInPdf(this.state.entries, this.state.filesprocessed.map((x) => x.name), this.state.pdfColumns, headerText);
       const fileTimeString = this.nowtimestring();
+      let headerNoSpaces = headerText.replaceAll(" ","-")
+      if (headerNoSpaces.length > 0) {
+        headerNoSpaces += '-'
+      }
       for (const pdf of checkInPdfs) {
-        const fileName:string = 'Registrations-'.concat(fileTimeString, '-', pdf.name, '.pdf');
+        const fileName = `Registrations-${headerNoSpaces}${fileTimeString}-${pdf.name}.pdf`
         pdf.doc.download(fileName); 
       }
     }
@@ -165,6 +205,16 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
     onpdftextchange(e:React.ChangeEvent<HTMLInputElement>) {
       e.preventDefault();
       this.setState({pdftextvalue:e.target.value});
+    }
+
+    onPdfColumnChange(e:React.ChangeEvent<HTMLInputElement>) {
+      if (e.target.checked) {
+        console.log("checked", e.target.value)
+        this.setState({pdfColumns: [...this.state.pdfColumns, e.target.value]})
+      } else {
+        console.log("un-checked", e.target.value)
+        this.setState({pdfColumns: [...this.state.pdfColumns.filter(x => x!== e.target.value)]})
+      }
     }
   
     render() {
@@ -211,6 +261,17 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
         regcount={regclass[1]}
       />
       );
+      
+      const pdfColumnSelectors = pdfColumOptions.map((column) =>
+        <FormCheck 
+          key={`check-${column.value}`}
+          id={`check-${column.value}`}
+          value={column.value}
+          label={column.label}
+          checked={this.state.pdfColumns.includes(column.value)}
+          onChange={this.onPdfColumnChange}
+        />
+      )
   
       return (
         <div>
@@ -284,6 +345,7 @@ export class EntryProcessor extends React.Component<{}, myformstate, {}> {
                             onSubmit={(e) => {e.preventDefault(); this.downloadpdf(this.state.pdftextvalue)}}>
                             <FormControl type='text' onChange={this.onpdftextchange} value={this.state.pdftextvalue}></FormControl>
                             <Button style= {{marginTop: '8px'}} type='submit' disabled={this.state.entries.length > 0 ? false:true}>Download PDFs</Button>
+                            {pdfColumnSelectors}
                           </Form>
                         </Col>
                       </Row>

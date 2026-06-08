@@ -2,7 +2,28 @@ import { LtEntry } from "./EntryFileParser";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
 
-export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderText: string = ''): { name: string, doc: pdfMake.TCreatedPdf }[] {
+
+function customTableBodyFromColumns(cols:string[]):any[][] {
+    let res:any[] = [' '];
+    // ORDER HERE MUST STAY IN SYNC WITH ORDER OF COLUMNS ADDED TO DOCUMENT BODY BASED ON THESE FLAGS!
+    if (cols.includes('bib')) { res.push('Bib#') }
+    if (cols.includes('first')) { res.push('First') }
+    if (cols.includes('last')) { res.push('Last') }
+    if (cols.includes('club')) { res.push('Club') }
+    if (cols.includes('owed')) { res.push('Owed') }
+    if (cols.includes('waiver')) { res.push('Waiver') }
+    if (cols.includes('class')) { res.push('Class') }
+    if (cols.includes('course')) { res.push('Course') }
+    if (cols.includes('epunch')) { res.push('SI #') }
+    if (cols.includes('start')) { res.push('Start') }
+    if (cols.includes('phone')) { res.push('Phone') }
+    if (cols.includes('vehicle')) { res.push('Vehicle') }
+    if (cols.includes('eContactName')) { res.push({text:'Emerg. Name', noWrap: true}) }
+    if (cols.includes('eContactPhone')) { res.push({text:'Emerg. Ph#', noWrap: true}) }
+    return [res]
+}
+
+export function buildCheckInPdf(entries: LtEntry[], files: String[], columns:string[], userHeaderText: string = ''): { name: string, doc: pdfMake.TCreatedPdf }[] {
 
     const fonts: TFontDictionary = {
         // download default Roboto font from cdnjs.com
@@ -14,15 +35,8 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
         }
     }
 
-    // Determine if ANY entries have a start time - if all are null, don't include the start time column.
-    const haveStartTimes = entries.filter(entry => (entry.StartTime)).length > 0
-
-    const tablebodyowned: any[][] = haveStartTimes ? 
-        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Start', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']] :
-        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
-    const tablebodyrented: any[][] = haveStartTimes ?
-        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Start', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']] :
-        [[' ', 'First', 'Last', 'Owed', 'Waiver', 'Course', 'Epunch', 'Club', 'Phone', { text: 'Emerg. Ph.', noWrap: true }, 'Vehicle']]
+    const tablebodyowned = customTableBodyFromColumns(columns)
+    const tablebodyrented = customTableBodyFromColumns(columns)
 
     const GroupLeaders = entries.filter(entry => entry.GroupLeader === true);
 
@@ -36,16 +50,16 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
         let groupmembers = entries.filter(entry => entry.GroupId === leader.GroupId && entry.GroupLeader === false)
         ownedepunchentries.splice(ownedepunchentries.indexOf(leader) + 1, 0, ...groupmembers)
     }
-    tablebodyowned.push(...(ownedepunchentries.map((x) => buildRegPdfRow(x,haveStartTimes))))
+    tablebodyowned.push(...(ownedepunchentries.map((x) => buildRegPdfRow(x,columns))))
 
     for (let leader of rentalepunchentries.filter(entry => entry.GroupId !== null)) {
         let groupmembers = entries.filter(entry => entry.GroupId === leader.GroupId && entry.GroupLeader === false)
         rentalepunchentries.splice(rentalepunchentries.indexOf(leader) + 1, 0, ...groupmembers)
     }
-    tablebodyrented.push(...(rentalepunchentries.map((x) => buildRegPdfRow(x,haveStartTimes))))
+    tablebodyrented.push(...(rentalepunchentries.map((x) => buildRegPdfRow(x,columns))))
 
 
-    function header(pageTitle: string): any {
+    function docTitle(pageTitle: string): any {
         return ({
             columns: [
                 {
@@ -63,7 +77,18 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
         })
     };
 
-    function buildfooter(currentPage: number, pageCount: number): any {
+    function buildHeader(): any {
+        return({
+            columns: [{
+                text: userHeaderText,
+                fontSize: 9,
+                margin: [0, 25, 50, 0],
+                alignment: 'right'
+            }]
+        })
+    }
+
+    function buildFooter(currentPage: number, pageCount: number): any {
         return ({
             columns: [{
                 text: 'Page ' + currentPage.toString() + ' of ' + pageCount + '. Created: ' + nowtimestring(),
@@ -165,14 +190,16 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
     const docDefinitionOwned: TDocumentDefinitions = {
         pageSize: 'LETTER',
         pageOrientation: 'landscape',
-        footer: buildfooter,
+        header: buildHeader,
+        footer: buildFooter,
         content: [
-            header('Pre-Registration List: OWNED punches'),
+            docTitle('Pre-Registration List: OWNED punches'),
             instructionsRegOwned(),
             {
                 layout: tableLayoutOwned(),
                 table: {
                     headerRows: 1,
+                    widths: new Array(columns.length + 1).fill('auto'),
                     dontBreakRows: true,
                     body: tablebodyowned
                 },
@@ -183,9 +210,10 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
     const docDefinitionRented1: TDocumentDefinitions = {
         pageSize: 'LETTER',
         pageOrientation: 'landscape',
-        footer: buildfooter,
+        header: buildHeader,
+        footer: buildFooter,
         content: [
-            header('Pre-Registration List: RENTAL punches (list A)'),
+            docTitle('Pre-Registration List: RENTAL punches (list A)'),
             instructionsRegRent(),
             instructionsFinishRent(),
             {
@@ -202,9 +230,10 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
     const docDefinitionRented2: TDocumentDefinitions = {
         pageSize: 'LETTER',
         pageOrientation: 'landscape',
-        footer: buildfooter,
+        header: buildHeader,
+        footer: buildFooter,
         content: [
-            header('Pre-Registration List: RENTAL punches (list B)'),
+            docTitle('Pre-Registration List: RENTAL punches (list B)'),
             instructionsRegRent(),
             instructionsFinishRent(),
             {
@@ -234,11 +263,9 @@ export function buildCheckInPdf(entries: LtEntry[], files: String[], userHeaderT
     ]);
 }
 
-
-function buildRegPdfRow(entry: LtEntry, startTimes: boolean): any[] {
-    const row = [
-        // checkbox
-        entry.GroupLeader === true ? {
+function renderCheckbox(entry:LtEntry) {
+    if (entry.GroupLeader) {
+        return({
             table: {
                 widths: [12],
                 heights: [10],
@@ -251,92 +278,130 @@ function buildRegPdfRow(entry: LtEntry, startTimes: boolean): any[] {
                 }
                 ]]
             }
-        } : { text: entry.Owed > 0 ? '$'.concat(entry.Owed.toString()) : "", color: '#999999', fontSize: 7 },
-        // first
-        entry.GroupLeader === true ? { text: entry.FirstName, fontSize: 11 } : { text: "+ " + entry.FirstName, fontSize: 10, italics: true, noWrap: true },
-        // last
-        entry.GroupLeader === true ?
-            entry.GroupId === null ? { text: entry.LastName, fontSize: 11 } :
-                { text: [{ text: entry.LastName.replace('_Group', ''), fontSize: 11 }, { text: " GROUP", bold: true, fontSize: 11 }] } :
-            { text: entry.LastName, fontSize: 10, italics: true },
-        // owed
-        entry.Owed > 0 ? { text: '$'.concat(entry.Owed.toString()), fontSize: 11, bold: true } : "",
-        // waiver
-        entry.SignedWaiver === true ? {text: "On File", fontSize: 9} : {
-            table: {body: [[{text: "waiver", fontSize:7, color: '#999999'}]]}
-        },
-        // class/course
-        entry.GroupLeader === true ? { text: entry.ClassId, fontSize: 11 } : "",
-        // epunch number
-        entry.EpunchRented === true ? 
-            // Group Member Rental Punch
-            entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
-            // Group Leader or Solo Rental Punch
-            {
-                table: {
-                    widths: [100],
-                    heights: [25],
-                    body: [[{
-                        columns: [
-                            {
-                                width: '*',
-                                text: entry.Epunch ? entry.Epunch : ' '
-                            },
-                            {
-                                width: 'auto',
-                                text: '     ',
-                                lineHeight: 1.45,
-                                background: '#CCCCCC'
-                            }
-                        ],
-                    }]]
-                },
-                layout: {
-                    hLineWidth() {
-                        return 1.5;
-                    },
-                    vLineWidth() {
-                        return 1.5;
-                    },
-                    hLineColor() {
-                        return 'black';
-                    },
-                    vLineColor() {
-                        return 'black';
-                    },
-                    paddingTop() {
-                        return 2;
-                    },
-                    paddingBottom() {
-                        return -2;
-                    },
-                    paddingRight() {
-                        return 2;
-                    }
-                }
-            } :
-            // Group Member Owned Punch
-            entry.GroupLeader === false ? { text: "(group)", fontSize: 10, italics: true } :
-            // Group Leader or Solo Owned Punch
-                { text: entry.Epunch, fontSize: 11, alignment: 'right' },
+        })
+    } else {
+        return({
+            text: entry.Owed > 0 ? '$'.concat(entry.Owed.toString()) : "", color: '#999999', fontSize: 7
+        })
+    }
+}
 
-        // Club OR Start Time
-        startTimes ?
-            { text: entry.StartTime, fontSize: 10, noWrap: true } :
-            { text: entry.Club, fontSize: 10 },
-        // Phone
-        { text: formatPhoneNumber(entry.Phone), fontSize: 10, noWrap: true },
-        // Emergency Phone
-        { text: formatPhoneNumber(entry.EmergencyPhone), fontSize: 10, noWrap: true },
-        // Vehicle
-        { text: entry.CarLicense, fontSize: 8 }
-    ]
+function renderEpunch(entry:LtEntry) {
+    if (entry.EpunchRented === false) {
+        return({ text: entry.Epunch, fontSize: 11, alignment: 'right' })
+    } 
+    if (entry.GroupLeader === false) {
+        return({ text: "(group)", fontSize: 10, italics: true })
+    }
+    return ({
+        table: { 
+            widths: [100], 
+            heights: [25], 
+            body: [[{
+                columns: [
+                    { width: '*', text: entry.Epunch ? entry.Epunch : ' ' },
+                    { width: 'auto', text: '     ', lineHeight: 1.45, background: '#CCCCCC' }
+                ],
+                }]]
+            },
+        layout: {
+            hLineWidth() { return 1.5; },
+            vLineWidth() { return 1.5; },
+            hLineColor() { return 'black'; },
+            vLineColor() { return 'black'; },
+            paddingTop() { return 2; },
+            paddingBottom() { return -2; },
+            paddingRight() { return 2; }
+        }
+    })
+}
+
+
+function buildRegPdfRow(entry: LtEntry, columns: string[]): any[] {
+    // ORDER HERE MUST STAY IN SYNC WITH ORDER OF COLUMNS SPECIFIED!!
+    let row:any[] = []
+    // columns.includes('checkbox')
+        row.push(renderCheckbox(entry))
+    if (columns.includes('bib')) {
+        row.push({ text: entry.StartNo, fontSize: 10 })
+    }
+    if (columns.includes('first')) {
+        row.push(
+            entry.GroupLeader === true ? { text: entry.FirstName, fontSize: 11 } : { text: "+ " + entry.FirstName, fontSize: 10, italics: true, noWrap: true }
+        )
+    }
+    if (columns.includes('last')) {
+        row.push(
+            entry.GroupLeader === true ?
+                entry.GroupId === null ? { text: entry.LastName, fontSize: 11 } :
+                    { text: [{ text: entry.LastName.replace('_Group', ''), fontSize: 11 }, { text: " GROUP", bold: true, fontSize: 11 }] } :
+                { text: entry.LastName, fontSize: 10, italics: true }
+        )
+    }
+    if (columns.includes('club')) {
+        row.push(
+            { text: entry.Club.slice(0,7), fontSize: 10 }
+        )
+    }
+    if (columns.includes('owed')) {
+        row.push(
+            entry.Owed > 0 ? { text: '$'.concat(entry.Owed.toString()), fontSize: 11, bold: true } : "",
+        )
+    }
+    if (columns.includes('waiver')) {
+        row.push(
+            entry.SignedWaiver === true ? {text: "On File", fontSize: 9} : 
+                { table: {body: [[{text: "waiver", fontSize:7, color: '#999999'}]]}}
+        )
+    }
+    if (columns.includes('class')) {
+        row.push(
+            entry.GroupLeader === true ? { text: entry.ClassId, fontSize: 11 } : "",
+        )
+    }
+    if (columns.includes('course')) {
+        row.push(
+            entry.GroupLeader === true ? { text: entry.Course, fontSize: 11 } : "",
+        )
+    }
+    if (columns.includes('epunch')) {
+        row.push(renderEpunch(entry))
+    }
+    if (columns.includes('start')) {
+        row.push(
+            { text: entry.StartTime, fontSize: 10, noWrap: true }
+        )
+    }
+    if (columns.includes('phone')) {
+        row.push(
+            { text: formatPhoneNumber(entry.Phone), fontSize: 8, noWrap: true },
+        )
+    }
+    if (columns.includes('eContactName')) {
+        row.push(
+            { text: entry.EmergencyName, fontSize: 9 }
+        )
+    }
+    if (columns.includes('eContactPhone')) {
+        row.push(
+            { text: formatPhoneNumber(entry.EmergencyPhone), fontSize: 8 },
+        )
+    }
+    if (columns.includes('vehicle')) {
+        row.push(
+            { text: entry.CarLicense, fontSize: 8 }
+        )
+    }
+
     return (row);
 }
 
 // https://stackoverflow.com/questions/8358084/regular-expression-to-reformat-a-us-phone-number-in-javascript/41318684
 function formatPhoneNumber(phoneNumberString: string) {
     var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+    if (cleaned.length === 20) {
+        return `(${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6,10)} (${cleaned.slice(11,14)}) ${cleaned.slice(14,17)}-${cleaned.slice(17,21)}`;
+    }
     var match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
     if (match) {
         return ['(', match[2], ') ', match[3], '-', match[4]].join('');
