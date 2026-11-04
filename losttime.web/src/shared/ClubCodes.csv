@@ -30,6 +30,7 @@ WIOL,BEL,Bellevue
 WIOL,BEN,Ben Rush Elementary
 WIOL,BES,Brier Elementary
 WIOL,BET,Bethel
+WIOL,BLH,Bellingham
 WIOL,BMS,Bethel Middle
 WIOL,BPS,Big Picture School
 WIOL,BRE,Bremerton
@@ -43,6 +44,8 @@ WIOL,CBE,Clara Barton Elementary
 WIOL,CDH,Cascade District Homelink
 WIOL,CDM,Cedar Heights Middle
 WIOL,CDR,Cedar River Elementary
+WIOL,CDRB,Cedar River Elementary - Blue
+WIOL,CDRG,Cedar River Elementary - Gold
 WIOL,CHE,Clyde Hill Elementary
 WIOL,CHM,Chehalis Middle
 WIOL,CKM,Chinook Middle
@@ -74,8 +77,9 @@ WIOL,ELK,Eastlake
 WIOL,ELP,Elk Plain K-8
 WIOL,EMS,Eisenhower Middle
 WIOL,ENE,Enatai Elementary
+WIOL,ENU,Enumclaw
 WIOL,ESM,Eagle Staff Middle
-WIOL,ESP,Eastside Prepatory
+WIOL,ESP,Eastside Preparatory
 WIOL,EUW,Early Entrance UW
 WIOL,EVT,Everett
 WIOL,EXC,Explorer Community School
@@ -93,15 +97,18 @@ WIOL,HLT,Highland Terrace Elementary
 WIOL,HME,Horace Mann Elementary
 WIOL,HMS,Hamilton International Middle
 WIOL,HOM,Home School
+WIOL,HMMV,Home School Maple Valley
 WIOL,HZW,Hazel Wolf K-8
 WIOL,ICS,International Community School
 WIOL,IGH,Ingraham
 WIOL,ILM,Island Middle
+WIOL,ILS,Innovation Lab High School
 WIOL,ING,Inglemoor
 WIOL,IPE,Island Park Elementary
 WIOL,ISS,Issaquah
 WIOL,JAC,Jackson
 WIOL,JAM,Jane Addams Middle
+WIOL,JEE,Jefferson Elementary (EVT)
 WIOL,JEF,Thomas Jefferson
 WIOL,JME,Jing Mei Elementary
 WIOL,JSI,John Stanford International
@@ -119,6 +126,8 @@ WIOL,LEM,Leota Middle
 WIOL,LIB,Liberty
 WIOL,LIN,Lincoln
 WIOL,LKW,Lake Wilderness Elementary
+WIOL,LKWB,Lake Wilderness Elementary - Blue
+WIOL,LKWG,Lake Wilderness Elementary - Gold
 WIOL,LMS,Lakeside Middle
 WIOL,LVW,Lakeview Elementary
 WIOL,LWA,Lake Washington
@@ -129,13 +138,17 @@ WIOL,MAY,Maywood Middle
 WIOL,MCM,McMurray Middle
 WIOL,MDP,Meridian Park Elementary
 WIOL,MEE,Mount Erie Elementary
+WIOL,MHE,Maplewood Heights Elementary
 WIOL,MLE,Moorlands Elementary
 WIOL,MNM,Meany Middle
 WIOL,MON,Montlake Elementary
+WIOL,MSA,Morningside Academy
 WIOL,MSU,Montana State University
 WIOL,MSV,Marysville
 WIOL,MTM,Mountain View Middle
 WIOL,MVM,Maple View Middle
+WIOL,MVMB,Maple View Middle - Blue
+WIOL,MVMG,Maple View Middle - Gold
 WIOL,NCA,Northshore Christian Academy
 WIOL,NDM,Northwood Middle
 WIOL,NEW,Newport
@@ -157,6 +170,8 @@ WIOL,PLE,Phantom Lake Elementary
 WIOL,PRV,Peace River Homeschool
 WIOL,RAV,Raisbeck Aviation
 WIOL,RCK,Rock Creek Elementary
+WIOL,RCKB,Rock Creek Elementary - Blue
+WIOL,RCKG,Rock Creek Elementary - Gold
 WIOL,RDE,Redmond Elementary
 WIOL,REC,Reed College
 WIOL,RED,Redmond
@@ -180,7 +195,9 @@ WIOL,SSE,Sunset Elementary
 WIOL,SSS,Summit Sierra School
 WIOL,STE,Stevens Elementary
 WIOL,STL,St. Lukes
-WIOL,STM,Summit Trails Middle
+WIOL,STM,Summit Trail Middle
+WIOL,STMB,Summit Trail Middle - Blue
+WIOL,STMG,Summit Trail Middle - Gold
 WIOL,STT,St. Thomas
 WIOL,SVC,Sky Valley Education Center
 WIOL,SVS,Soundview School
@@ -189,10 +206,14 @@ WIOL,SWH,South Whidbey
 WIOL,SWM,South Whidbey Middle
 WIOL,SWS,Seattle Waldorf School
 WIOL,TAH,Tahoma
+WIOL,TAHB,Tahoma - Blue
+WIOL,TAHG,Tahoma - Gold
 WIOL,TCE,Thornton Creek Elementary
 WIOL,TCM,Timbercrest Middle
 WIOL,TCO,Tahoma Co-Op
 WIOL,TEL,Tahoma Elementary
+WIOL,TELB,Tahoma Elementary - Blue
+WIOL,TELG,Tahoma Elementary - Gold
 WIOL,TES,Tesla STEM
 WIOL,TGM,Thurgood Marshall Elementary
 WIOL,THE,Thoreau Elementary
@@ -206,9 +227,11 @@ WIOL,UMI,University of Michigan
 WIOL,UNP,University Prep
 WIOL,UWS,University of Washington - Seattle
 WIOL,VIN,Vinland Elementary
+WIOL,VRE,View Ridge Elementary
 WIOL,VVW,Valley View Middle
 WIOL,WAM,Washington Middle
 WIOL,WDE,Woodridge Elementary
+WIOL,WDV,Woodinville
 WIOL,WGE,Westgate Elementary
 WIOL,WHC,Whitman College
 WIOL,WHE,Whittier Elementary
