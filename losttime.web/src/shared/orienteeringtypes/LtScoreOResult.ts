@@ -31,7 +31,7 @@ export class LtScoreOResult extends LtResult {
         this.bonus = params.bonus? Math.abs(params.bonus) : 0
         if (params.score) {
             const calcScore:number = params.scoreRaw - this.penalty + this.bonus
-            if (params.score != calcScore) {
+            if (params.score !== calcScore) {
                 console.log(`ISSUE! ${params.score} != ${params.scoreRaw}-${this.penalty}+${this.bonus} = ${calcScore}`)
                 Error("Math is wrong somewhere!")
             }
